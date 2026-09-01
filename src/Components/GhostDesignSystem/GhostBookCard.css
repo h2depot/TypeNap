@@ -1,0 +1,185 @@
+.ghost-book-item {
+    display: inline-block;
+    vertical-align: top;
+    width: 164px;
+    perspective: 1200px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+    transition: z-index 0.3s ease;
+}
+
+.ghost-book-item:hover {
+    z-index: 15;
+}
+
+.ghost-book-cover-button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    display: block;
+    width: 100%;
+}
+
+.ghost-book-cover {
+    position: relative;
+    width: 164px;
+    height: 232px;
+    border-radius: 12px 18px 18px 12px;
+    overflow: hidden;
+    transition:
+        transform 0.15s cubic-bezier(0.25, 1, 0.5, 1),
+        box-shadow 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+    transform-style: preserve-3d;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: var(--ghost-book-cover-bg);
+    border: 1px solid var(--ghost-book-cover-border);
+    box-shadow: var(--ghost-book-cover-shadow);
+}
+
+.ghost-book-spine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 21px;
+    z-index: 5;
+    pointer-events: none;
+    background: var(--ghost-card-spine);
+}
+
+.ghost-book-edge {
+    position: absolute;
+    left: 21px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    z-index: 5;
+    pointer-events: none;
+    background: var(--ghost-card-edge-bg);
+    border-right: var(--ghost-card-edge-border);
+}
+
+.ghost-book-title {
+    position: absolute;
+    left: 36px;
+    right: 24px;
+    top: 60px;
+    font-size: 16px;
+    line-height: 1.3;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    color: var(--ghost-text);
+    text-shadow: var(--ghost-card-title-shadow);
+}
+
+/* Hover effects for title: Gradient text and glow matching the border gradient */
+.ghost-book-item:hover .ghost-book-title {
+    background: var(--ghost-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 6px var(--ghost-glow));
+}
+
+.ghost-book-border-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px 18px 18px 12px;
+    padding: 4px;
+    pointer-events: none;
+    z-index: 10;
+
+    background: var(--ghost-gradient, linear-gradient(45deg, #ff7b00, #ff007b));
+    opacity: 0;
+    transition: opacity 0.5s ease;
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+.ghost-book-item:hover .ghost-book-border-glow {
+    opacity: 1;
+}
+
+.ghost-book-item:active .ghost-book-cover {
+    transform: scale(0.95);
+}
+
+
+.ghost-book-meta {
+    width: 164px;
+    margin-top: 14px;
+    padding: 0 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.ghost-book-item:hover .ghost-book-meta {
+    transform: translateY(2px);
+}
+
+.ghost-book-meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.ghost-book-meta-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+    color: var(--ghost-text);
+}
+
+.ghost-book-item:hover .ghost-book-meta-title {
+    color: var(--ghost-hover-highlight);
+}
+
+.ghost-book-meta-sub {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: color 0.3s ease;
+    color: var(--ghost-subtext);
+}
+
+.ghost-book-meta-more {
+    border: none;
+    background: transparent;
+    padding: 4px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--ghost-subtext);
+}
+
+.ghost-book-meta-more:hover {
+    color: var(--ghost-hover-highlight);
+    background: var(--ghost-hover-bg);
+}

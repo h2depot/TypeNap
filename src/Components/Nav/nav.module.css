@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    padding: 28px 0;
+    gap: 20px;
+    background-color: var(--app-workspace-bg, var(--tb-container-bg));
+    border: var(--ghost-list-item-border);
+    border-radius: 38px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--ghost-shadow);
+    margin: 0;
+    z-index: 10;
+    align-self: center;
+}

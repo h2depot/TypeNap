@@ -1,0 +1,318 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "rename": "Rename",
+    "change": "Change",
+    "create": "Create",
+    "loading": "Loading...",
+    "deleteConfirmation": "Confirm deletion",
+    "notSelected": "Not selected",
+    "characters": "characters",
+    "characterCount": "{{count}} characters",
+    "chapterCount": "{{count}} chapters",
+    "confirm": "Apply",
+    "deleting": "Deleting...",
+    "restoring": "Restoring...",
+    "clearInput": "Clear input",
+    "closeDialog": "Close dialog",
+    "errorWithDetail": "{{message}} Error: {{error}}",
+    "inputPlaceholder": "Enter text...",
+    "imageLoadFailed": "Could not load the image."
+  },
+  "tour": {
+    "navigation": {
+      "label": "Tour navigation",
+      "previous": "Go back",
+      "next": "Continue",
+      "complete": "Complete the tour"
+    },
+    "welcome": {
+      "title": "Welcome to TypeNap.",
+      "description": "Simple features and a polished interface help you focus on your writing."
+    },
+    "library": {
+      "title": "Build your personal library",
+      "description": "Whether it is a work in progress or a treasured story, find it in your library and pick up right where you left off.",
+      "sampleBooks": {
+        "anne": "Anne of Green Gables",
+        "blueBird": "The Blue Bird",
+        "jadeRing": "The Jade Ring"
+      },
+      "menu": {
+        "details": "View details",
+        "rename": "Rename",
+        "delete": "Delete"
+      }
+    },
+    "startStory": {
+      "title": "Let your story begin.",
+      "description": "Choose a background before you start writing. You can change it anytime later in Settings.",
+      "selectBackground": "Choose a background",
+      "loadingBackgrounds": "Loading backgrounds…"
+    }
+  },
+  "app": {
+    "initializationError": {
+      "title": "Start-up error",
+      "message": "Reload or close the app."
+    },
+    "exit": "Close app",
+    "reload": "Reload",
+    "terminate": {
+      "title": "Unsaved changes",
+      "message": "Some documents are not saved. Close the app?",
+      "closeWithoutSaving": "Close without saving"
+    }
+  },
+  "tabs": {
+    "noContent": "No content.",
+    "unsaved": {
+      "title": "Unsaved changes",
+      "message": "You have unsaved changes. Close anyway?",
+      "closeWithoutSaving": "Close without saving"
+    }
+  },
+  "editor": {
+    "saved": "Saved",
+    "unsaved": "Unsaved",
+    "titlePlaceholder": "Title",
+    "bodyPlaceholder": "Write your ideas here...",
+    "search": { "label": "Search", "noResults": "No results" },
+    "writingMode": { "horizontal": "Use horizontal text", "vertical": "Use vertical text" }
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Hello",
+      "evening": "Good evening",
+      "message": "{{greeting}}, let's write!"
+    },
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "stats": { "weekTotal": "This week", "dailyAverage": "Daily average" },
+    "activity": "Writing activity",
+    "recentFiles": "Recent files",
+    "noRecentFiles": "No recent files."
+  },
+  "story": {
+    "create": {
+      "nameLabel": "Story name",
+      "namePlaceholder": "Enter a story name...",
+      "duplicateName": "A story with this name already exists.",
+      "submit": "Create story"
+    },
+    "cover": { "color": "Cover colour", "chooseImage": "Choose a background image", "changeTitle": "Change cover colour" },
+    "summary": {
+      "totalCharacters": "Characters: {{count}}",
+      "lastUpdated": "Last updated: {{date}}",
+      "synopsis": "Synopsis",
+      "synopsisPlaceholder": "Enter a synopsis..."
+    },
+    "actions": { "restoreBackup": "Restore backup" },
+    "files": {
+      "description": "Text file",
+      "fetchFailed": "Could not load the file list: ",
+      "empty": "No files.",
+      "deleteMessage": "Delete “{{name}}”? This cannot be undone. 💀",
+      "createTitle": "Add text file",
+      "nameLabel": "File name",
+      "namePlaceholder": "Enter a file name...",
+      "duplicateName": "A file with this name already exists.",
+      "renameTitle": "Rename file",
+      "renameLabel": "New file name",
+      "renamePlaceholder": "Enter a file name..."
+    },
+    "restore": {
+      "submit": "Restore",
+      "title": "Restore a backup of “{{name}}”",
+      "noHistory": "No history to restore.",
+      "historyFailed": "Could not load history: {{error}}",
+      "success": "Restored “{{name}}”.",
+      "failed": "Could not restore the backup.",
+      "generationOption": "Version {{current}} / {{total}}",
+      "generationLabel": "Backup version",
+      "generationPlaceholder": "Choose a version",
+      "generation": "Version: {{current}} / {{total}}",
+      "unknownDate": "Unknown date (initial version)",
+      "noContent": "(No content)"
+    }
+  },
+  "image": {
+    "add": "Add image",
+    "addNew": "Add a new image",
+    "none": "No images.",
+    "pathMissing": "The selected path does not exist."
+  },
+  "background": { "title": "Background settings", "chooseColor": "Choose a colour", "chooseImage": "Choose an image" },
+  "scan": { "title": "Scan results", "found": "Found {{count}} unwanted files:", "deleted": "Unwanted files deleted." },
+  "settings": {
+    "title": "Settings",
+    "theme": {
+      "changed": "Changed to {{theme}}",
+      "names": { "system": "System theme", "light": "Light theme", "dark": "Dark theme" },
+      "system": { "title": "Use system theme", "description": "Match your system theme." },
+      "manual": { "description": "Choose the theme manually." }
+    },
+    "background": { "title": "Background", "solidColor": "Solid colour", "image": "Background image" },
+    "language": { "title": "Language", "description": "Change the app language.", "japanese": "Japanese" },
+    "fontSize": { "title": "Writing size (px)", "description": "Change the editor text size." },
+    "tabs": {
+      "title": "Save tabs",
+      "description": "Restore open tabs at start-up.",
+      "enabled": "Tab restore enabled.",
+      "disabled": "Tab restore disabled."
+    },
+    "environment": { "title": "Storage" },
+    "scan": { "title": "Scan folder", "description": "Find unwanted files in the app folder.", "noneFound": "No unwanted files found." },
+    "images": { "title": "Manage images", "count": "User images: {{count}}" },
+    "restore": { "title": "Restore deleted files", "description": "Restore deleted files from a backup." },
+    "deleteLock": { "title": "Lock data deletion", "description": "Prevent accidental data deletion." },
+    "delete": { "title": "Delete all data", "description": "Delete all data permanently." },
+    "help": { "title": "Help" },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "description": "View keyboard shortcuts.",
+      "save": "Save this document",
+      "closeTab": "Close this tab",
+      "nextTab": "Go to the next tab",
+      "previousTab": "Go to the previous tab",
+      "openSettings": "Open settings",
+      "openLibrary": "Open library",
+      "openHome": "Open home",
+      "create": "Create new",
+      "search": "Search this document",
+      "closeDialog": "Close the dialog"
+    },
+    "licenses": {
+      "title": "Third-party licences",
+      "description": "View third-party content used by the app.",
+      "explanation": "TypeNap uses the following content:",
+      "momoSignature": "Momo Signature: Copyright 2024 The Momo Signature Project Authors (https://github.com/typeassociates/MomoSignature). Licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).",
+      "aiGeneratedImages": "The images in the initial set were generated with OpenAI Codex."
+    },
+    "backgroundDialog": {
+      "title": "Set background",
+      "chooseColour": "Choose a colour",
+      "chooseImage": "Choose an image",
+      "noImages": "No images.",
+      "missingPath": "The image could not be found.",
+      "addImage": "Add image",
+      "solidName": "Solid background",
+      "imageName": "Background"
+    },
+    "imageManager": {
+      "title": "Manage images",
+      "userImages": "User images",
+      "count": "{{count}} images",
+      "empty": "No images can be deleted.",
+      "deleted": "Background image deleted."
+    },
+    "deletedFiles": {
+      "restoreTitle": "Restore deleted files",
+      "deleteTitle": "Delete data permanently",
+      "loading": "Loading deleted files...",
+      "noneToRestore": "No files can be restored.",
+      "noneToDelete": "No files can be deleted permanently.",
+      "deleteWarning": "This cannot be undone. Delete the selected data permanently?",
+      "restored": "Files restored.",
+      "restorePartial": "Some files could not be restored.",
+      "deleted": "Data deleted permanently.",
+      "deletePartial": "Some data could not be deleted."
+    }
+  },
+  "work": {
+    "renameFailed": "Could not rename the title."
+  },
+  "notice": {
+    "tabLimit": "No more tabs can be opened.",
+    "settingsLoadFailed": "Could not load settings.",
+    "settingsSaveFailed": "Could not save settings.",
+    "statsLoadFailed": "Could not load writing stats.",
+    "statsSaveFailed": "Could not save writing stats.",
+    "recentFilesSaveFailed": "Could not save recent files.",
+    "tabsSaveFailed": "Could not save tab state.",
+    "imageAddFailed": "Could not add the background image.",
+    "imageDeleteFailed": "Could not delete the background image.",
+    "imageListFailed": "Could not load the image list.",
+    "fileOperationFailed": "Could not {{operation}}.",
+    "libraryCreated": "The library was missing, so a new one was created.",
+    "synopsisUpdated": "Synopsis updated.",
+    "coverUpdated": "Cover updated.",
+    "saved": "Saved ‘{{title}}’.",
+    "partialSave": "The text was saved, but {{target}} could not be updated.",
+    "backup": "the backup",
+    "storyInfo": "the story details",
+    "savePathFailed": "Could not prepare the save location. Check the file name and location.",
+    "loadFileFailed": "Could not load the file.",
+    "operations": {
+      "getBasePath": "get the save location", "loadStories": "load the story list", "loadTexts": "load the document list",
+      "loadText": "load the document", "loadStory": "load the story details", "updateSynopsis": "update the synopsis",
+      "updateCover": "update the cover", "createStory": "create the story", "deleteStory": "delete the story",
+      "renameStory": "rename the story", "createText": "create the document", "deleteText": "delete the document",
+      "renameText": "rename the document", "scan": "scan the folder", "loadDeleted": "load deleted files",
+      "restoreDeleted": "restore deleted files", "deletePermanently": "delete the data permanently", "deleteUnwanted": "delete unwanted files"
+    },
+    "saveError": {
+      "createTemporary": "Could not create a temporary file. Check access and free space.",
+      "writeTemporary": "Could not write the full text. Check free space.",
+      "syncTemporary": "Could not sync the text to the drive. The old file is safe.",
+      "replaceDestination": "Could not replace the saved file. Check that it is not open in another app.",
+      "invalidDestination": "The save location is not valid.",
+      "default": "Could not save the text safely.",
+      "title": "Could not save the title.",
+      "document": "Could not save ‘{{title}}’."
+    }
+  },
+  "contextMenu": {
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select all",
+    "newStory": "Add story",
+    "newFile": "Create file",
+    "switchTheme": "Switch to {{theme}} theme",
+    "reload": "Reload"
+  },
+  "initialization": {
+    "appDataPath": "Could not find the app storage location.",
+    "backupDirectory": "Could not prepare the backup folder.",
+    "libraryDirectory": "Could not prepare the library folder.",
+    "backgroundDirectory": "Could not prepare the background image folder.",
+    "backgroundAssets": "Could not prepare the default backgrounds.",
+    "storyAssets": "Could not prepare the default story.",
+    "jsonFile": "Could not read or write the initialisation data.",
+    "default": "Could not start the app."
+  },
+  "library": {
+    "title": "Library",
+    "searchPlaceholder": "Search stories",
+    "filter": "Filter",
+    "empty": "No stories",
+    "deleteMessage": "Delete “{{name}}”? This cannot be undone.",
+    "addStory": "Add story",
+    "sort": {
+      "title": "Title",
+      "updated": "Last updated",
+      "created": "Date created",
+      "placeholder": "Sort by",
+      "ascending": "Ascending",
+      "descending": "Descending"
+    },
+    "actions": { "details": "View details", "edit": "Edit", "delete": "Delete" },
+    "details": {
+      "title": "Story details",
+      "storyName": "Story name",
+      "createdAt": "Created",
+      "lastUpdated": "Last updated",
+      "synopsis": "Synopsis",
+      "chapters": "Chapters",
+      "totalCharacters": "Characters"
+    },
+    "rename": {
+      "title": "Rename story",
+      "label": "New story name",
+      "placeholder": "Enter a story name..."
+    }
+  }
+}

@@ -1,0 +1,120 @@
+.fullscreen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.ambient {
+    position: absolute;
+    width: min(62vw, 720px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ghost-gradient);
+    filter: blur(120px);
+    opacity: 0.11;
+    pointer-events: none;
+}
+
+.page {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 48px 24px 132px;
+    text-align: center;
+}
+
+.iconFrame {
+    width: clamp(104px, 13vw, 144px);
+    height: clamp(104px, 13vw, 144px);
+    margin-bottom: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--ghost-border-light);
+    border-radius: 36px;
+    background: color-mix(in srgb, var(--ghost-bg) 76%, transparent);
+    box-shadow: var(--ghost-shadow-large);
+    backdrop-filter: blur(18px);
+}
+
+.iconFrame svg {
+    width: 46%;
+    height: 46%;
+    stroke: var(--ghost-text);
+    stroke-width: 1.4;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: var(--ghost-subtext);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+}
+
+.page h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3.2rem);
+    line-height: 1.25;
+    letter-spacing: 0.03em;
+}
+
+.description {
+    max-width: 560px;
+    margin: 22px 0 0;
+    color: var(--ghost-subtext);
+    font-size: clamp(0.92rem, 1.5vw, 1.08rem);
+    line-height: 1.9;
+}
+
+.navigation {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: clamp(30px, 6vh, 58px);
+    width: min(420px, calc(100vw - 48px));
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: center;
+    transform: translateX(-50%);
+}
+
+.progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ghost-text);
+}
+
+@media (max-height: 560px) {
+    .iconFrame {
+        width: 88px;
+        height: 88px;
+        margin-bottom: 20px;
+        border-radius: 28px;
+    }
+
+    .description {
+        margin-top: 12px;
+    }
+
+    .page {
+        padding-bottom: 100px;
+    }
+}

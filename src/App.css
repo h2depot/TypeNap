@@ -1,0 +1,253 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  /* --- Global Colors (Light Mode Defaults) --- */
+  --bg-primary: #E9E5D8;
+  --text-primary: #101426;
+
+  /* --- Solid Palette Colors (Cover & Background) --- */
+  --solid-color-1: #E9E5D8;
+  --solid-color-2: #101426;
+  --solid-color-3: #A04940;
+  --solid-color-4: #85916D;
+  --solid-color-5: #246A84;
+
+  /* --- TextBox Colors --- */
+  --tb-btn-text: #08060d;
+  --tb-btn-bg: #f4f3ec;
+  --tb-btn-border: #e5e4e7;
+  --tb-wrapper-bg: linear-gradient(135deg, rgba(170, 59, 255, 0.05), rgba(170, 59, 255, 0.01));
+  --tb-wrapper-border: rgba(170, 59, 255, 0.1);
+  --tb-container-bg: #E9E5D8;
+  --tb-container-bg-translucent: rgba(233, 229, 216, 0.75);
+  --tb-text: #08060d;
+  --tb-placeholder: #6b6375;
+  --tb-thumb-bg: rgba(170, 59, 255, 0.2);
+  --tb-thumb-hover: rgba(170, 59, 255, 0.4);
+  --tb-thumb-border: #ffffff;
+  --tb-divider: linear-gradient(90deg, rgba(170, 59, 255, 0.02), rgba(170, 59, 255, 0.2) 50%, rgba(170, 59, 255, 0.02));
+  --tb-divider-vert: linear-gradient(180deg, rgba(170, 59, 255, 0.02), rgba(170, 59, 255, 0.2) 50%, rgba(170, 59, 255, 0.02));
+  --tb-title-text: #08060d;
+  --tb-title-placeholder: rgba(107, 99, 117, 0.5);
+
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  height: 100vh;
+  background-color: var(--bg-primary);
+  background-image: var(--app-bg-image, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.content {
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-theme="dark"] {
+  /* --- Global Colors (Dark Mode) --- */
+  --bg-primary: #101426;
+  --text-primary: #E9E5D8;
+
+  /* --- TextBox Colors --- */
+  --tb-btn-text: #f3f4f6;
+  --tb-btn-bg: #1f2028;
+  --tb-btn-border: #2e303a;
+  --tb-wrapper-bg: linear-gradient(135deg, rgba(192, 132, 252, 0.08), rgba(192, 132, 252, 0.02));
+  --tb-wrapper-border: rgba(192, 132, 252, 0.1);
+  --tb-container-bg: #101426;
+  --tb-container-bg-translucent: rgba(16, 20, 38, 0.75);
+  --tb-text: #f3f4f6;
+  --tb-placeholder: #9ca3af;
+  --tb-thumb-bg: rgba(192, 132, 252, 0.2);
+  --tb-thumb-hover: rgba(192, 132, 252, 0.4);
+  --tb-thumb-border: #101426;
+  --tb-divider: linear-gradient(90deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
+  --tb-divider-vert: linear-gradient(180deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
+  --tb-title-text: #f3f4f6;
+  --tb-title-placeholder: rgba(156, 163, 175, 0.4);
+}
+
+[data-theme="dark"] a:hover {
+  color: #c084fc;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--ghost-border-light);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ghost-text);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ==========================================================================
+   GhostDesignSystem Custom Properties / CSS Variables
+   ========================================================================== */
+:root,
+[data-theme="light"] {
+  --ghost-bg: #D4CFBF;
+  --ghost-border: #232b69;
+  --ghost-text: #232b69;
+  --ghost-subtext: rgba(35, 43, 105, 0.6);
+  --ghost-accent: #4A55A2;
+  --ghost-hover-bg: rgba(35, 43, 105, 0.08);
+  --ghost-option-bg: rgba(0, 0, 0, 0.05);
+  --ghost-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+  --ghost-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.2);
+  --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --ghost-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+  --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  --ghost-glow: rgba(110, 142, 251, 0.4);
+  --ghost-placeholder: rgba(35, 43, 105, 0.4);
+  --ghost-toast-success: #3b82f6;
+  --ghost-toast-info: #8b5cf6;
+  --ghost-toast-border: rgba(35, 43, 105, 0.15);
+  --ghost-toast-bg: rgba(212, 207, 191, 0.75);
+  --ghost-toast-text: #232b69;
+  --ghost-border-light: rgba(35, 43, 105, 0.25);
+  --ghost-toggle-knob-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --ghost-toggle-shadow-off: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  --ghost-card-bg: #E3E2D8;
+  --ghost-card-border: 1px solid rgba(35, 43, 105, 0.08);
+  --ghost-list-item-bg: #E3E2D8;
+  --ghost-list-item-border: 1px solid rgba(35, 43, 105, 0.15);
+  --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 60%, rgba(255, 255, 255, 0.25) 85%, rgba(0, 0, 0, 0.06) 100%);
+  --ghost-card-edge-bg: rgba(0, 0, 0, 0.04);
+  --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.2);
+  --ghost-card-title-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+  --ghost-menu-bg-hover: rgba(35, 43, 105, 0.1);
+  --ghost-tooltip-bg: rgba(212, 207, 191, 0.85);
+  --ghost-tooltip-border: rgba(35, 43, 105, 0.2);
+  --ghost-tooltip-text: #232b69;
+  --ghost-tooltip-glow: rgba(110, 142, 251, 0.3);
+  --ghost-book-bg: #E3E2D8;
+  --ghost-book-cover-bg: var(--ghost-book-bg);
+  --ghost-book-cover-border: rgba(35, 43, 105, 0.08);
+  --ghost-book-cover-shadow: 0 12px 30px rgba(31, 38, 135, 0.08), inset 1px 1px 0px rgba(255, 255, 255, 0.3), inset -1px -1px 0px rgba(0, 0, 0, 0.05);
+  --ghost-hover-highlight: #6e8efb;
+  --ghost-dialog-bg: #9ca3af;
+}
+
+[data-theme="dark"] {
+  --ghost-bg: #232b69;
+  --ghost-border: #D4CFBF;
+  --ghost-text: #D4CFBF;
+  --ghost-subtext: rgba(212, 207, 191, 0.6);
+  --ghost-accent: #E8E4D9;
+  --ghost-hover-bg: rgba(212, 207, 191, 0.08);
+  --ghost-option-bg: rgba(255, 255, 255, 0.05);
+  --ghost-gradient: linear-gradient(135deg, #004aad 0%, #cb6ce6 100%);
+  --ghost-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.15);
+  --ghost-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.3));
+  --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(255, 255, 255, 0.25));
+  --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.15));
+  --ghost-glow: rgba(203, 108, 230, 0.4);
+  --ghost-placeholder: rgba(212, 207, 191, 0.4);
+  --ghost-toast-success: #4ade80;
+  --ghost-toast-info: #cb6ce6;
+  --ghost-toast-border: rgba(212, 207, 191, 0.15);
+  --ghost-toast-bg: rgba(16, 20, 38, 0.85);
+  --ghost-toast-text: #E9E5D8;
+  --ghost-border-light: rgba(212, 207, 191, 0.25);
+  --ghost-toggle-knob-shadow: 0 2px 6px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(255, 255, 255, 0.1);
+  --ghost-toggle-shadow-off: inset 0 2px 6px rgba(255, 255, 255, 0.1);
+  --ghost-card-bg: #1C1E2E;
+  --ghost-card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --ghost-list-item-bg: #1C1E2E;
+  --ghost-list-item-border: 1px solid rgba(212, 207, 191, 0.15);
+  --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.05) 60%, rgba(255, 255, 255, 0.03) 85%, rgba(0, 0, 0, 0.15) 100%);
+  --ghost-card-edge-bg: rgba(0, 0, 0, 0.2);
+  --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.04);
+  --ghost-card-title-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+  --ghost-menu-bg-hover: rgba(255, 255, 255, 0.1);
+  --ghost-tooltip-bg: rgba(26, 32, 60, 0.85);
+  --ghost-tooltip-border: rgba(212, 207, 191, 0.2);
+  --ghost-tooltip-text: #D4CFBF;
+  --ghost-tooltip-glow: rgba(203, 108, 230, 0.4);
+  --ghost-book-bg: #1C1E2E;
+  --ghost-book-cover-bg: var(--ghost-book-bg);
+  --ghost-book-cover-border: rgba(255, 255, 255, 0.08);
+  --ghost-book-cover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 1px 1px 0px rgba(255, 255, 255, 0.05), inset -1px -1px 0px rgba(0, 0, 0, 0.2);
+  --ghost-hover-highlight: #cb6ce6;
+  --ghost-dialog-bg: #101426;
+}
+
+/* ==========================================================================
+   Left Sidebar & Mascot Sizing
+   ========================================================================== */
+.left-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 20px);
+  margin: 10px 0 10px 20px;
+  width: 76px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+
+.content-workspace {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: calc(100vh - 20px);
+  margin: 10px 10px 10px 10px;
+  background-color: var(--app-workspace-bg, var(--tb-container-bg));
+  border: var(--ghost-list-item-border);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--ghost-shadow-large);
+  overflow: hidden;
+  box-sizing: border-box;
+}

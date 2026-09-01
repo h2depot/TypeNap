@@ -1,0 +1,225 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 16px 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    gap: 20px;
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.dashboardGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
+}
+
+@media (min-width: 900px) {
+    .dashboardGrid {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+    }
+}
+
+.mainCol {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.sideCol {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+}
+
+.statsRow {
+    display: flex;
+    gap: 16px;
+}
+
+@media (max-width: 600px) {
+    .statsRow {
+        flex-direction: column;
+    }
+}
+
+.statBadge {
+    display: flex;
+    flex-direction: column;
+}
+
+.statLabel {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statValue {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.statUnit {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.6;
+    letter-spacing: 0;
+}
+
+.sectionHeader {
+    margin-bottom: 24px;
+}
+
+.chartContainer {
+    width: 100%;
+    flex-grow: 1;
+    min-height: 220px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.chartArea {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 10px;
+    box-sizing: border-box;
+}
+
+.barGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    flex: 1;
+    max-width: 48px;
+    justify-content: flex-end;
+    transition: transform 0.2s ease;
+}
+
+.barGroup:hover {
+    transform: translateY(-4px);
+}
+
+.barTrack {
+    width: 100%;
+    max-width: 24px;
+    flex-grow: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    margin: 0 auto;
+}
+
+.barFill {
+    width: 100%;
+    border-radius: 12px;
+    transition: height 1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+    animation: barGrow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: bottom;
+}
+
+@keyframes barGrow {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+.barGroup:hover .barFill {
+    filter: brightness(1.2);
+}
+
+.barLabel {
+    font-size: 13px;
+    transition: color 0.2s ease;
+}
+
+.barValue {
+    font-size: 11px;
+    height: 16px;
+    font-weight: 600;
+}
+
+.recentFilesWrapper {
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 2px 4px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.recentFilesWrapper::-webkit-scrollbar {
+    width: 6px;
+}
+.recentFilesWrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+.recentFilesWrapper::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 4px;
+}
+.recentFilesWrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.3);
+}
+
+.listItemWrapper {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    animation: slideIn 0.4s ease-out both;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 200px;
+    text-align: center;
+}

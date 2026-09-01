@@ -1,0 +1,318 @@
+{
+  "common": {
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "delete": "削除する",
+    "rename": "名前を変更",
+    "change": "変更する",
+    "create": "作成する",
+    "loading": "読み込み中...",
+    "deleteConfirmation": "削除確認",
+    "notSelected": "未選択",
+    "characters": "文字",
+    "characterCount": "{{count}}文字",
+    "chapterCount": "{{count}}話",
+    "confirm": "決定",
+    "deleting": "削除中...",
+    "restoring": "復元中...",
+    "clearInput": "入力を消去",
+    "closeDialog": "ダイアログを閉じる",
+    "errorWithDetail": "{{message}} エラー: {{error}}",
+    "inputPlaceholder": "入力してください...",
+    "imageLoadFailed": "画像を読み込めません。"
+  },
+  "tour": {
+    "navigation": {
+      "label": "ツアーの操作",
+      "previous": "前へ戻る",
+      "next": "次へ進む",
+      "complete": "ツアーを完了"
+    },
+    "welcome": {
+      "title": "TypeNapへようこそ。",
+      "description": "シンプルな機能と洗練させたユーザーインターフェースによりあなたの執筆作業を支えます。"
+    },
+    "library": {
+      "title": "あなただけの書斎を構築",
+      "description": "書きかけの物語も、大切な作品も、ライブラリからすぐに見つけて続きを始められます。",
+      "sampleBooks": {
+        "anne": "赤毛のアン",
+        "blueBird": "青い鳥",
+        "jadeRing": "碧玉の指輪"
+      },
+      "menu": {
+        "details": "詳細を見る",
+        "rename": "名前を変更",
+        "delete": "削除"
+      }
+    },
+    "startStory": {
+      "title": "物語をはじめましょう。",
+      "description": "執筆を始める前に、お好みの背景をお選びください。選択した背景は、あとから設定画面でいつでも変更できます。",
+      "selectBackground": "背景を選択",
+      "loadingBackgrounds": "背景を読み込んでいます…"
+    }
+  },
+  "app": {
+    "initializationError": {
+      "title": "初期化エラーが発生しました",
+      "message": "一旦アプリを再読み込みするか、終了してください。"
+    },
+    "exit": "アプリを終了",
+    "reload": "再読み込み",
+    "terminate": {
+      "title": "未保存の変更があります",
+      "message": "保存されていない文書があります。アプリを終了しますか？",
+      "closeWithoutSaving": "保存せずに終了"
+    }
+  },
+  "tabs": {
+    "noContent": "コンテンツがありません。",
+    "unsaved": {
+      "title": "未保存の変更",
+      "message": "保存されていない変更があります。本当に閉じますか？",
+      "closeWithoutSaving": "保存せずに閉じる"
+    }
+  },
+  "editor": {
+    "saved": "保存済み",
+    "unsaved": "未保存",
+    "titlePlaceholder": "タイトル",
+    "bodyPlaceholder": "インスピレーションをここに書き留めてください...",
+    "search": { "label": "検索", "noResults": "結果なし" },
+    "writingMode": { "horizontal": "横書きに変更", "vertical": "縦書きに変更" }
+  },
+  "home": {
+    "greeting": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは",
+      "message": "{{greeting}}、執筆を始めましょう！"
+    },
+    "weekdays": ["日", "月", "火", "水", "木", "金", "土"],
+    "stats": { "weekTotal": "今週の合計", "dailyAverage": "1日あたりの平均" },
+    "activity": "執筆アクティビティ",
+    "recentFiles": "最近のファイル",
+    "noRecentFiles": "最近開いたファイルはありません。"
+  },
+  "story": {
+    "create": {
+      "nameLabel": "ストーリーの名前",
+      "namePlaceholder": "新しいストーリーの名前を入力...",
+      "duplicateName": "同じ名前のストーリーが既に存在します。",
+      "submit": "ストーリーを作成する"
+    },
+    "cover": { "color": "カバーの色", "chooseImage": "背景画像から選ぶ", "changeTitle": "カバー色を変更" },
+    "summary": {
+      "totalCharacters": "総文字数: {{count}}字",
+      "lastUpdated": "最終更新: {{date}}",
+      "synopsis": "あらすじ",
+      "synopsisPlaceholder": "あらすじを入力..."
+    },
+    "actions": { "restoreBackup": "バックアップを復元" },
+    "files": {
+      "description": "テキストファイル",
+      "fetchFailed": "ファイルリストの取得に失敗しました: ",
+      "empty": "ファイルがありません。",
+      "deleteMessage": "本当に「{{name}}」を削除しますか？",
+      "createTitle": "新規テキストファイルを追加",
+      "nameLabel": "ファイル名",
+      "namePlaceholder": "新しいファイルの名前を入力...",
+      "duplicateName": "同じ名前のファイルが既に存在します。",
+      "renameTitle": "ファイル名を変更",
+      "renameLabel": "新しいファイル名",
+      "renamePlaceholder": "ファイル名を入力..."
+    },
+    "restore": {
+      "submit": "復元する",
+      "title": "「{{name}}」のバックアップを復元",
+      "noHistory": "復元できる履歴が存在しません！",
+      "historyFailed": "履歴の取得に失敗: {{error}}",
+      "success": "「{{name}}」を復元しました！",
+      "failed": "バックアップの復元に失敗しました",
+      "generationOption": "世代 {{current}} / {{total}}",
+      "generationLabel": "バックアップ世代",
+      "generationPlaceholder": "世代を選択",
+      "generation": "世代: {{current}} / {{total}}",
+      "unknownDate": "日時不明 (初期状態)",
+      "noContent": "(内容なし)"
+    }
+  },
+  "image": {
+    "add": "画像を追加",
+    "addNew": "画像を新しく追加",
+    "none": "画像がありません。",
+    "pathMissing": "指定されたパスが存在しません。"
+  },
+  "background": { "title": "背景画像設定", "chooseColor": "単色を選択", "chooseImage": "画像を選択" },
+  "scan": { "title": "スキャン結果", "found": "以下の {{count}} 個の不要なファイルが見つかりました:", "deleted": "不要なファイルを削除しました。" },
+  "settings": {
+    "title": "設定",
+    "theme": {
+      "changed": "{{theme}}に変更しました",
+      "names": { "system": "システムテーマ", "light": "ライトテーマ", "dark": "ダークテーマ" },
+      "system": { "title": "システムテーマを利用", "description": "OSのテーマ設定に合わせます。" },
+      "manual": { "description": "手動でテーマを切り替えます。" }
+    },
+    "background": { "title": "背景", "solidColor": "単色背景", "image": "背景画像" },
+    "language": { "title": "言語", "description": "アプリの表示言語を変更します。", "japanese": "日本語" },
+    "fontSize": { "title": "執筆文字の大きさ変更(px)", "description": "エディタの文字の大きさを変更します。" },
+    "tabs": {
+      "title": "タブを保存する",
+      "description": "アプリ起動時に前回終了時のタブを復元します",
+      "enabled": "起動時のタブ復元を有効にしました",
+      "disabled": "起動時のタブ復元を無効にしました"
+    },
+    "environment": { "title": "環境設定" },
+    "scan": { "title": "ディレクトリをスキャン", "description": "アプリディレクトリ内の不要なファイルをスキャンします。", "noneFound": "不要なファイルは見つかりませんでした。" },
+    "images": { "title": "画像を管理", "count": "ユーザー画像: {{count}}件" },
+    "restore": { "title": "削除したファイルの復元", "description": "バックアップから削除済みファイルを復元します。" },
+    "deleteLock": { "title": "データ完全削除のロック", "description": "誤操作を防ぐため、データ完全削除をロックします。" },
+    "delete": { "title": "データを完全に削除", "description": "すべてのデータを復元不可能な状態で完全に削除します。" },
+    "help": { "title": "ヘルプ" },
+    "shortcuts": {
+      "title": "ショートカットキー一覧",
+      "description": "使用できるショートカットキーを確認します。",
+      "save": "現在の文書を保存",
+      "closeTab": "現在のタブを閉じる",
+      "nextTab": "次のタブへ移動",
+      "previousTab": "前のタブへ移動",
+      "openSettings": "設定を開く",
+      "openLibrary": "ライブラリを開く",
+      "openHome": "ホームを開く",
+      "create": "新規作成",
+      "search": "文書内を検索",
+      "closeDialog": "ダイアログを閉じる"
+    },
+    "licenses": {
+      "title": "サードパーティのライセンス",
+      "description": "使用しているサードパーティコンテンツを確認します。",
+      "explanation": "TypeNapでは、以下のコンテンツを使用しています。",
+      "momoSignature": "Momo Signature: Copyright 2024 The Momo Signature Project Authors (https://github.com/typeassociates/MomoSignature). SIL Open Font License, Version 1.1 (https://openfontlicense.org) の下でライセンスされています。",
+      "aiGeneratedImages": "初期セットの画像はOpenAI Codexを使用して生成されました。"
+    },
+    "backgroundDialog": {
+      "title": "背景を設定",
+      "chooseColour": "色を選択",
+      "chooseImage": "画像を選択",
+      "noImages": "画像がありません。",
+      "missingPath": "指定した画像が見つかりません。",
+      "addImage": "画像を追加",
+      "solidName": "単色背景",
+      "imageName": "背景"
+    },
+    "imageManager": {
+      "title": "画像を管理",
+      "userImages": "ユーザー画像",
+      "count": "{{count}}件",
+      "empty": "削除できる画像はありません。",
+      "deleted": "背景画像を削除しました。"
+    },
+    "deletedFiles": {
+      "restoreTitle": "削除したファイルを復元",
+      "deleteTitle": "データを完全に削除",
+      "loading": "削除済みファイルを読み込んでいます...",
+      "noneToRestore": "復元できるファイルはありません。",
+      "noneToDelete": "完全に削除できるファイルはありません。",
+      "deleteWarning": "この操作は取り消せません。選択したデータを完全に削除しますか？",
+      "restored": "ファイルを復元しました。",
+      "restorePartial": "一部のファイルを復元できませんでした。",
+      "deleted": "データを完全に削除しました。",
+      "deletePartial": "一部のデータを削除できませんでした。"
+    }
+  },
+  "work": {
+    "renameFailed": "タイトルの変更に失敗しました。"
+  },
+  "notice": {
+    "tabLimit": "これ以上タブを開けません。",
+    "settingsLoadFailed": "設定を読み込めませんでした。",
+    "settingsSaveFailed": "設定を保存できませんでした。",
+    "statsLoadFailed": "統計情報を読み込めませんでした。",
+    "statsSaveFailed": "統計情報を保存できませんでした。",
+    "recentFilesSaveFailed": "最近使ったファイルを保存できませんでした。",
+    "tabsSaveFailed": "タブの状態を保存できませんでした。",
+    "imageAddFailed": "背景画像を追加できませんでした。",
+    "imageDeleteFailed": "背景画像を削除できませんでした。",
+    "imageListFailed": "画像一覧を取得できませんでした。",
+    "fileOperationFailed": "{{operation}}に失敗しました。",
+    "libraryCreated": "ライブラリがなかったため、新しく作成しました。",
+    "synopsisUpdated": "あらすじを更新しました。",
+    "coverUpdated": "表紙を更新しました。",
+    "saved": "「{{title}}」を保存しました。",
+    "partialSave": "本文は保存しましたが、{{target}}を更新できませんでした。",
+    "backup": "バックアップ",
+    "storyInfo": "作品情報",
+    "savePathFailed": "保存先を準備できませんでした。ファイル名と保存先を確認してください。",
+    "loadFileFailed": "ファイルを読み込めませんでした。",
+    "operations": {
+      "getBasePath": "保存先の取得", "loadStories": "作品一覧の取得", "loadTexts": "文書一覧の取得",
+      "loadText": "文書の取得", "loadStory": "作品情報の取得", "updateSynopsis": "あらすじの更新",
+      "updateCover": "表紙の更新", "createStory": "作品の作成", "deleteStory": "作品の削除",
+      "renameStory": "作品名の変更", "createText": "文書の作成", "deleteText": "文書の削除",
+      "renameText": "文書名の変更", "scan": "スキャン", "loadDeleted": "削除済みファイルの取得",
+      "restoreDeleted": "削除済みファイルの復元", "deletePermanently": "完全削除", "deleteUnwanted": "不要ファイルの削除"
+    },
+    "saveError": {
+      "createTemporary": "一時ファイルを作成できませんでした。保存先の権限と空き容量を確認してください。",
+      "writeTemporary": "本文を書き込めませんでした。空き容量を確認してください。",
+      "syncTemporary": "本文をディスクへ同期できませんでした。元のファイルは維持されています。",
+      "replaceDestination": "保存済みファイルを置き換えられませんでした。他のアプリで開かれていないか確認してください。",
+      "invalidDestination": "保存先が無効です。",
+      "default": "本文を安全に保存できませんでした。",
+      "title": "タイトルを保存できませんでした。",
+      "document": "「{{title}}」を保存できませんでした。"
+    }
+  },
+  "contextMenu": {
+    "cut": "切り取り",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "selectAll": "すべて選択",
+    "newStory": "作品を追加",
+    "newFile": "新しいファイルを作成",
+    "switchTheme": "{{theme}}テーマに切り替え",
+    "reload": "再読み込み"
+  },
+  "initialization": {
+    "appDataPath": "アプリの保存先を取得できませんでした。",
+    "backupDirectory": "バックアップ用フォルダを準備できませんでした。",
+    "libraryDirectory": "ライブラリ用フォルダを準備できませんでした。",
+    "backgroundDirectory": "背景画像用フォルダを準備できませんでした。",
+    "backgroundAssets": "初期背景画像を準備できませんでした。",
+    "storyAssets": "初期作品を準備できませんでした。",
+    "jsonFile": "初期化情報を読み書きできませんでした。",
+    "default": "アプリを初期化できませんでした。"
+  },
+  "library": {
+    "title": "ライブラリ",
+    "searchPlaceholder": "ストーリーを検索",
+    "filter": "フィルター",
+    "empty": "ストーリーがありません",
+    "deleteMessage": "本当に「{{name}}」を削除しますか？",
+    "addStory": "新規ストーリーを追加",
+    "sort": {
+      "title": "タイトル順",
+      "updated": "更新日順",
+      "created": "作成日順",
+      "placeholder": "ソート基準",
+      "ascending": "昇順",
+      "descending": "降順"
+    },
+    "actions": { "details": "詳細を見る", "edit": "編集する", "delete": "削除する" },
+    "details": {
+      "title": "ストーリー詳細",
+      "storyName": "ストーリー名",
+      "createdAt": "作成日時",
+      "lastUpdated": "最終更新日時",
+      "synopsis": "あらすじ",
+      "chapters": "話数",
+      "totalCharacters": "総文字数"
+    },
+    "rename": {
+      "title": "Story名を変更",
+      "label": "新しいStory名",
+      "placeholder": "Story名を入力..."
+    }
+  }
+}
