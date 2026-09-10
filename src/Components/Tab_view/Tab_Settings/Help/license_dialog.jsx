@@ -1,5 +1,5 @@
 import React from "react";
-import { GhostDialog } from "../../GhostDesignSystem";
+import { GhostDialog } from "../../../GhostDesignSystem";
 import { useTranslation } from "react-i18next";
 
 const EXPLANATION = "settings.licenses.explanation";

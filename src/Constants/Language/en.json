@@ -156,6 +156,14 @@
     },
     "background": { "title": "Background", "solidColor": "Solid colour", "image": "Background image" },
     "language": { "title": "Language", "description": "Change the app language.", "japanese": "Japanese" },
+    "soundEffect": {
+      "title": "Sound effects",
+      "description": "Set sound effects for typing.",
+      "none": "None",
+      "chillWood": "ChillWood",
+      "raindrop": "Raindrop",
+      "typeWriter": "TypeWriter"
+    },
     "fontSize": { "title": "Writing size (px)", "description": "Change the editor text size." },
     "tabs": {
       "title": "Save tabs",

@@ -3,7 +3,7 @@ import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
-import { Search, ArrowUpNarrowWide, ArrowDownNarrowWide, Funnel, Pencil } from "lucide-react";
+import { BookSearch, ArrowUpNarrowWide, ArrowDownNarrowWide, Funnel, Pencil } from "lucide-react";
 import styles from "./tab_library.module.css";
 import AddTabContent from "../../Dialog/AddTabContent";
 import {
@@ -126,7 +126,7 @@ export default function Tab_Library() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t("library.searchPlaceholder")}
-                        icon={<Search size={18} />}
+                        icon={<BookSearch size={18} />}
                         borderRadius="30px"
                     />
                 </div>
@@ -253,16 +253,16 @@ export default function Tab_Library() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--ghost-text)', maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
                         {Object.entries(detailsTargetStory).map(([key, value]) => {
                             let displayValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-                            
+
                             if (typeof value === 'number' && (key === 'created_at' || key === 'last_update' || key.includes('time') || key.includes('date'))) {
                                 const date = new Date(value > 1e11 ? value : value * 1000);
                                 displayValue = date.toLocaleString('ja-JP');
                             }
-                            
+
                             if (key === 'chapters') {
                                 displayValue = t("common.chapterCount", { count: Array.isArray(value) ? value.length : (value ? 1 : 0) });
                             }
-                            
+
                             if (key === 'char_cnt') {
                                 displayValue = t("common.characterCount", { count: value });
                             }
@@ -304,7 +304,7 @@ export default function Tab_Library() {
                 onClose={closeRenameDialog}
                 title={t("library.rename.title")}
             >
-                <form 
+                <form
                     onSubmit={handleRenameStory}
                     style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
                 >

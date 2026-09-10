@@ -51,7 +51,7 @@ export default function Tab_Home() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 style={{ color: titleColor, margin: 0, fontSize: '28px', fontWeight: 800 }}>
+                <h1 style={{ color: titleColor, margin: 0, fontSize: '28px', fontWeight: 600 }}>
                     {t("home.greeting.message", { greeting: t(greetingKey) })}
                 </h1>
             </div>

@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { AnimatePresence, motion } from "framer-motion";
-import { GhostButton, GhostDialog, GhostIconButton, GhostTooltip } from "../../GhostDesignSystem";
+import { GhostButton, GhostDialog, GhostIconButton, GhostTooltip } from "../../../GhostDesignSystem";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

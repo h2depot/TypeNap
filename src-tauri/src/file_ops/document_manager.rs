@@ -1,4 +1,4 @@
-use super::{atomic_file, backup_manager, file_manager, txt_info::TxtInfo};
+use super::{atomic_file, backup_manager, document_name, file_manager, txt_info::TxtInfo};
 use crate::utils::path_gate;
 use serde::Serialize;
 use std::fs;
@@ -25,13 +25,17 @@ pub enum SaveDocumentError {
 #[tauri::command]
 pub async fn create_document_txt(app: tauri::AppHandle, txt_info: TxtInfo) -> Result<(), String> {
     let library_path = file_manager::get_library_path(&app)?;
-    let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
-
-    if let Some(parent) = text_path.parent() {
-        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    {
+        let _guard = document_name::CREATION_LOCK
+            .lock()
+            .map_err(|e| e.to_string())?;
+        document_name::create(
+            &library_path,
+            &file_manager::get_backup_root_path(&app)?,
+            &txt_info.story_name,
+            &txt_info.title,
+        )?;
     }
-
-    fs::write(&text_path, "").map_err(|e| e.to_string())?;
     backup_manager::create_backup(
         app.clone(),
         txt_info.story_name.clone(),
@@ -82,12 +86,27 @@ pub async fn save_document_title(
     new_title: String,
 ) -> Result<(), String> {
     let library_path = file_manager::get_library_path(&app)?;
-
+    let _guard = document_name::CREATION_LOCK
+        .lock()
+        .map_err(|e| e.to_string())?;
     let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
-    let new_text_path = path_gate::text_file(&library_path, &txt_info.story_name, &new_title)?;
-
-    fs::rename(text_path, new_text_path).map_err(|e| e.to_string())?;
-    backup_manager::rename_txt_backup(&app, &txt_info.story_name, &txt_info.title, &new_title)?;
+    let story_path = path_gate::story_dir(&library_path, &txt_info.story_name)?;
+    if let Some(existing) = document_name::find_title(&story_path, &new_title)? {
+        if existing != text_path {
+            return Err("Text already exists".to_string());
+        }
+    }
+    let old_stem = text_path
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .ok_or_else(|| "Invalid text file name".to_string())?;
+    let new_stem = document_name::renamed_stem(old_stem, &new_title)?;
+    let new_text_path = story_path.join(format!("{new_stem}.txt"));
+    if text_path == new_text_path {
+        return Ok(());
+    }
+    fs::rename(&text_path, &new_text_path).map_err(|e| e.to_string())?;
+    backup_manager::rename_txt_backup(&app, &txt_info.story_name, old_stem, &new_stem)?;
     file_manager::sync_story_info(&app, &txt_info.story_name, true)?;
 
     Ok(())

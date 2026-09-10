@@ -4,7 +4,7 @@ import { useTabStore } from "../store/tabStore";
 import { useFileStore } from "../store/fileStore";
 import { useStoryStore } from "../store/storyStore";
 
-export default function KeyboardEvent() {
+export default function KeyboardShortcutEvent() {
     const { saveContent, workspaces } = useTxtStore();
     const { tabsList, selectedIndex, setSelectedIndex, addTab } = useTabStore();
     const { getStoryInfo } = useFileStore();

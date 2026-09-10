@@ -39,10 +39,10 @@ const GhostTextField = ({
     <div style={{ width: width, position: 'relative', boxSizing: 'border-box' }}>
       <motion.div
         animate={{
-          y: isFocused ? -2 : 0,
-          scale: isFocused ? 1.01 : 1,
+          y: 0,
+          scale: 1,
           boxShadow: isFocused
-            ? '0 8px 24px var(--ghost-glow)'
+            ? '0 0 0 2px var(--ghost-focus)'
             : isHovered
               ? 'var(--ghost-shadow-input-focus)'
               : 'var(--ghost-shadow-input)',
@@ -53,7 +53,7 @@ const GhostTextField = ({
         style={{
           position: 'relative',
           borderRadius: borderRadius,
-          padding: '4px',
+          padding: '1px',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
@@ -78,8 +78,8 @@ const GhostTextField = ({
             position: 'relative',
             zIndex: 1,
             background: bgColor,
-            borderRadius: `calc(${borderRadius} - 4px)`,
-            padding: '10px 16px',
+            borderRadius: `calc(${borderRadius} - 1px)`,
+            padding: '13px 19px',
             display: 'flex',
             alignItems: 'center',
             width: '100%',
@@ -109,7 +109,7 @@ const GhostTextField = ({
               background: 'transparent',
               outline: 'none',
               color: textColor,
-              fontWeight: 700,
+              fontWeight: 500,
               fontSize: '15px',
               fontFamily: 'inherit',
               padding: 0,

@@ -38,11 +38,11 @@ const GhostButton = ({ children, onClick, variant = 'primary', size = 'medium', 
         display: 'inline-flex',
         border: 'none',
         background: 'transparent',
-        padding: '4px', // border width
+        padding: '1px', // quiet hairline border
         borderRadius: borderRadius,
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.5 : 1,
-        boxShadow: 'var(--ghost-shadow)',
+        boxShadow: 'none',
         overflow: 'hidden',
         outline: 'none',
       }}
@@ -63,15 +63,15 @@ const GhostButton = ({ children, onClick, variant = 'primary', size = 'medium', 
           position: 'relative',
           zIndex: 1,
           background: buttonBgColor,
-          borderRadius: `calc(${borderRadius} - 4px)`,
-          padding: size === 'large' ? '12px 28px' : '8px 20px',
+          borderRadius: `calc(${borderRadius} - 1px)`,
+          padding: size === 'large' ? '14px 30px' : '11px 23px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           gap: '8px',
           color: buttonTextColor,
-          fontWeight: 700,
-          fontSize: size === 'large' ? '18px' : '16px',
+          fontWeight: 600,
+          fontSize: size === 'large' ? '16px' : '14px',
         }}
       >
         {children}

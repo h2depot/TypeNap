@@ -1,4 +1,4 @@
-use super::file_manager;
+use super::{document_name, file_manager};
 use crate::utils::{path_gate, time_manager};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -97,6 +97,7 @@ pub async fn create_backup(
     path_gate::validate_name(&story_name)?;
     path_gate::validate_name(&file_name)?;
     let library_path = file_manager::get_library_path(&app)?;
+    let file_name = document_name::resolve_stem(&library_path, &story_name, &file_name)?;
     let file_path = library_path
         .join(&story_name)
         .join(format!("{}.txt", file_name));
@@ -123,9 +124,8 @@ fn write_initial_backup(
     file_name: &str,
     base_content: String,
 ) -> Result<(), String> {
-    let backup_path = file_manager::get_backup_path(app)?
-        .join(story_name)
-        .join(format!("{}_backup.json", file_name));
+    let backup_path =
+        path_gate::text_backup(&file_manager::get_backup_path(app)?, story_name, file_name)?;
 
     if let Some(parent) = backup_path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
@@ -158,10 +158,13 @@ pub fn increment_backup(
 ) -> Result<(), String> {
     path_gate::validate_name(&story_name)?;
     path_gate::validate_name(&file_name)?;
+    let file_name = document_name::resolve_stem(
+        &file_manager::get_library_path(&app)?,
+        &story_name,
+        &file_name,
+    )?;
     let backup_path = file_manager::get_backup_path(&app)?;
-    let backup_path = backup_path
-        .join(&story_name)
-        .join(format!("{}_backup.json", file_name));
+    let backup_path = path_gate::text_backup(&backup_path, &story_name, &file_name)?;
     let backup_file = File::open(&backup_path).map_err(|e| e.to_string())?;
     let backup_reader = BufReader::new(backup_file);
     let mut backup_json: BackupJson =
@@ -230,10 +233,13 @@ pub fn get_backup_history(
 ) -> Result<Vec<BackupGeneration>, String> {
     path_gate::validate_name(&story_name)?;
     path_gate::validate_name(&file_name)?;
+    let file_name = document_name::resolve_stem(
+        &file_manager::get_library_path(&app)?,
+        &story_name,
+        &file_name,
+    )?;
     let backup_path = file_manager::get_backup_path(&app)?;
-    let backup_path = backup_path
-        .join(&story_name)
-        .join(format!("{}_backup.json", file_name));
+    let backup_path = path_gate::text_backup(&backup_path, &story_name, &file_name)?;
 
     if !backup_path.exists() {
         return Ok(Vec::new());
@@ -292,6 +298,7 @@ pub struct DeletedFileInfo {
 pub struct DeletedEntryInfo {
     pub backup_kind: String,
     pub file_name: Option<String>,
+    pub display_name: Option<String>,
     pub deleted_at: i64,
 }
 
@@ -473,7 +480,7 @@ fn restore_txt_entry(
 
     for stored_path_str in &entry.stored_backup_paths {
         let source_file = checked_existing_necropolis_file(directory_path, stored_path_str)?;
-        let target_file = available_rev_path(&target_story_path, &original_file_name);
+        let target_file = available_rev_path(&target_story_path, &original_file_name)?;
         fs::copy(&source_file, &target_file).map_err(|e| e.to_string())?;
         create_backup_from_text_path(app, story_name, &target_file)?;
         restored_sources.push(source_file);
@@ -530,32 +537,68 @@ fn available_rev_name(parent: &Path, name: &str) -> String {
     }
 }
 
-fn available_rev_path(parent: &Path, file_name: &str) -> PathBuf {
-    let mut target_file = parent.join(file_name);
-    if !target_file.exists() {
-        return target_file;
-    }
-
+fn available_rev_path(parent: &Path, file_name: &str) -> Result<PathBuf, String> {
     let path = Path::new(file_name);
     let stem = path
         .file_stem()
         .and_then(|stem| stem.to_str())
         .unwrap_or(file_name);
-    let ext = path.extension().and_then(|extension| extension.to_str());
-    let mut rev_count = 1;
-
+    let title = document_name::display_title(stem);
+    let mut rev_count = 0;
     loop {
-        let candidate = match (rev_count, ext) {
-            (1, Some(ext)) => format!("{}_rev.{}", stem, ext),
-            (_, Some(ext)) => format!("{}_rev_{}.{}", stem, rev_count, ext),
-            (1, None) => format!("{}_rev", stem),
-            (_, None) => format!("{}_rev_{}", stem, rev_count),
+        let suffix = match rev_count {
+            0 => String::new(),
+            1 => "_rev".to_string(),
+            _ => format!("_rev_{rev_count}"),
         };
-        target_file = parent.join(candidate);
-        if !target_file.exists() {
-            return target_file;
+        let mut shortened = title.to_string();
+        while shortened.encode_utf16().count() + suffix.len() > 100 {
+            shortened.pop();
+        }
+        let candidate_title = format!("{shortened}{suffix}");
+        if document_name::find_title(parent, &candidate_title)?.is_none() {
+            let candidate_stem = document_name::renamed_stem(stem, &candidate_title)?;
+            return Ok(parent.join(format!("{candidate_stem}.txt")));
         }
         rev_count += 1;
+    }
+}
+
+#[cfg(test)]
+mod naming_tests {
+    use super::*;
+
+    #[test]
+    fn restore_detects_display_title_conflicts_and_preserves_uuid_suffix() {
+        let parent =
+            std::env::temp_dir().join(format!("typenap-restore-test-{}", uuid::Uuid::new_v4()));
+        fs::create_dir_all(&parent).unwrap();
+        let original_id = uuid::Uuid::new_v4();
+        let original_name = format!("text_Chapter_part_1_{original_id}.txt");
+        assert_eq!(
+            available_rev_path(&parent, &original_name).unwrap(),
+            parent.join(&original_name)
+        );
+        let existing = parent.join(format!("text_Chapter_part_1_{}.txt", uuid::Uuid::new_v4()));
+        fs::write(&existing, "existing document").unwrap();
+        let restored = available_rev_path(&parent, &original_name).unwrap();
+        assert_eq!(
+            restored.file_name().unwrap().to_str().unwrap(),
+            format!("text_Chapter_part_1_rev_{original_id}.txt")
+        );
+        fs::write(&restored, "restored document").unwrap();
+        assert_eq!(
+            available_rev_path(&parent, &original_name)
+                .unwrap()
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap(),
+            format!("text_Chapter_part_1_rev_2_{original_id}.txt")
+        );
+        assert_eq!(fs::read_to_string(&existing).unwrap(), "existing document");
+        assert_eq!(parent.parent(), Some(std::env::temp_dir().as_path()));
+        fs::remove_dir_all(parent).unwrap();
     }
 }
 
@@ -659,6 +702,11 @@ pub fn get_deleted_files(app: tauri::AppHandle) -> Result<Vec<DeletedFileInfo>, 
                 for manifest_entry in manifest.entries {
                     entries_info.push(DeletedEntryInfo {
                         backup_kind: manifest_entry.backup_kind,
+                        display_name: manifest_entry
+                            .file_name
+                            .as_deref()
+                            .map(document_name::display_title)
+                            .map(str::to_string),
                         file_name: manifest_entry.file_name,
                         deleted_at: manifest_entry.deleted_at,
                     });
@@ -716,9 +764,10 @@ pub fn retire_txt_backup(
 ) -> Result<(), String> {
     path_gate::validate_name(story_name)?;
     path_gate::validate_name(file_name)?;
-    let alive_backup_path = file_manager::get_backup_path(app)?
-        .join(story_name)
-        .join(format!("{}_backup.json", file_name));
+    let file_name =
+        document_name::resolve_stem(&file_manager::get_library_path(app)?, story_name, file_name)?;
+    let alive_backup_path =
+        path_gate::text_backup(&file_manager::get_backup_path(app)?, story_name, &file_name)?;
     let library_text_path = file_manager::get_library_path(app)?
         .join(story_name)
         .join(format!("{}.txt", file_name));
@@ -757,13 +806,19 @@ pub fn rename_txt_backup(
     new_file_name: &str,
 ) -> Result<(), String> {
     path_gate::validate_name(story_name)?;
-    path_gate::validate_name(old_file_name)?;
-    path_gate::validate_name(new_file_name)?;
+    document_name::validate_stem(old_file_name)?;
+    document_name::validate_stem(new_file_name)?;
     let alive_story_path = file_manager::get_backup_path(app)?.join(story_name);
-    let old_backup_path = alive_story_path.join(format!("{}_backup.json", old_file_name));
-    let new_backup_path = alive_story_path.join(format!("{}_backup.json", new_file_name));
+    let old_backup_path = alive_story_path.join(format!("{}.json", old_file_name));
+    let new_backup_path = alive_story_path.join(format!("{}.json", new_file_name));
 
     if old_backup_path.exists() {
+        let mut backup: BackupJson =
+            serde_json::from_str(&fs::read_to_string(&old_backup_path).map_err(|e| e.to_string())?)
+                .map_err(|e| e.to_string())?;
+        backup.file_name = new_file_name.to_string();
+        let json = serde_json::to_string(&backup).map_err(|e| e.to_string())?;
+        fs::write(&old_backup_path, json).map_err(|e| e.to_string())?;
         fs::rename(old_backup_path, new_backup_path).map_err(|e| e.to_string())?;
     }
 

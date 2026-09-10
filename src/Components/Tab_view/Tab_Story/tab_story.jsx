@@ -18,7 +18,6 @@ import {
     SpiritListItem,
     GhostIconButton,
     GhostTextField,
-    SpiritCard,
     GhostBookCard_Preview,
     GhostDropdown,
     GhostSlider,
@@ -364,69 +363,47 @@ export default function Tab_Story({ story_name }) {
     const titleColor = "var(--ghost-text)";
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', height: '100%', width: '100%', padding: '10px', gap: '20px', boxSizing: 'border-box', overflow: 'hidden' }}>
-
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', flexShrink: 0 }}>
-                <SpiritCard style={{ marginLeft: 0, height: '100%', width: '330px', maxWidth: '330px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
-                    <GhostBookCard_Preview 
-                        title={story_name} 
-                        coverColor={workspace?.cover} 
-                        onClick={() => {
-                            setEditedCoverColor(workspace?.cover || "#232b69");
-                            setIsCoverDialogOpen(true);
-                        }} 
-                    />
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center', marginTop: '12px', width: '100%', flexGrow: 1, minHeight: 0 }}>
-                        <button
-                            onClick={handleTitleClick}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'inherit',
-                                cursor: 'pointer',
-                                padding: '6px 12px',
-                                borderRadius: '8px',
-                                transition: 'background-color 0.2s ease',
-                                flexShrink: 0
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = 'var(--ghost-hover-bg)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                            }}
-                        >
-                            <span style={{ fontSize: '22px', fontWeight: 'bold' }}>
-                                {story_name}
-                            </span>
-                            <PencilLine size={18} style={{ opacity: 0.5 }} />
-                        </button>
-                        <span style={{ fontSize: '13px', opacity: 0.8, flexShrink: 0 }}>{t("story.summary.totalCharacters", { count: workspace.charCnt })}</span>
-                        <span style={{ fontSize: '13px', opacity: 0.8, flexShrink: 0 }}>{t("story.summary.lastUpdated", { date: formatTimestampToDateTime(workspace.lastUpdate ?? workspace.last_update) })}</span>
-                        <span style={{ fontSize: '16px', opacity: 0.8, fontWeight: 'bold', alignSelf: 'flex-start', textAlign: 'left', marginTop: '20px', flexShrink: 0 }}>{t("story.summary.synopsis")}</span>
-                        <div className={styles.memoWrapper} style={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-                            <div className={styles.memoContainer} style={{ flexGrow: 1, height: '100%' }}>
-                                <textarea
-                                    className={styles.memoTextarea}
-                                    placeholder={t("story.summary.synopsisPlaceholder")}
-                                    value={synopsis}
-                                    onChange={(e) => setSynopsis(e.target.value)}
-                                    onBlur={saveSynopsis}
-                                    spellCheck={false}
-                                />
-                            </div>
+        <div className={styles.container}>
+            <div className={styles.sidebar}>
+                <GhostBookCard_Preview 
+                    title={story_name} 
+                    coverColor={workspace?.cover} 
+                    onClick={() => {
+                        setEditedCoverColor(workspace?.cover || "#232b69");
+                        setIsCoverDialogOpen(true);
+                    }} 
+                />
+                <div className={styles.sidebarContent}>
+                    <button
+                        onClick={handleTitleClick}
+                        className={styles.titleButton}
+                    >
+                        <span className={styles.titleText}>
+                            {story_name}
+                        </span>
+                        <PencilLine size={18} style={{ opacity: 0.5, flexShrink: 0 }} />
+                    </button>
+                    <span className={styles.metaText}>{t("story.summary.totalCharacters", { count: workspace.charCnt })}</span>
+                    <span className={styles.metaText}>{t("story.summary.lastUpdated", { date: formatTimestampToDateTime(workspace.lastUpdate ?? workspace.last_update) })}</span>
+                    <span className={styles.synopsisHeading}>{t("story.summary.synopsis")}</span>
+                    <div className={styles.memoWrapper} style={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <div className={styles.memoContainer} style={{ flexGrow: 1, height: '100%' }}>
+                            <textarea
+                                className={styles.memoTextarea}
+                                placeholder={t("story.summary.synopsisPlaceholder")}
+                                value={synopsis}
+                                onChange={(e) => setSynopsis(e.target.value)}
+                                onBlur={saveSynopsis}
+                                spellCheck={false}
+                            />
                         </div>
                     </div>
-                </SpiritCard>
+                </div>
             </div>
 
-            <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%', minWidth: 0 }}>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: '24px', fontWeight: 800, color: titleColor, flexShrink: 0 }}>Recent Opened</h3>
-                <div style={{ flexGrow: 1, overflowY: 'auto', padding: '6px 12px 6px 6px', boxSizing: 'border-box' }}>
+            <div className={styles.mainContent}>
+                <h3 className={styles.contentTitle}>Recent Opened</h3>
+                <div className={styles.listScrollArea}>
                     <SpiritListView maxWidth="100%">
                         {files.map((fileTitle) => (
                             <SpiritListItem

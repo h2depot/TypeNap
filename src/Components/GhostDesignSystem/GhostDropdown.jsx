@@ -20,7 +20,6 @@ const GhostDropdown = ({ options, value, onChange, placeholder = "Select option"
   const bgColor = 'var(--ghost-bg)';
   const borderColor = 'var(--ghost-border)';
   const textColor = 'var(--ghost-text)';
-
   const gradient = 'var(--ghost-gradient)';
 
   return (
@@ -40,7 +39,7 @@ const GhostDropdown = ({ options, value, onChange, placeholder = "Select option"
           WebkitUserSelect: 'none',
           userSelect: 'none',
           borderRadius: '16px',
-          padding: '4px', // This acts as the border width
+          padding: '2px', // stronger 2px border
           cursor: 'pointer',
           boxShadow: 'var(--ghost-shadow)',
           overflow: 'hidden'
@@ -50,11 +49,14 @@ const GhostDropdown = ({ options, value, onChange, placeholder = "Select option"
         <div style={{ position: 'absolute', inset: 0, background: borderColor, zIndex: 0 }} />
 
         <motion.div
+          animate={{
+            opacity: isOpen ? 1 : 0
+          }}
           variants={{
-            initial: { opacity: 0 },
+            initial: { opacity: isOpen ? 1 : 0 },
             hover: { opacity: 1 }
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.25 }}
           style={{ position: 'absolute', inset: 0, background: gradient, zIndex: 0 }}
         />
 
@@ -64,13 +66,13 @@ const GhostDropdown = ({ options, value, onChange, placeholder = "Select option"
             position: 'relative',
             zIndex: 1,
             background: bgColor,
-            borderRadius: '12px', // 16px (outer) - 4px (padding) = 12px
-            padding: '10px 12px',
+            borderRadius: '14px',
+            padding: '12px 14px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             color: textColor,
-            fontWeight: 700,
+            fontWeight: 500,
             fontSize: '14px',
           }}
         >
@@ -99,42 +101,52 @@ const GhostDropdown = ({ options, value, onChange, placeholder = "Select option"
               top: '100%',
               left: 0,
               right: 0,
-              background: bgColor,
+              padding: '2px', // prominent 2px gradient border
               borderRadius: '16px',
-              border: `4px solid ${borderColor}`,
-              boxShadow: 'var(--ghost-shadow-large)',
-              padding: '8px',
+              background: gradient,
+              boxShadow: 'var(--ghost-shadow-large), 0 0 16px var(--ghost-glow)',
               zIndex: 100,
               overflow: 'hidden'
             }}
           >
-            {options.map((option) => (
-              <motion.div
-                key={option.value}
-                whileHover={{
-                  x: 4,
-                  backgroundColor: value === option.value
-                    ? borderColor
-                    : 'var(--ghost-menu-bg-hover)'
-                }}
-                onClick={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
-                }}
-                style={{
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  color: value === option.value ? bgColor : textColor,
-                  backgroundColor: value === option.value ? borderColor : 'transparent',
-                  fontWeight: 'bold',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {option.label}
-              </motion.div>
-            ))}
+            <div
+              style={{
+                background: bgColor,
+                borderRadius: '14px',
+                padding: '6px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px'
+              }}
+            >
+              {options.map((option) => (
+                <motion.div
+                  key={option.value}
+                  whileHover={{
+                    x: 4,
+                    backgroundColor: value === option.value
+                      ? borderColor
+                      : 'var(--ghost-menu-bg-hover)'
+                  }}
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  style={{
+                    padding: '11px 13px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    color: value === option.value ? bgColor : textColor,
+                    backgroundColor: value === option.value ? borderColor : 'transparent',
+                    fontWeight: 'bold',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {option.label}
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

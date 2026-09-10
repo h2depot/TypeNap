@@ -20,10 +20,10 @@ const SpiritCard = ({ children, title, style = {} }) => {
         background: 'var(--ghost-card-bg)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderRadius: '24px',
+        borderRadius: '18px',
         border: 'var(--ghost-card-border)',
         padding: '24px',
-        boxShadow: 'var(--ghost-shadow, 0 4px 16px rgba(0, 0, 0, 0.1))',
+        boxShadow: 'none',
         color: 'var(--ghost-text)',
         maxWidth: '300px',
         margin: '16px',
@@ -37,14 +37,14 @@ const SpiritCard = ({ children, title, style = {} }) => {
         variants={{
           initial: { opacity: 0 },
           animate: { opacity: 0 },
-          hover: { opacity: 1 }
+          hover: { opacity: 0.35 }
         }}
         transition={{ duration: 0.25 }}
         style={{
           position: 'absolute',
           inset: '-1px',
-          borderRadius: '24px', 
-          padding: '2px',
+          borderRadius: '18px',
+          padding: '1px',
           background: gradient,
           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
@@ -55,7 +55,7 @@ const SpiritCard = ({ children, title, style = {} }) => {
       />
 
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, justifyContent: 'center' }}>
-        {title && <h3 style={{ margin: 0, fontSize: '20px', color: '#a777e3' }}>{title}</h3>}
+        {title && <h3 style={{ margin: 0, fontSize: '20px', color: 'var(--ghost-text)' }}>{title}</h3>}
         <div style={{ fontSize: '15px', lineHeight: '1.6', opacity: 0.9, display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           {children}
         </div>

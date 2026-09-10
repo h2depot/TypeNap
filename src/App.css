@@ -53,12 +53,27 @@ html {
 
 .row {
   display: flex;
+  position: relative;
+  isolation: isolate;
   height: 100vh;
+  box-sizing: border-box;
   background-color: var(--bg-primary);
   background-image: var(--app-bg-image, none);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+/* One continuous theme-tinted glass layer behind both workspace columns. */
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--tb-container-bg-translucent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .content {
@@ -80,14 +95,14 @@ html {
   --tb-wrapper-border: rgba(192, 132, 252, 0.1);
   --tb-container-bg: #101426;
   --tb-container-bg-translucent: rgba(16, 20, 38, 0.75);
-  --tb-text: #f3f4f6;
+  --tb-text: #E9E5D8;
   --tb-placeholder: #9ca3af;
   --tb-thumb-bg: rgba(192, 132, 252, 0.2);
   --tb-thumb-hover: rgba(192, 132, 252, 0.4);
   --tb-thumb-border: #101426;
   --tb-divider: linear-gradient(90deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
   --tb-divider-vert: linear-gradient(180deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
-  --tb-title-text: #f3f4f6;
+  --tb-title-text: #F1EDE3;
   --tb-title-placeholder: rgba(156, 163, 175, 0.4);
 }
 
@@ -124,15 +139,15 @@ html {
    ========================================================================== */
 :root,
 [data-theme="light"] {
-  --ghost-bg: #D4CFBF;
+  --ghost-bg: #DDD8CA;
   --ghost-border: #232b69;
   --ghost-text: #232b69;
-  --ghost-subtext: rgba(35, 43, 105, 0.6);
+  --ghost-subtext: #626579;
   --ghost-accent: #4A55A2;
   --ghost-hover-bg: rgba(35, 43, 105, 0.08);
   --ghost-option-bg: rgba(0, 0, 0, 0.05);
-  --ghost-gradient: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
-  --ghost-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  --ghost-gradient: linear-gradient(135deg, #6673AE 0%, #9786B4 100%);
+  --ghost-shadow: 0 4px 14px rgba(26, 30, 52, 0.05);
   --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.2);
   --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.15);
   --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -140,20 +155,23 @@ html {
   --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
   --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
   --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
-  --ghost-glow: rgba(110, 142, 251, 0.4);
-  --ghost-placeholder: rgba(35, 43, 105, 0.4);
+  --ghost-glow: rgba(102, 115, 174, 0.16);
+  --ghost-placeholder: #6E7080;
   --ghost-toast-success: #3b82f6;
   --ghost-toast-info: #8b5cf6;
   --ghost-toast-border: rgba(35, 43, 105, 0.15);
   --ghost-toast-bg: rgba(212, 207, 191, 0.75);
   --ghost-toast-text: #232b69;
-  --ghost-border-light: rgba(35, 43, 105, 0.25);
+  --ghost-border-light: rgba(35, 43, 105, 0.14);
+  --ghost-stroke: rgba(35, 43, 105, 0.12);
+  --ghost-focus: #626FA6;
+  --ghost-surface-active: rgba(74, 85, 162, 0.12);
   --ghost-toggle-knob-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
   --ghost-toggle-shadow-off: inset 0 2px 6px rgba(0, 0, 0, 0.1);
   --ghost-card-bg: #E3E2D8;
   --ghost-card-border: 1px solid rgba(35, 43, 105, 0.08);
-  --ghost-list-item-bg: #E3E2D8;
-  --ghost-list-item-border: 1px solid rgba(35, 43, 105, 0.15);
+  --ghost-list-item-bg: #DDD8CA;
+  --ghost-list-item-border: 1px solid transparent;
   --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 60%, rgba(255, 255, 255, 0.25) 85%, rgba(0, 0, 0, 0.06) 100%);
   --ghost-card-edge-bg: rgba(0, 0, 0, 0.04);
   --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.2);
@@ -168,19 +186,19 @@ html {
   --ghost-book-cover-border: rgba(35, 43, 105, 0.08);
   --ghost-book-cover-shadow: 0 12px 30px rgba(31, 38, 135, 0.08), inset 1px 1px 0px rgba(255, 255, 255, 0.3), inset -1px -1px 0px rgba(0, 0, 0, 0.05);
   --ghost-hover-highlight: #6e8efb;
-  --ghost-dialog-bg: #9ca3af;
+  --ghost-dialog-bg: #E9E5D8;
 }
 
 [data-theme="dark"] {
-  --ghost-bg: #232b69;
+  --ghost-bg: #1B2137;
   --ghost-border: #D4CFBF;
-  --ghost-text: #D4CFBF;
-  --ghost-subtext: rgba(212, 207, 191, 0.6);
+  --ghost-text: #E9E5D8;
+  --ghost-subtext: #A3A7B7;
   --ghost-accent: #E8E4D9;
   --ghost-hover-bg: rgba(212, 207, 191, 0.08);
   --ghost-option-bg: rgba(255, 255, 255, 0.05);
-  --ghost-gradient: linear-gradient(135deg, #004aad 0%, #cb6ce6 100%);
-  --ghost-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  --ghost-gradient: linear-gradient(135deg, #6575B6 0%, #A194C0 100%);
+  --ghost-shadow: 0 4px 18px rgba(4, 7, 18, 0.16);
   --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.5);
   --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.4);
   --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -188,20 +206,23 @@ html {
   --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.3));
   --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(255, 255, 255, 0.25));
   --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.15));
-  --ghost-glow: rgba(203, 108, 230, 0.4);
-  --ghost-placeholder: rgba(212, 207, 191, 0.4);
+  --ghost-glow: rgba(161, 148, 192, 0.16);
+  --ghost-placeholder: #9499AD;
   --ghost-toast-success: #4ade80;
-  --ghost-toast-info: #cb6ce6;
+  --ghost-toast-info: #B3A4D2;
   --ghost-toast-border: rgba(212, 207, 191, 0.15);
   --ghost-toast-bg: rgba(16, 20, 38, 0.85);
   --ghost-toast-text: #E9E5D8;
-  --ghost-border-light: rgba(212, 207, 191, 0.25);
+  --ghost-border-light: rgba(212, 207, 191, 0.14);
+  --ghost-stroke: rgba(212, 207, 191, 0.10);
+  --ghost-focus: #A8B1DE;
+  --ghost-surface-active: rgba(141, 151, 202, 0.15);
   --ghost-toggle-knob-shadow: 0 2px 6px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(255, 255, 255, 0.1);
   --ghost-toggle-shadow-off: inset 0 2px 6px rgba(255, 255, 255, 0.1);
   --ghost-card-bg: #1C1E2E;
   --ghost-card-border: 1px solid rgba(255, 255, 255, 0.08);
-  --ghost-list-item-bg: #1C1E2E;
-  --ghost-list-item-border: 1px solid rgba(212, 207, 191, 0.15);
+  --ghost-list-item-bg: #1D2336;
+  --ghost-list-item-border: 1px solid transparent;
   --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.05) 60%, rgba(255, 255, 255, 0.03) 85%, rgba(0, 0, 0, 0.15) 100%);
   --ghost-card-edge-bg: rgba(0, 0, 0, 0.2);
   --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.04);
@@ -215,39 +236,58 @@ html {
   --ghost-book-cover-bg: var(--ghost-book-bg);
   --ghost-book-cover-border: rgba(255, 255, 255, 0.08);
   --ghost-book-cover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 1px 1px 0px rgba(255, 255, 255, 0.05), inset -1px -1px 0px rgba(0, 0, 0, 0.2);
-  --ghost-hover-highlight: #cb6ce6;
-  --ghost-dialog-bg: #101426;
+  --ghost-hover-highlight: #B7BDE2;
+  --ghost-dialog-bg: #181D30;
 }
 
 /* ==========================================================================
-   Left Sidebar & Mascot Sizing
+   Activity Rail & Workspace
    ========================================================================== */
 .left-sidebar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: calc(100vh - 20px);
-  margin: 10px 0 10px 20px;
-  width: 76px;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0;
+  width: 72px;
   box-sizing: border-box;
   flex-shrink: 0;
   position: relative;
   z-index: 50;
+  background-color: var(--ghost-option-bg);
+  border-right: 1px solid var(--ghost-stroke);
 }
 
 .content-workspace {
   display: flex;
+  position: relative;
+  /* Keep dialogs in the shared stacking context, above the activity rail. */
   flex-direction: column;
   flex-grow: 1;
-  height: calc(100vh - 20px);
-  margin: 10px 10px 10px 10px;
-  background-color: var(--app-workspace-bg, var(--tb-container-bg));
-  border: var(--ghost-list-item-border);
-  border-radius: 16px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--ghost-shadow-large);
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  background-color: transparent;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+/* Keyboard focus stays visible even on controls with inline outline resets. */
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--ghost-focus) !important;
+  outline-offset: 3px;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+@media (max-width: 700px) {
+  .left-sidebar {
+    width: 64px;
+  }
 }

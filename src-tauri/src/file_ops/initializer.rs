@@ -46,7 +46,7 @@ fn load_state(app: &tauri::AppHandle) -> Result<InitializerState, Initialization
 
     Ok(InitializerState {
         integrated_version: String::new(),
-        settings_version: String::from("1.0.1"),
+        settings_version: String::from("0.1.0"),
         story_assets_version: String::new(),
         image_assets_version: String::new(),
         toured: false,
@@ -116,8 +116,8 @@ pub fn create_dir_all(app: tauri::AppHandle) -> Result<bool, InitializationError
         created = true;
     }
 
-    if state.integrated_version != "1.0.1" {
-        state.integrated_version = String::from("1.0.1");
+    if state.integrated_version != "0.1.0" {
+        state.integrated_version = String::from("0.1.0");
     }
 
     save_state(&app, &state)?;
@@ -129,13 +129,13 @@ pub fn create_dir_all(app: tauri::AppHandle) -> Result<bool, InitializationError
 pub async fn initialize(app: tauri::AppHandle) -> Result<bool, InitializationError> {
     let mut state = load_state(&app)?;
 
-    if state.image_assets_version != "1.0.1" {
+    if state.image_assets_version != "0.1.0" {
         bgimage_manager::init_bgimage(&app)
             .map_err(|message| InitializationError::BackgroundAssets { message })?;
-        state.image_assets_version = String::from("1.0.1");
+        state.image_assets_version = String::from("0.1.0");
     }
 
-    if state.story_assets_version != "1.0.1" {
+    if state.story_assets_version != "0.1.0" {
         let library_path = file_manager::get_library_path(&app)
             .map_err(|message| InitializationError::LibraryDirectory { message })?;
         let story_path = library_path.join("Hello World!");
@@ -150,7 +150,7 @@ pub async fn initialize(app: tauri::AppHandle) -> Result<bool, InitializationErr
             .map_err(|message| InitializationError::StoryAssets { message })?;
         }
 
-        state.story_assets_version = String::from("1.0.1");
+        state.story_assets_version = String::from("0.1.0");
     }
 
     save_state(&app, &state)?;

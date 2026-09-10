@@ -32,11 +32,5 @@ pub async fn save_title(
     txt_info: TxtInfo,
     new_title: String,
 ) -> Result<(), String> {
-    let app_data_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    let library_path = app_data_dir.join("TypeNap_Library");
-    let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
-    let new_text_path = path_gate::text_file(&library_path, &txt_info.story_name, &new_title)?;
-    fs::rename(text_path, new_text_path).map_err(|e| e.to_string())?;
-    file_manager::sync_story_info(&app, &txt_info.story_name, true)?;
-    Ok(())
+    super::document_manager::save_document_title(app, txt_info, new_title).await
 }

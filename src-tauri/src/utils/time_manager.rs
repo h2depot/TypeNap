@@ -1,4 +1,11 @@
-use chrono::Utc;
+use chrono::{Local, Timelike, Utc};
+
+/// Local wall-clock hour in [0, 24), including minutes, seconds and fractions.
+/// Kept separate from UTC timestamps used for persistence.
+pub fn current_local_hour() -> f64 {
+    let now = Local::now();
+    (now.num_seconds_from_midnight() as f64 + now.nanosecond() as f64 / 1_000_000_000.0) / 3600.0
+}
 
 pub fn current_timestamp() -> i64 {
     Utc::now().timestamp()

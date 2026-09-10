@@ -3,10 +3,10 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 16px 20px;
+    padding: 24px clamp(12px, 2.5vw, 32px);
     box-sizing: border-box;
     overflow-y: auto;
-    gap: 20px;
+    gap: 28px;
     animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -18,15 +18,15 @@
 .header {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 24px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+    border-bottom: 1px solid transparent;
 }
 
 .dashboardGrid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
+    gap: 24px;
     align-items: stretch;
     flex-grow: 1;
     width: 100%;
@@ -42,7 +42,7 @@
 .mainCol {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
     min-width: 0;
 }
 
@@ -56,7 +56,7 @@
 
 .statsRow {
     display: flex;
-    gap: 16px;
+    gap: 24px;
 }
 
 @media (max-width: 600px) {
@@ -83,7 +83,7 @@
 
 .statValue {
     font-size: 32px;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: -1px;
     display: flex;
     align-items: baseline;
