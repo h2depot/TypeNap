@@ -1,4 +1,5 @@
 pub mod file_ops;
+pub mod soundeffect;
 pub mod utils;
 
 use file_ops::{
@@ -20,7 +21,6 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            //ここにJS側から呼び出す関数を書き連ねる。
             initializer::initialize,
             initializer::create_dir_all,
             initializer::get_settings_state,
@@ -53,7 +53,10 @@ pub fn run() {
             backup_manager::execute_complete_deletion,
             bgimage_manager::add_user_image,
             bgimage_manager::delete_user_image,
-            bgimage_manager::get_whole_image_list
+            bgimage_manager::get_whole_image_list,
+            soundeffect::soundeffect::run_sound_effect,
+            soundeffect::soundeffect::run_enter_sound_effect,
+            soundeffect::soundeffect::load_wavfile
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

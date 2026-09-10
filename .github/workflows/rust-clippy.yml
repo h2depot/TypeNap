@@ -2,12 +2,9 @@ name: Rust Clippy Code Checker
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "Developer"]
   pull_request:
-    branches: ["main", "develop"]
-
-permissions:
-  contents: read
+    branches: ["main", "Developer"]
 
 jobs:
   clippy:

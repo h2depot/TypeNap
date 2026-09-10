@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./tabs.module.css";
-import { Home, X, Settings, Folder, Book, FileText, Library } from "lucide-react";
+import { Home, X, Settings, Folder, Book, FileText, Library, Search } from "lucide-react";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
@@ -11,7 +11,7 @@ import GhostDialog from "../GhostDesignSystem/GhostDialog";
 import GhostButton from "../GhostDesignSystem/GhostButton";
 import TabHome from "../Tab_view/Tab_Home/tab_home";
 import TabLibrary from "../Tab_view/Tab_Library/tab_library";
-
+import TabSearch from "../Tab_view/Tab_Search/tab_search";
 import TabSettings from "../Tab_view/Tab_Settings/tab_settings";
 import TabWork from "../Tab_view/Tab_Work/tab_work";
 import TabStory from "../Tab_view/Tab_Story/tab_story";
@@ -111,6 +111,7 @@ export default function Tabs() {
         switch (type) {
             case 'home': return <Home size={18} />;
             case 'library': return <Library size={18} />;
+            case 'search': return <Search size={18} />;
             case 'settings': return <Settings size={18} />;
 
             case 'work': return <FileText size={18} />;
@@ -130,7 +131,7 @@ export default function Tabs() {
         switch (tab.type) {
             case 'home': return <TabHome {...tab.props} />;
             case 'library': return <TabLibrary {...tab.props} />;
-
+            case 'search': return <TabSearch {...tab.props} />;
             case 'settings': return <TabSettings {...tab.props} />;
             case 'work': return <TabWork {...tab.props} />;
             case 'story': return <TabStory {...tab.props} />;

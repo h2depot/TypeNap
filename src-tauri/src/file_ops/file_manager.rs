@@ -1,4 +1,4 @@
-use super::{backup_manager, bgimage_manager, txt_info::TxtInfo};
+use super::{backup_manager, bgimage_manager, document_name, txt_info::TxtInfo};
 use crate::utils::{path_gate, time_manager};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -145,7 +145,7 @@ fn collect_story_chapters(story_path: &Path) -> (Vec<String>, usize) {
                     if let Some(title) = name.strip_suffix(".txt") {
                         if let Ok(text) = fs::read_to_string(&path) {
                             char_cnt += text.chars().count();
-                            chapters.push(title.to_string());
+                            chapters.push(document_name::display_title(title).to_string());
                         }
                     }
                 }
@@ -259,7 +259,7 @@ pub async fn get_whole_txt_list(app: tauri::AppHandle) -> Result<Vec<TxtInfo>, S
 
                             whole_txt_list.push(TxtInfo {
                                 story_name: story_name.clone(),
-                                title,
+                                title: document_name::display_title(&title).to_string(),
                             });
                         }
                     }
@@ -340,18 +340,7 @@ pub async fn rename_story(
 // Creates a new text file and its backup.
 #[tauri::command]
 pub async fn create_txt(app: tauri::AppHandle, txt_info: TxtInfo) -> Result<(), String> {
-    let library_path = get_library_path(&app)?;
-    let backup_path = get_backup_path(&app)?;
-
-    let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
-    let text_backup_path =
-        path_gate::text_backup(&backup_path, &txt_info.story_name, &txt_info.title)?;
-
-    fs::write(text_path, "").map_err(|e| e.to_string())?;
-    fs::write(text_backup_path, "{}").map_err(|e| e.to_string())?;
-
-    sync_story_info(&app, &txt_info.story_name, true)?;
-    Ok(())
+    super::document_manager::create_document_txt(app, txt_info).await
 }
 
 // Deletes the specified text file.
@@ -460,7 +449,7 @@ fn is_expected_scan_file(
         let is_backup_file = path
             .file_name()
             .and_then(|name| name.to_str())
-            .is_some_and(|name| name.ends_with("_backup.json"));
+            .is_some_and(|name| name.ends_with(".json"));
         let is_story_backup_file = path
             .strip_prefix(alive_backup_path)
             .ok()

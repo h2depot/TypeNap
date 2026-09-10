@@ -9,7 +9,8 @@ import { useFileStore } from "./store/fileStore";
 import { useStatsStore } from "./store/saving/stats";
 import { useTabStore } from "./store/tabStore";
 import { useToastStore } from "./store/toastStore";
-import KeyboardEvent from "./InputEvent/keyboardEvent";
+import KeyboardShortcutEvent from "./InputEvent/KeyboardShortcutEvent";
+import KeyboardSoundEffectEvent from "./InputEvent/KeyboardSoundEffectEvent";
 import Trackpad from "./InputEvent/Trackpad";
 import SplashScreen from "./Components/TourContents/SplashScreen";
 import tourPages from "./Components/TourContents/TourPages";
@@ -201,7 +202,8 @@ function App() {
               '--app-workspace-bg': bgImagePath ? 'var(--tb-container-bg-translucent)' : 'var(--tb-container-bg)',
             }}
           >
-            <KeyboardEvent />
+            <KeyboardShortcutEvent />
+            <KeyboardSoundEffectEvent />
             <Trackpad />
             <div className="left-sidebar">
               <Nav />

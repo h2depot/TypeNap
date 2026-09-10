@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap2 uap3 uap10 desktop desktop6 rescap uap5"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5">
+  <Identity
+    Name="HelloweenHeadsDepot.TypeNap"
+    Publisher="CN=A1760C1B-8454-4962-BB86-C0325CE81F2C"
+    Version="1.0.1.0"
+    ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>TypeNap</DisplayName>
+    <PublisherDisplayName>HelloweenHead's Depot</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <uap10:PackageIntegrity>
+      <uap10:Content Enforcement="on" />
+    </uap10:PackageIntegrity>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.18362.0"
+      MaxVersionTested="10.0.26200.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="ja" />
+    <Resource Language="en" />
+  </Resources>
+  <Applications>
+    <Application
+      Id="typeNap"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="TypeNap" Description="A simple writing tool with lo-fi pop vibes and a chilled-out, effortless design." BackgroundColor="transparent" Square150x150Logo="Assets\MedTile.png" Square44x44Logo="Assets\AppList.png"></uap:VisualElements>
+      <Extensions>
+        <uap5:Extension Category="windows.appExecutionAlias">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="$targetnametoken$.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

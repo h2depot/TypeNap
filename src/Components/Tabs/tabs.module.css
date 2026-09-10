@@ -7,21 +7,20 @@
 }
 
 .tabswitch_container {
-    padding-top: 8px;
     background-color: transparent;
 }
 
 .tabswitch_row {
     display: flex;
     flex-direction: row;
-    margin: 0 16px;
+    margin: 0 20px;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none;
     align-items: flex-end;
-    min-height: 44px;
-    padding-bottom: 6px;
+    min-height: 40px;
+    padding: 10px 0;
 }
 
 .tabswitch_row::-webkit-scrollbar {
@@ -50,8 +49,8 @@
         border-color 0.3s ease,
         box-shadow 0.3s ease,
         color 0.3s ease;
-    transform: translateY(4px);
-    border: 1.5px solid transparent;
+    transform: translateY(0);
+    border: 1px solid transparent;
     position: relative;
     box-sizing: border-box;
     color: var(--ghost-subtext);
@@ -59,17 +58,17 @@
 
 .tab_active {
     transform: translateY(0);
-    border-color: var(--ghost-border);
-    background-color: var(--ghost-bg);
+    border-color: var(--ghost-focus);
+    background-color: var(--ghost-surface-active);
     color: var(--ghost-text);
-    box-shadow: var(--ghost-shadow);
+    box-shadow: none;
 }
 
 .tab_divider {
     width: 1px;
     height: 18px;
     background-color: var(--ghost-border-light);
-    opacity: 0.6;
+    opacity: 0.25;
     align-self: center;
     margin-left: 2px;
     margin-right: 3px;
@@ -100,7 +99,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 34px;
+    height: 38px;
     width: 125px;
     padding: 0 8px;
     border-radius: 8px;
@@ -118,8 +117,8 @@
 }
 
 .tab_active:hover {
-    background-color: var(--ghost-bg);
-    box-shadow: var(--ghost-shadow), 0 0 10px var(--ghost-glow);
+    background-color: var(--ghost-surface-active);
+    border-color: var(--ghost-focus);
 }
 
 .tab_icon {
@@ -168,12 +167,15 @@
 
 .divider {
     height: 1px;
-    background-color: var(--ghost-border-light);
+    flex-shrink: 0;
+    background-color: var(--ghost-stroke);
     width: 100%;
 }
 
 .content {
     flex-grow: 1;
-    padding: 15px;
+    padding: 0;
+    min-height: 0;
+    min-width: 0;
     overflow-y: auto;
 }

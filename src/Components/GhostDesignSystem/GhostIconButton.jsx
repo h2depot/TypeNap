@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 const GhostIconButton = ({
@@ -9,8 +9,11 @@ const GhostIconButton = ({
   borderRadius = '50%',
   disabled = false,
   type = 'button',
+  onHoverStart,
+  onHoverEnd,
   ...props
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const isPrimary = variant === 'primary';
   const isGhost = variant === 'ghost';
 
@@ -30,7 +33,7 @@ const GhostIconButton = ({
   if (isPrimary) {
     buttonBgColor = borderColor;
     buttonTextColor = bgColor;
-    borderBgColor = bgColor;
+    borderBgColor = gradient;
   } else if (isGhost) {
     buttonBgColor = 'transparent';
     buttonTextColor = textColor;
@@ -52,7 +55,7 @@ const GhostIconButton = ({
 
   const innerBorderRadius = borderRadius.toString().endsWith('%')
     ? borderRadius
-    : `calc(${borderRadius} - 3px)`;
+    : `calc(${borderRadius} - 2px)`;
 
   // React.cloneElement to inject correct size to Lucide icons if not already set
   const clonedIcon = icon && React.isValidElement(icon)
@@ -75,7 +78,7 @@ const GhostIconButton = ({
   };
 
   const iconContainerVariants = {
-    initial: { y: 0, rotate: 0 },
+    initial: { y: 0, rotate: 0, transition: { duration: 0.2, repeat: 0 } },
     hover: {
       y: [0, -3, 2, -2, 0],
       rotate: [0, -4, 4, -2, 0],
@@ -96,6 +99,14 @@ const GhostIconButton = ({
       animate="initial"
       whileHover={disabled ? undefined : "hover"}
       whileTap={disabled ? undefined : "tap"}
+      onHoverStart={(event, info) => {
+        setIsHovered(true);
+        onHoverStart?.(event, info);
+      }}
+      onHoverEnd={(event, info) => {
+        setIsHovered(false);
+        onHoverEnd?.(event, info);
+      }}
       variants={buttonVariants}
       disabled={disabled}
       style={{
@@ -107,27 +118,24 @@ const GhostIconButton = ({
         height: buttonSize,
         border: 'none',
         background: 'transparent',
-        padding: '3px', // border width
+        padding: '2px', // stronger 2px border
         borderRadius: borderRadius,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        boxShadow: disabled
-          ? 'none'
-          : 'var(--ghost-shadow)',
+        boxShadow: 'none',
         overflow: 'hidden',
         outline: 'none',
         opacity: disabled ? 0.45 : 1,
       }}
       {...props}
     >
- 
       {!isGhost && (
-        <div style={{ position: 'absolute', inset: 0, background: borderBgColor, zIndex: 0, borderRadius }} />
+        <div style={{ position: 'absolute', inset: 0, background: isPrimary ? gradient : borderBgColor, zIndex: 0, borderRadius }} />
       )}
 
       {!disabled && (
         <motion.div
           variants={{
-            initial: { opacity: 0 },
+            initial: { opacity: isPrimary ? 1 : 0 },
             hover: { opacity: 1 }
           }}
           transition={{ duration: 0.25 }}
@@ -137,7 +145,7 @@ const GhostIconButton = ({
             background: gradient,
             zIndex: 0,
             borderRadius,
-            opacity: 0,
+            opacity: isPrimary ? 1 : 0,
           }}
         />
       )}
@@ -178,6 +186,7 @@ const GhostIconButton = ({
 
         <motion.div
           variants={iconContainerVariants}
+          animate={isHovered && !disabled ? "hover" : "initial"}
           style={{
             display: 'flex',
             justifyContent: 'center',

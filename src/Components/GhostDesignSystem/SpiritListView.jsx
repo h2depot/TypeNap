@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 
 
-export const SpiritListView = ({ children, width = '100%', maxWidth = '800px', gap = '14px', ...props }) => {
+export const SpiritListView = ({ children, width = '100%', maxWidth = '800px', gap = '8px', ...props }) => {
 
   return (
     <div
@@ -82,10 +82,8 @@ export const SpiritListItem = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '18px 24px',
-        borderRadius: '20px',
+        borderRadius: '14px',
         border: 'var(--ghost-list-item-border)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
         cursor: isClickable ? 'pointer' : 'default',
         opacity: disabled ? 0.45 : 1,
         pointerEvents: 'auto',
@@ -107,8 +105,8 @@ export const SpiritListItem = ({
         style={{
           position: 'absolute',
           inset: '-1px', 
-          borderRadius: '20px',
-          padding: '2px',
+          borderRadius: '14px',
+          padding: '1px',
           background: gradient,
           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
@@ -134,7 +132,7 @@ export const SpiritListItem = ({
               width: '42px',
               height: '42px',
               borderRadius: '12px',
-              background: 'var(--ghost-hover-bg)',
+              background: 'transparent',
               color: textColor,
               flexShrink: 0,
             }}
@@ -147,7 +145,7 @@ export const SpiritListItem = ({
           {title && (
             <span style={{
               fontSize: '16px',
-              fontWeight: 700,
+              fontWeight: 600,
               color: textColor,
               whiteSpace: 'nowrap',
               overflow: 'hidden',

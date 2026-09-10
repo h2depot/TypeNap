@@ -49,11 +49,10 @@ pub fn story_metadata(root: &Path, story_name: &str) -> Result<PathBuf, String> 
 }
 
 pub fn text_file(root: &Path, story_name: &str, title: &str) -> Result<PathBuf, String> {
-    validate_name(title)?;
-    Ok(story_dir(root, story_name)?.join(format!("{title}.txt")))
+    crate::file_ops::document_name::resolve(root, story_name, title)
 }
 
-pub fn text_backup(root: &Path, story_name: &str, title: &str) -> Result<PathBuf, String> {
-    validate_name(title)?;
-    Ok(story_dir(root, story_name)?.join(format!("{title}_backup.json")))
+pub fn text_backup(root: &Path, story_name: &str, file_stem: &str) -> Result<PathBuf, String> {
+    crate::file_ops::document_name::validate_stem(file_stem)?;
+    Ok(story_dir(root, story_name)?.join(format!("{file_stem}.json")))
 }

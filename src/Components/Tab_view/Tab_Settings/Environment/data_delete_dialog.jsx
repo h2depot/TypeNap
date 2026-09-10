@@ -1,5 +1,5 @@
 import React from "react";
-import { GhostButton, GhostCheckBox, GhostDialog } from "../../GhostDesignSystem";
+import { GhostButton, GhostCheckBox, GhostDialog } from "../../../GhostDesignSystem";
 import { useTranslation } from "react-i18next";
 
 export default function DataDeleteDialog({
@@ -103,7 +103,7 @@ export default function DataDeleteDialog({
                                                     disabled={isDeleting}
                                                 />
                                                 <span style={{ marginLeft: "8px", wordBreak: "break-word" }}>
-                                                    {entry.fileName}.txt
+                                                    {entry.displayName ?? entry.fileName}.txt
                                                 </span>
                                             </div>
                                         );

@@ -14,6 +14,7 @@ const defaultSettings = {
   settings_version: "0.1.0",
   theme: "System Theme", // "Light Theme", "Dark Theme", "System Theme"
   language: "ja", // "ja", "en"
+  sound_effect: "None", // "None", "ChillWood", "Raindrop", "TypeWriter"
   bgimage: {},
   fontSize: 16, // 12~24
   SavingTab: "On", // "On", "Off"

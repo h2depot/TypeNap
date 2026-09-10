@@ -16,8 +16,8 @@ const GhostMenu = ({ trigger, items = [] }) => {
   }, []);
 
   const bgColor = 'var(--ghost-bg)';
-  const borderColor = 'var(--ghost-border)';
   const textColor = 'var(--ghost-text)';
+  const gradient = 'var(--ghost-gradient)';
 
   return (
     <div
@@ -53,55 +53,65 @@ const GhostMenu = ({ trigger, items = [] }) => {
               position: 'absolute',
               top: '100%',
               right: 0,
-              width: '150px',
-              background: bgColor,
+              width: '160px',
+              padding: '2px', // prominent 2px gradient border
               borderRadius: '16px',
-              border: `4px solid ${borderColor}`,
-              boxShadow: 'var(--ghost-shadow-large)',
-              padding: '6px',
+              background: gradient,
+              boxShadow: 'var(--ghost-shadow-large), 0 0 16px var(--ghost-glow)',
               zIndex: 100,
               overflow: 'hidden'
             }}
           >
-            {items.map((item, index) => {
-              const isDanger = item.isDanger;
-              const isDisabled = item.disabled;
-              const itemTextColor = isDanger ? '#ff4d4d' : textColor;
+            <div
+              style={{
+                background: bgColor,
+                borderRadius: '14px',
+                padding: '6px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px'
+              }}
+            >
+              {items.map((item, index) => {
+                const isDanger = item.isDanger;
+                const isDisabled = item.disabled;
+                const itemTextColor = isDanger ? '#ff4d4d' : textColor;
 
-              return (
-                <motion.div
-                  key={index}
-                  whileHover={isDisabled ? undefined : {
-                    x: 4,
-                    backgroundColor: isDanger
-                      ? 'rgba(255, 77, 77, 0.15)'
-                      : 'var(--ghost-menu-bg-hover)'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (isDisabled) return;
-                    item.onClick?.(e);
-                    setIsOpen(false);
-                  }}
-                  aria-disabled={isDisabled}
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    cursor: isDisabled ? 'default' : 'pointer',
-                    fontSize: '13px',
-                    color: itemTextColor,
-                    opacity: isDisabled ? 0.45 : 1,
-                    fontWeight: 'bold',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start'
-                  }}
-                >
-                  {item.label}
-                </motion.div>
-              );
-            })}
+                return (
+                  <motion.div
+                    key={index}
+                    whileHover={isDisabled ? undefined : {
+                      x: 4,
+                      backgroundColor: isDanger
+                        ? 'rgba(255, 77, 77, 0.15)'
+                        : 'var(--ghost-menu-bg-hover)'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isDisabled) return;
+                      item.onClick?.(e);
+                      setIsOpen(false);
+                    }}
+                    aria-disabled={isDisabled}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      cursor: isDisabled ? 'default' : 'pointer',
+                      fontSize: '13px',
+                      color: itemTextColor,
+                      opacity: isDisabled ? 0.45 : 1,
+                      fontWeight: 'bold',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start'
+                    }}
+                  >
+                    {item.label}
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useMemo, useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Plus } from "lucide-react";
-import { GhostButton, GhostCheckBox, GhostDialog, GhostIconButton, GhostTooltip } from "../../GhostDesignSystem";
+import { GhostButton, GhostCheckBox, GhostDialog, GhostIconButton, GhostTooltip } from "../../../GhostDesignSystem";
 import { useTranslation } from "react-i18next";
 
 function BgDeleteDialog({

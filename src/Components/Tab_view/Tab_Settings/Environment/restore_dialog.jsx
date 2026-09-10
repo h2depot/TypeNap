@@ -1,5 +1,5 @@
 import React from "react";
-import { GhostButton, GhostCheckBox, GhostDialog } from "../../GhostDesignSystem";
+import { GhostButton, GhostCheckBox, GhostDialog } from "../../../GhostDesignSystem";
 import { useTranslation } from "react-i18next";
 
 export default function RestoreDialog({
@@ -99,7 +99,7 @@ export default function RestoreDialog({
                                                     disabled={isRestoring}
                                                 />
                                                 <span style={{ marginLeft: "8px", wordBreak: "break-word" }}>
-                                                    {entry.fileName}.txt
+                                                    {entry.displayName ?? entry.fileName}.txt
                                                 </span>
                                             </div>
                                         );

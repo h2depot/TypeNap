@@ -29,10 +29,9 @@ const GhostDialog = ({ isOpen, onClose, title, children, maxWidth = '500px' }) =
   }, [isOpen]);
 
   const bgColor = 'var(--ghost-dialog-bg)';
-  const borderColor = 'var(--ghost-border)';
   const textColor = 'var(--ghost-text)';
 
-  const gradient = 'var(--ghost-gradient)';
+  const borderColor = 'var(--ghost-border)';
 
   return (
     <AnimatePresence>
@@ -66,7 +65,7 @@ const GhostDialog = ({ isOpen, onClose, title, children, maxWidth = '500px' }) =
             }}
           />
 
-          {/* Dialog Outer Container (Gradient Border) */}
+          {/* A single soft edge separates the dialog from the backdrop. */}
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -76,9 +75,11 @@ const GhostDialog = ({ isOpen, onClose, title, children, maxWidth = '500px' }) =
               position: 'relative',
               width: '100%',
               maxWidth: maxWidth,
-              background: gradient,
-              padding: '4px',
-              borderRadius: '24px',
+              background: borderColor,
+              padding: '1px',
+              borderRadius: '21px',
+              maxHeight: 'calc(100dvh - 40px)',
+              display: 'flex',
               boxShadow: 'var(--ghost-shadow-large)',
               zIndex: 1,
             }}
@@ -93,12 +94,14 @@ const GhostDialog = ({ isOpen, onClose, title, children, maxWidth = '500px' }) =
               display: 'flex',
               flexDirection: 'column',
               width: '100%',
-              height: '100%',
+              minHeight: 0,
             }}>
               {/* Header */}
               <div style={{
-                padding: '20px 24px',
-                borderBottom: '2px solid var(--ghost-border-light)',
+                padding: '24px',
+                flexShrink: 0,
+                gap: '16px',
+                borderBottom: '1px solid var(--ghost-stroke)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -107,7 +110,7 @@ const GhostDialog = ({ isOpen, onClose, title, children, maxWidth = '500px' }) =
                   margin: 0,
                   color: textColor,
                   fontSize: '20px',
-                  fontWeight: 700,
+                  fontWeight: 600,
                 }}>
                   {title}
                 </h2>

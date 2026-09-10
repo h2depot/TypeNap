@@ -156,6 +156,14 @@
     },
     "background": { "title": "背景", "solidColor": "単色背景", "image": "背景画像" },
     "language": { "title": "言語", "description": "アプリの表示言語を変更します。", "japanese": "日本語" },
+    "soundEffect": {
+      "title": "効果音",
+      "description": "タイピング時の効果音を設定します。",
+      "none": "なし",
+      "chillWood": "ChillWood",
+      "raindrop": "Raindrop",
+      "typeWriter": "TypeWriter"
+    },
     "fontSize": { "title": "執筆文字の大きさ変更(px)", "description": "エディタの文字の大きさを変更します。" },
     "tabs": {
       "title": "タブを保存する",
