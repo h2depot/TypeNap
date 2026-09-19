@@ -1,4 +1,23 @@
 {
+  "search": {
+    "more": "More options",
+    "bookmarks": "Bookmarks",
+    "bookmarkInstructions": "Drag or use the arrow buttons to reorder. Changes are saved automatically.",
+    "noBookmarks": "No saved bookmarks.",
+    "reorderBookmark": "Reorder {{name}}",
+    "moveBookmarkUp": "Move {{name}} up",
+    "moveBookmarkDown": "Move {{name}} down",
+    "deleteBookmark": "Delete {{name}}",
+    "bookmarkSaveFailed": "Could not save the bookmark.",
+    "bookmarkSaved": "Bookmark saved.",
+    "bookmarkSavedPartially": "Bookmark saved, but the title or icon information could not be retrieved.",
+    "suggestions": "Search suggestions",
+    "addShortcut": "Add shortcut",
+    "shortcutName": "Name",
+    "shortcutNameRequired": "Enter a name.",
+    "shortcutInvalidUrl": "Enter an allowed URL.",
+    "shortcutSaveFailed": "Could not save the shortcut."
+  },
   "common": {
     "cancel": "Cancel",
     "close": "Close",
@@ -16,6 +35,9 @@
     "deleting": "Deleting...",
     "restoring": "Restoring...",
     "clearInput": "Clear input",
+    "bookmark": "Bookmark",
+    "addBookmark": "Add bookmark",
+    "removeBookmark": "Remove bookmark",
     "closeDialog": "Close dialog",
     "errorWithDetail": "{{message}} Error: {{error}}",
     "inputPlaceholder": "Enter text...",
@@ -156,6 +178,7 @@
     },
     "background": { "title": "Background", "solidColor": "Solid colour", "image": "Background image" },
     "language": { "title": "Language", "description": "Change the app language.", "japanese": "Japanese" },
+    "searchEngine": { "title": "Search engine", "description": "Choose the search engine for web searches." },
     "soundEffect": {
       "title": "Sound effects",
       "description": "Set sound effects for typing.",

@@ -1,26 +1,46 @@
 pub mod file_ops;
 pub mod soundeffect;
 pub mod utils;
+pub mod webbrowser;
 
 use file_ops::{
     backup_manager, bgimage_manager, document_manager, file_manager, initializer, txt_editor,
 };
 use utils::{battery_manager, time_manager};
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri::plugin::Builder::<tauri::Wry>::new("https-navigation")
+            .on_navigation(|webview, url| {
+                // Also enforce the policy for page links and redirects.
+                !webview.label().starts_with("search-") || url.scheme() == "https"
+            })
+            .build())
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
+            app.manage(webbrowser::suggest_retriever::construct_http_client()?);
             battery_manager::start_battery_monitor(app.handle().clone());
             Ok(())
         })
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            webbrowser::setup_url::setup_url,
+            webbrowser::suggest_retriever::get_suggestions,
+            webbrowser::setup_url::validate_shortcut_url,
+            webbrowser::siteinfo_retriever::get_site_title,
+            webbrowser::siteinfo_retriever::get_site_info,
+            webbrowser::siteinfo_retriever::get_site_icon,
+            webbrowser::webview_manager::webview_back,
+            webbrowser::webview_manager::webview_forward,
+            webbrowser::webview_manager::webview_reload,
+            webbrowser::webview_manager::webview_navigate,
+            webbrowser::webview_manager::webview_navigation_state,
             initializer::initialize,
             initializer::create_dir_all,
             initializer::get_settings_state,

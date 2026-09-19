@@ -20,7 +20,7 @@
     -ms-overflow-style: none;
     align-items: flex-end;
     min-height: 40px;
-    padding: 10px 0;
+    padding: 5px 0;
 }
 
 .tabswitch_row::-webkit-scrollbar {

@@ -157,7 +157,7 @@ html {
   --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   --ghost-glow: rgba(102, 115, 174, 0.16);
   --ghost-placeholder: #6E7080;
-  --ghost-toast-success: #3b82f6;
+  --ghost-toast-success: #15803d;
   --ghost-toast-info: #8b5cf6;
   --ghost-toast-border: rgba(35, 43, 105, 0.15);
   --ghost-toast-bg: rgba(212, 207, 191, 0.75);
@@ -187,6 +187,8 @@ html {
   --ghost-book-cover-shadow: 0 12px 30px rgba(31, 38, 135, 0.08), inset 1px 1px 0px rgba(255, 255, 255, 0.3), inset -1px -1px 0px rgba(0, 0, 0, 0.05);
   --ghost-hover-highlight: #6e8efb;
   --ghost-dialog-bg: #E9E5D8;
+  --ghost-webview-bg: rgba(227, 226, 216, 0.55);
+  --ghost-webview-toolbar-bg: rgba(221, 216, 202, 0.70);
 }
 
 [data-theme="dark"] {
@@ -238,6 +240,8 @@ html {
   --ghost-book-cover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 1px 1px 0px rgba(255, 255, 255, 0.05), inset -1px -1px 0px rgba(0, 0, 0, 0.2);
   --ghost-hover-highlight: #B7BDE2;
   --ghost-dialog-bg: #181D30;
+  --ghost-webview-bg: rgba(28, 30, 46, 0.55);
+  --ghost-webview-toolbar-bg: rgba(27, 33, 55, 0.70);
 }
 
 /* ==========================================================================

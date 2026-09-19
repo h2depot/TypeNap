@@ -111,9 +111,11 @@ function App() {
   useEffect(() => {
     if (!isInitializerReady || settingsVersion === null) return;
 
-    initSettings(settingsVersion);
+    // Resolve the initial OS language before choosing the default bookmarks.
+    initSettings(settingsVersion).then(() => {
+      return initStats();
+    });
     initFileStore();
-    initStats();
   }, [isInitializerReady, settingsVersion, initSettings, initFileStore, initStats]);
 
   useEffect(() => {

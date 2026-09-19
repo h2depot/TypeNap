@@ -1,6 +1,8 @@
 import { useContextMenuStore } from "../store/contextMenuStore";
 import { useAppSettings } from "../store/saving/appSettings";
 import { useTabStore } from "../store/tabStore";
+import { useStatsStore } from "../store/saving/stats";
+import { useToastStore } from "../store/toastStore";
 import i18next from "../store/languageController";
 
 document.addEventListener("contextmenu", async (e) => {
@@ -14,6 +16,31 @@ document.addEventListener("contextmenu", async (e) => {
         const hasSelection = window.getSelection().toString().length > 0;
 
         const options = [];
+
+        const shortcut = target.closest("[data-search-shortcut-url]");
+        const shortcutUrl = shortcut?.dataset.searchShortcutUrl;
+        const bookmark = useStatsStore.getState().stats.bookmarks.find((item) => item.url === shortcutUrl);
+        if (bookmark) {
+            const bookmarkTitle = String(bookmark.label || "");
+            const displayName = Array.from(bookmarkTitle).slice(0, 6).join("")
+                + (Array.from(bookmarkTitle).length > 6 ? "..." : "");
+            options.push({
+                label: i18next.t("search.deleteBookmark", { name: displayName }),
+                isDanger: true,
+                disabled: !useStatsStore.getState().isReady,
+                onClick: async () => {
+                    try {
+                        await useStatsStore.getState().removeBookmark(shortcutUrl);
+                    } catch (err) {
+                        useToastStore.getState().addToast(i18next.t("common.errorWithDetail", {
+                            message: i18next.t("search.bookmarkSaveFailed"),
+                            error: String(err),
+                        }), "error");
+                    }
+                },
+            });
+            options.push({ isSeparator: true });
+        }
 
         if (isEditable) {
             const start = target.selectionStart;

@@ -1,4 +1,23 @@
 {
+  "search": {
+    "more": "その他のメニュー",
+    "bookmarks": "ブックマーク",
+    "bookmarkInstructions": "ドラッグまたは上下ボタンで並び替えられます。変更は自動で保存されます。",
+    "noBookmarks": "保存したブックマークはありません。",
+    "reorderBookmark": "{{name}}を並び替え",
+    "moveBookmarkUp": "{{name}}を上へ移動",
+    "moveBookmarkDown": "{{name}}を下へ移動",
+    "deleteBookmark": "{{name}}を削除",
+    "bookmarkSaveFailed": "ブックマークを保存できませんでした。",
+    "bookmarkSaved": "ブックマークを保存しました。",
+    "bookmarkSavedPartially": "ブックマークを保存しましたが、タイトルまたはアイコンの情報を取得できませんでした。",
+    "suggestions": "検索候補",
+    "addShortcut": "ショートカットを追加",
+    "shortcutName": "名前",
+    "shortcutNameRequired": "名前を入力してください。",
+    "shortcutInvalidUrl": "登録できるURLを入力してください。",
+    "shortcutSaveFailed": "ショートカットを保存できませんでした。"
+  },
   "common": {
     "cancel": "キャンセル",
     "close": "閉じる",
@@ -16,6 +35,9 @@
     "deleting": "削除中...",
     "restoring": "復元中...",
     "clearInput": "入力を消去",
+    "bookmark": "ブックマーク",
+    "addBookmark": "ブックマークに追加",
+    "removeBookmark": "ブックマークを解除",
     "closeDialog": "ダイアログを閉じる",
     "errorWithDetail": "{{message}} エラー: {{error}}",
     "inputPlaceholder": "入力してください...",
@@ -156,6 +178,7 @@
     },
     "background": { "title": "背景", "solidColor": "単色背景", "image": "背景画像" },
     "language": { "title": "言語", "description": "アプリの表示言語を変更します。", "japanese": "日本語" },
+    "searchEngine": { "title": "検索エンジン", "description": "Web検索に使用する検索エンジンを選択します。" },
     "soundEffect": {
       "title": "効果音",
       "description": "タイピング時の効果音を設定します。",

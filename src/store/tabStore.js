@@ -125,6 +125,31 @@ export const useTabStore = create((set, get) => ({
         updateSelectedTab(newTabsList, nextSelectedIndex);
     },
 
+    updateSearchTabInfo: (id, expectedUrl, info) => {
+        const index = get().tabsList.findIndex((tab) => tab.id === id);
+        const tab = get().tabsList[index];
+        // Ignore results for closed tabs or URLs that have since changed.
+        if (!tab || tab.type !== "search" || (tab.props.url || "") !== expectedUrl) return;
+        const title = expectedUrl && tab.props.liveTitleUrl === expectedUrl ? tab.title : info.title;
+        if (tab.title === title && tab.props.siteIcon === info.icon && tab.props.siteInfoUrl === expectedUrl) return;
+        get().updateTabProps(index, title, { siteIcon: info.icon, siteInfoUrl: expectedUrl });
+    },
+
+    updateSearchTabTitle: (id, expectedUrl, title) => {
+        if (!title?.trim() || !expectedUrl) return;
+        const index = get().tabsList.findIndex((tab) => tab.id === id);
+        const tab = get().tabsList[index];
+        if (!tab || tab.type !== "search" || tab.props.url !== expectedUrl) return;
+        if (tab.title === title && tab.props.liveTitleUrl === expectedUrl) return;
+        get().updateTabProps(index, title, { liveTitleUrl: expectedUrl });
+    },
+
+    updateTabPropsById: (id, newProps) => {
+        const index = get().tabsList.findIndex((tab) => tab.id === id);
+        if (index === -1) return;
+        get().updateTabProps(index, undefined, newProps);
+    },
+
     updateTabProps: (index, newTitle, newProps) => {
         set((state) => {
             const newTabsList = [...state.tabsList];
