@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Computer, Languages, Moon, Save, Sun, Type, Speaker, Wallpaper } from "lucide-react";
+import { Computer, Languages, Moon, Save, Search, Sun, Type, Speaker, Wallpaper } from "lucide-react";
 import { GhostRadioButton, GhostSlider, GhostDropdown, GhostToggle, SpiritListItem, SpiritListView } from "../../../GhostDesignSystem";
 import BackgroundDialog from "./background_dialog";
 import { SOLID_PALETTE_COLORS } from "../../../../constants/colors";
@@ -99,6 +99,24 @@ export default function GeneralSettings() {
                             ]}
                             value={settings.language}
                             onChange={(value) => updateSetting("language", value)}
+                        />
+                    }
+                />
+
+                <SpiritListItem
+                    icon={<Search size={20} />}
+                    title={t("settings.searchEngine.title")}
+                    description={t("settings.searchEngine.description")}
+                    control={
+                        <GhostDropdown
+                            options={[
+                                { value: "Google", label: "Google" },
+                                { value: "Bing", label: "Bing" },
+                                { value: "DuckDuckGo", label: "DuckDuckGo" },
+                                { value: "Yahoo", label: "Yahoo" },
+                            ]}
+                            value={settings.SearchingEngine || "Google"}
+                            onChange={(value) => updateSetting("SearchingEngine", value)}
                         />
                     }
                 />

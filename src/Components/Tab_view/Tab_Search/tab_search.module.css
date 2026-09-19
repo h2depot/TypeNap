@@ -3,15 +3,403 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 24px 32px;
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
+    color: var(--ghost-text);
+    overflow: hidden;
+}
+
+/* Edge-to-edge Translucent Toolbar Header */
+.toolbar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 12px;
+    background: var(--ghost-webview-toolbar-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: none;
+    border-bottom: 1px solid var(--ghost-stroke);
+    box-sizing: border-box;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease;
+}
+
+.navGroup {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.urlBarWrapper {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.actionGroup {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Edge-to-edge Translucent Viewport Area */
+.viewportContainer {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: var(--ghost-webview-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+.emptyView {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    position: relative;
+    user-select: none;
     overflow-y: auto;
+}
+
+/* Ambient subtle glow */
+.ambientGlow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: var(--ghost-gradient);
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Chrome-like Center Search Container */
+.centerContent {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+    gap: 28px;
+    margin-top: -30px;
+}
+
+.brandTitle {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: var(--ghost-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    user-select: none;
+}
+
+.centerSearchWrapper {
+    width: 100%;
+    box-shadow: var(--ghost-shadow-large);
+    border-radius: 24px;
+}
+
+/* Chrome-like Shortcuts */
+.shortcutsContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.shortcutItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 72px;
+    color: var(--ghost-text);
+    text-decoration: none;
+    outline: none;
+    transition: transform 0.2s ease;
+}
+
+.shortcutItem:hover {
+    transform: translateY(-3px);
+}
+
+.shortcutIconWrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ghost-bg);
+    border: 1px solid var(--ghost-stroke);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--ghost-shadow);
+    color: var(--ghost-text);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+}
+
+.shortcutItem:hover .shortcutIconWrapper {
+    background: var(--ghost-hover-bg);
+    border-color: var(--ghost-focus);
+    box-shadow: var(--ghost-shadow-large);
+}
+
+.shortcutLabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ghost-subtext);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 72px;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.shortcutItem:hover .shortcutLabel {
     color: var(--ghost-text);
 }
 
-.sectionTitle {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 24px;
+.shortcutForm,
+.shortcutField {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shortcutForm {
+    gap: 20px;
+}
+
+.shortcutActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.suggestField {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 5;
+    padding: 6px;
+    border: 1px solid var(--ghost-stroke);
+    border-radius: 12px;
+    background: var(--ghost-dialog-bg);
+    box-shadow: var(--ghost-shadow-large);
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Native child Webviews sit above HTML overlays. Reserve real space for
+   toolbar suggestions so ResizeObserver moves the page below the list. */
+.suggestToolbar .suggestions {
+    position: relative;
+    top: auto;
+    margin-top: 6px;
+    max-height: min(280px, 35vh);
+}
+
+.suggestion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
     color: var(--ghost-text);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+}
+
+.suggestion svg {
+    flex-shrink: 0;
+}
+
+.suggestion span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.suggestion:hover,
+.suggestionSelected {
+    background: var(--ghost-hover-bg);
+}
+
+.browserMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 10;
+    min-width: 200px;
+    padding: 6px;
+    border: 1px solid var(--ghost-stroke);
+    border-radius: 12px;
+    background: var(--ghost-dialog-bg);
+    box-shadow: var(--ghost-shadow-large);
+}
+
+.browserMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 8px;
+    color: var(--ghost-text);
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+}
+
+.browserMenuItem:hover,
+.browserMenuItem:focus-visible {
+    background: var(--ghost-hover-bg);
+}
+
+.bookmarkManager {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.bookmarkHint {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ghost-subtext);
+}
+
+.bookmarkList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bookmarkRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px;
+    border: 1px solid var(--ghost-stroke);
+    border-radius: 12px;
+    background: var(--ghost-dialog-bg);
+}
+
+.bookmarkRow>svg {
+    flex-shrink: 0;
+}
+
+.bookmarkDrag {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ghost-subtext);
+    cursor: grab;
+    touch-action: none;
+}
+
+.bookmarkDrag:active {
+    cursor: grabbing;
+}
+
+.bookmarkDrag:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.bookmarkDetails {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bookmarkName,
+.bookmarkUrl {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bookmarkName {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.bookmarkUrl {
+    font-size: 12px;
+    color: var(--ghost-subtext);
+}
+
+.bookmarkActions {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.bookmarkManager button:focus-visible,
+.browserMenuItem:focus-visible {
+    outline: 2px solid var(--ghost-focus);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .bookmarkRow {
+        flex-wrap: wrap;
+    }
+
+    .bookmarkActions {
+        margin-left: auto;
+    }
 }

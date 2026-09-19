@@ -12,6 +12,7 @@ import GhostButton from "../GhostDesignSystem/GhostButton";
 import TabHome from "../Tab_view/Tab_Home/tab_home";
 import TabLibrary from "../Tab_view/Tab_Library/tab_library";
 import TabSearch from "../Tab_view/Tab_Search/tab_search";
+import { SiteIcon } from "../Tab_view/Tab_Search/SiteIcon";
 import TabSettings from "../Tab_view/Tab_Settings/tab_settings";
 import TabWork from "../Tab_view/Tab_Work/tab_work";
 import TabStory from "../Tab_view/Tab_Story/tab_story";
@@ -131,7 +132,6 @@ export default function Tabs() {
         switch (tab.type) {
             case 'home': return <TabHome {...tab.props} />;
             case 'library': return <TabLibrary {...tab.props} />;
-            case 'search': return <TabSearch {...tab.props} />;
             case 'settings': return <TabSettings {...tab.props} />;
             case 'work': return <TabWork {...tab.props} />;
             case 'story': return <TabStory {...tab.props} />;
@@ -158,8 +158,10 @@ export default function Tabs() {
                                             onClick={() => setSelectedIndex(index)}
                                         >
                                             <div className={styles.tab_header}>
-                                                <span className={styles.tab_icon}>{getTabIcon(tab.type)}</span>
-                                                <span className={styles.tab_text}>{tab.title}</span>
+                                                <span className={styles.tab_icon}>{tab.type === "search"
+                                                    ? <SiteIcon size={18} icon={tab.props?.url && tab.props.siteInfoUrl === tab.props.url ? tab.props.siteIcon : "Search"} />
+                                                    : getTabIcon(tab.type)}</span>
+                                                <span className={styles.tab_text}>{tab.type === "search" && (!tab.props?.url || (tab.props.siteInfoUrl !== tab.props.url && tab.props.liveTitleUrl !== tab.props.url)) ? "Search" : tab.title}</span>
                                                 <button
                                                     className={styles.close_btn}
                                                     onClick={(e) => onClose(e, index)}
@@ -181,7 +183,15 @@ export default function Tabs() {
             <div className={styles.divider}></div>
 
             <div className={styles.content}>
-                {renderTabContent(tabsList[selectedIndex])}
+                {tabsList.filter(tab => tab.type === 'search').map(tab => {
+                    const isActive = tab.id === tabsList[selectedIndex]?.id;
+                    return (
+                        <div key={tab.id} style={{ display: isActive ? 'block' : 'none', height: '100%' }}>
+                            <TabSearch {...tab.props} tabId={tab.id} isActive={isActive} />
+                        </div>
+                    );
+                })}
+                {tabsList[selectedIndex]?.type !== 'search' && renderTabContent(tabsList[selectedIndex])}
             </div>
 
             <GhostDialog

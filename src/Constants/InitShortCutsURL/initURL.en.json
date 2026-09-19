@@ -1,0 +1,6 @@
+[
+    { "label": "Google", "url": "https://www.google.com" },
+    { "label": "Wikipedia", "url": "https://en.wikipedia.org" },
+    { "label": "ChatGPT", "url": "https://chat.openai.com" },
+    { "label": "Wattpad", "url": "https://www.wattpad.com" }
+]
