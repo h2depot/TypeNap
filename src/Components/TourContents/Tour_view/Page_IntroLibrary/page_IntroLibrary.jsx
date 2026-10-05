@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TN_BookCard } from "../../../TNDesignSystem";
+import { GhostBookCard } from "../../../GhostDesignSystem";
 import { SOLID_PALETTE_COLORS } from "../../../../Constants/colors";
 import { useTranslation } from "react-i18next";
 import styles from "./page_IntroLibrary.module.css";
@@ -34,7 +34,7 @@ export default function PageIntroLibrary() {
                         }}
                         transition={{ type: "spring", stiffness: 180, damping: 20 }}
                     >
-                        <TN_BookCard
+                        <GhostBookCard
                             title={book.title}
                             updated="2026-08-29"
                             coverColor={book.color}

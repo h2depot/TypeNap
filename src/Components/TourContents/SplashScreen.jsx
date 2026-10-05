@@ -1,15 +1,27 @@
-import { Children, useState } from "react";
+import { Children, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LeftArrow, RightArrow } from "../../assets/IconList";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { TN_IconButton } from "../TNDesignSystem";
+import { GhostIconButton } from "../GhostDesignSystem";
+import TypeNapLogo from "../TypeNapLogo/SplashScreen";
 import styles from "./SplashScreen.module.css";
 
-function SplashScreen({ tourPages = [], onTourComplete }) {
+function SplashScreen({ theme = "dark", tourPages = [], tourCompleted = null, onComplete, onTourComplete }) {
     const { t } = useTranslation();
+    const [showLogo, setShowLogo] = useState(true);
+    const [logoFinished, setLogoFinished] = useState(false);
     const [page, setPage] = useState(0);
     const [direction, setDirection] = useState(1);
+    const advancedFromLogo = useRef(false);
     const pages = Children.toArray(tourPages);
+
+    useEffect(() => {
+        if (!logoFinished || tourCompleted === null || advancedFromLogo.current) return;
+
+        advancedFromLogo.current = true;
+        if (tourCompleted || pages.length === 0) onComplete?.();
+        else setShowLogo(false);
+    }, [logoFinished, tourCompleted, onComplete, pages.length]);
 
     const moveTo = (nextPage) => {
         if (nextPage < 0 || nextPage >= pages.length) return;
@@ -21,6 +33,14 @@ function SplashScreen({ tourPages = [], onTourComplete }) {
         if (page === pages.length - 1) onTourComplete?.();
         else moveTo(page + 1);
     };
+
+    if (showLogo) {
+        return (
+            <motion.div className={styles.fullscreen} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+                <TypeNapLogo theme={theme} onComplete={() => setLogoFinished(true)} />
+            </motion.div>
+        );
+    }
 
     return (
         <div className={styles.fullscreen}>
@@ -41,8 +61,8 @@ function SplashScreen({ tourPages = [], onTourComplete }) {
             </AnimatePresence>
 
             <nav className={styles.navigation} aria-label={t("tour.navigation.label")}>
-                <TN_IconButton
-                    icon={<LeftArrow />}
+                <GhostIconButton
+                    icon={<ChevronLeft />}
                     onClick={() => moveTo(page - 1)}
                     disabled={page === 0}
                     aria-label={t("tour.navigation.previous")}
@@ -59,8 +79,8 @@ function SplashScreen({ tourPages = [], onTourComplete }) {
                     ))}
                 </div>
 
-                <TN_IconButton
-                    icon={<RightArrow />}
+                <GhostIconButton
+                    icon={<ChevronRight />}
                     onClick={handleNext}
                     variant={page === pages.length - 1 ? "primary" : "secondary"}
                     aria-label={page === pages.length - 1 ? t("tour.navigation.complete") : t("tour.navigation.next")}

@@ -1,7 +1,4 @@
 import { create } from "zustand";
-import { useFileStore } from "./fileStore";
-
-const synopsisSaveQueues = new Map();
 
 const currentTimestamp = () => Math.floor(Date.now() / 1000);
 
@@ -9,7 +6,7 @@ const validTimestamp = (timestamp) => timestamp > 0;
 
 const nonEmptyCover = (cover) => (typeof cover === "string" && cover.trim() ? cover : null);
 
-export const useStoryStore = create((set, get) => ({
+export const useStoryStore = create((set) => ({
     workspaces: {},
 
     initWorkspace: (storyName, filesList = [], charCnt = 0, storyInfo = {}) => {
@@ -37,12 +34,7 @@ export const useStoryStore = create((set, get) => ({
                         filesList,
                         charCnt,
                         synopsis,
-                        synopsisDraft: synopsis,
-                        synopsisIsEdited: false,
-                        synopsisIsSaving: false,
-                        synopsisSaveError: null,
                         cover,
-                        coverTextColor: storyInfo.cover_text_color || "",
                         lastUpdate,
                         createdAt,
                     },
@@ -63,11 +55,7 @@ export const useStoryStore = create((set, get) => ({
                         ...workspace,
                         filesList: storyInfo.chapters ?? storyInfo.files ?? [],
                         charCnt: storyInfo.char_cnt,
-                        ...(!workspace.synopsisIsEdited && !workspace.synopsisIsSaving ? {
-                            synopsis: storyInfo.synopsis ?? "",
-                            synopsisDraft: storyInfo.synopsis ?? "",
-                        } : {}),
-                        coverTextColor: storyInfo.cover_text_color || "",
+                        synopsis: storyInfo.synopsis ?? "",
                         cover: nonEmptyCover(storyInfo.cover) ?? nonEmptyCover(workspace.cover) ?? "",
                         lastUpdate: validTimestamp(storyInfo.last_update)
                             ? storyInfo.last_update
@@ -83,7 +71,7 @@ export const useStoryStore = create((set, get) => ({
         });
     },
 
-    markSynopsisSaved: (storyName, storyInfo = {}, content = storyInfo.synopsis) => {
+    markSynopsisSaved: (storyName, storyInfo = {}) => {
         set((state) => {
             const workspace = state.workspaces[storyName];
             if (!workspace) return state;
@@ -93,9 +81,7 @@ export const useStoryStore = create((set, get) => ({
                     ...state.workspaces,
                     [storyName]: {
                         ...workspace,
-                        synopsis: content ?? workspace.synopsis,
-                        synopsisIsEdited: workspace.synopsisDraft !== (content ?? workspace.synopsis),
-                        synopsisSaveError: null,
+                        synopsis: storyInfo.synopsis ?? workspace.synopsis,
                         lastUpdate: validTimestamp(storyInfo.last_update)
                             ? storyInfo.last_update
                             : workspace.lastUpdate,
@@ -107,51 +93,6 @@ export const useStoryStore = create((set, get) => ({
             };
         });
     },
-
-    updateSynopsis: (storyName, content) => {
-        set((state) => {
-            const workspace = state.workspaces[storyName];
-            if (!workspace || workspace.synopsisDraft === content) return state;
-            return { workspaces: { ...state.workspaces, [storyName]: {
-                ...workspace, synopsisDraft: content,
-                synopsisIsEdited: content !== workspace.synopsis,
-                synopsisSaveError: null,
-            } } };
-        });
-    },
-
-    saveSynopsis: (storyName) => {
-        const previous = synopsisSaveQueues.get(storyName) ?? Promise.resolve();
-        const task = previous.catch(() => {}).then(async () => {
-            // Save once; edits made during IPC remain an unsaved shared draft.
-            if (get().workspaces[storyName]?.synopsisIsEdited) {
-                const content = get().workspaces[storyName].synopsisDraft;
-                const updateStatus = (status) => set((state) => {
-                    const workspace = state.workspaces[storyName];
-                    if (!workspace) return state;
-                    return { workspaces: { ...state.workspaces, [storyName]: { ...workspace, ...status } } };
-                });
-                updateStatus({ synopsisIsSaving: true, synopsisSaveError: null });
-                try {
-                    const info = await useFileStore.getState().updateStorySynopsis(storyName, content, { silent: true });
-                    get().markSynopsisSaved(storyName, info, content);
-                } catch (error) {
-                    updateStatus({ synopsisSaveError: String(error) });
-                    throw error;
-                } finally {
-                    updateStatus({ synopsisIsSaving: false });
-                }
-            }
-        });
-        synopsisSaveQueues.set(storyName, task);
-        const clear = () => { if (synopsisSaveQueues.get(storyName) === task) synopsisSaveQueues.delete(storyName); };
-        task.then(clear, clear);
-        return task;
-    },
-
-    waitForSynopsisSave: (storyName) => synopsisSaveQueues.get(storyName) ?? Promise.resolve(),
-
-    waitForSynopsisSaves: () => Promise.all([...synopsisSaveQueues.values()]),
 
     updateFilesList: (storyName, newFilesList) => {
         set((state) => {

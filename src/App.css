@@ -1,31 +1,8 @@
-@import "./assets/fonts/fonts.css";
-
 :root {
-  --font-family-ui: "Nunito Sans", "M PLUS 1p", sans-serif;
-  --font-family-content: Inter, Avenir, Helvetica, Arial, sans-serif;
-  --dark-base: #1A1A1A;
-  --dark-surface: #363636;
-  --light-base: #E5E5E5;
-  --light-surface: #C9C9C9;
-  --brand-neutral: #D4CFBF;
-  --brand-indigo: #232B69;
-  --brand-accent: #E8890D;
-  --theme-red: #A04940;
-  --theme-green: #85916D;
-  --theme-blue: #246A84;
-  --app-glass-shell: rgba(255, 255, 255, 0.45);
-  --app-glass-content: rgba(255, 255, 255, 0.3);
-  /* Opaque sRGB blends: base * weight + white/black * (1 - weight). */
-  --app-color-mix: #FFFFFF;
-  --app-color-shell-weight: 33%;
-  --app-color-content-weight: 40%;
-  --app-default-shell: #D6D6D6;
-  --app-default-content: var(--light-surface);
-  --font-weight-ui: 800;
-  font-family: var(--font-family-ui);
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
-  font-weight: var(--font-weight-ui);
+  font-weight: 400;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -34,32 +11,33 @@
   -webkit-text-size-adjust: 100%;
 
   /* --- Global Colors (Light Mode Defaults) --- */
-  --bg-primary: var(--light-base);
-  --text-primary: var(--brand-indigo);
+  --bg-primary: #E9E5D8;
+  --text-primary: #101426;
 
   /* --- Solid Palette Colors (Cover & Background) --- */
-  --solid-color-1: var(--light-base);
-  --solid-color-2: var(--dark-base);
-  --solid-color-3: var(--theme-red);
-  --solid-color-4: var(--theme-green);
-  --solid-color-5: var(--theme-blue);
+  --solid-color-1: #E9E5D8;
+  --solid-color-2: #101426;
+  --solid-color-3: #A04940;
+  --solid-color-4: #85916D;
+  --solid-color-5: #246A84;
 
   /* --- TextBox Colors --- */
-  --tb-btn-text: var(--brand-indigo);
-  --tb-btn-bg: var(--light-surface);
-  --tb-btn-border: var(--light-surface);
-  --tb-wrapper-bg: linear-gradient(135deg, rgba(232, 137, 13, 0.05), rgba(232, 137, 13, 0.01));
-  --tb-wrapper-border: rgba(232, 137, 13, 0.1);
-  --tb-container-bg: var(--light-base);
-  --tb-text: var(--brand-indigo);
-  --tb-placeholder: #555A72;
-  --tb-thumb-bg: rgba(232, 137, 13, 0.2);
-  --tb-thumb-hover: rgba(232, 137, 13, 0.4);
-  --tb-thumb-border: var(--light-base);
-  --tb-divider: linear-gradient(90deg, transparent, rgba(232, 137, 13, 0.2) 50%, transparent);
-  --tb-divider-vert: linear-gradient(180deg, transparent, rgba(232, 137, 13, 0.2) 50%, transparent);
-  --tb-title-text: var(--brand-indigo);
-  --tb-title-placeholder: rgba(35,43,105,0.5);
+  --tb-btn-text: #08060d;
+  --tb-btn-bg: #f4f3ec;
+  --tb-btn-border: #e5e4e7;
+  --tb-wrapper-bg: linear-gradient(135deg, rgba(170, 59, 255, 0.05), rgba(170, 59, 255, 0.01));
+  --tb-wrapper-border: rgba(170, 59, 255, 0.1);
+  --tb-container-bg: #E9E5D8;
+  --tb-container-bg-translucent: rgba(233, 229, 216, 0.75);
+  --tb-text: #08060d;
+  --tb-placeholder: #6b6375;
+  --tb-thumb-bg: rgba(170, 59, 255, 0.2);
+  --tb-thumb-hover: rgba(170, 59, 255, 0.4);
+  --tb-thumb-border: #ffffff;
+  --tb-divider: linear-gradient(90deg, rgba(170, 59, 255, 0.02), rgba(170, 59, 255, 0.2) 50%, rgba(170, 59, 255, 0.02));
+  --tb-divider-vert: linear-gradient(180deg, rgba(170, 59, 255, 0.02), rgba(170, 59, 255, 0.2) 50%, rgba(170, 59, 255, 0.02));
+  --tb-title-text: #08060d;
+  --tb-title-placeholder: rgba(107, 99, 117, 0.5);
 
   color: var(--text-primary);
   background-color: var(--bg-primary);
@@ -79,21 +57,21 @@ html {
   isolation: isolate;
   height: 100vh;
   box-sizing: border-box;
-  background-color: var(--app-default-shell);
+  background-color: var(--bg-primary);
   background-image: var(--app-bg-image, none);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Shared shell tone for the navigation rail and tab header. */
-.row[data-background="image"]::before {
+/* One continuous theme-tinted glass layer behind both workspace columns. */
+.row::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: var(--app-glass-shell);
+  background-color: var(--tb-container-bg-translucent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -105,37 +83,31 @@ html {
 }
 
 [data-theme="dark"] {
-  --app-color-mix: #000000;
-  --app-color-shell-weight: 37%;
-  --app-color-content-weight: 30%;
-  --app-default-shell: #272727;
-  --app-default-content: var(--dark-base);
-  --app-glass-shell: rgba(0, 0, 0, 0.45);
-  --app-glass-content: rgba(0, 0, 0, 0.3);
   /* --- Global Colors (Dark Mode) --- */
-  --bg-primary: var(--dark-base);
-  --text-primary: var(--brand-neutral);
+  --bg-primary: #101426;
+  --text-primary: #E9E5D8;
 
   /* --- TextBox Colors --- */
-  --tb-btn-text: var(--brand-neutral);
-  --tb-btn-bg: var(--dark-surface);
-  --tb-btn-border: var(--dark-surface);
-  --tb-wrapper-bg: linear-gradient(135deg, rgba(232, 137, 13, 0.05), rgba(232, 137, 13, 0.01));
-  --tb-wrapper-border: rgba(232, 137, 13, 0.1);
-  --tb-container-bg: var(--dark-base);
-  --tb-text: var(--brand-neutral);
-  --tb-placeholder: #B8B4A8;
-  --tb-thumb-bg: rgba(232, 137, 13, 0.2);
-  --tb-thumb-hover: rgba(232, 137, 13, 0.4);
-  --tb-thumb-border: var(--dark-base);
-  --tb-divider: linear-gradient(90deg, transparent, rgba(232, 137, 13, 0.2) 50%, transparent);
-  --tb-divider-vert: linear-gradient(180deg, transparent, rgba(232, 137, 13, 0.2) 50%, transparent);
-  --tb-title-text: var(--brand-neutral);
-  --tb-title-placeholder: rgba(212,207,191,0.5);
+  --tb-btn-text: #f3f4f6;
+  --tb-btn-bg: #1f2028;
+  --tb-btn-border: #2e303a;
+  --tb-wrapper-bg: linear-gradient(135deg, rgba(192, 132, 252, 0.08), rgba(192, 132, 252, 0.02));
+  --tb-wrapper-border: rgba(192, 132, 252, 0.1);
+  --tb-container-bg: #101426;
+  --tb-container-bg-translucent: rgba(16, 20, 38, 0.75);
+  --tb-text: #E9E5D8;
+  --tb-placeholder: #9ca3af;
+  --tb-thumb-bg: rgba(192, 132, 252, 0.2);
+  --tb-thumb-hover: rgba(192, 132, 252, 0.4);
+  --tb-thumb-border: #101426;
+  --tb-divider: linear-gradient(90deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
+  --tb-divider-vert: linear-gradient(180deg, rgba(192, 132, 252, 0.02), rgba(192, 132, 252, 0.2) 50%, rgba(192, 132, 252, 0.02));
+  --tb-title-text: #F1EDE3;
+  --tb-title-placeholder: rgba(156, 163, 175, 0.4);
 }
 
 [data-theme="dark"] a:hover {
-  color: var(--brand-accent);
+  color: #c084fc;
 }
 
 ::-webkit-scrollbar {
@@ -148,14 +120,14 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--tn-border-light);
+  background-color: var(--ghost-border-light);
   border-radius: 12px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--tn-text);
+  background-color: var(--ghost-text);
 }
 
 ::-webkit-scrollbar-corner {
@@ -163,59 +135,109 @@ html {
 }
 
 /* ==========================================================================
-   TNDesignSystem Custom Properties / CSS Variables
+   GhostDesignSystem Custom Properties / CSS Variables
    ========================================================================== */
 :root,
 [data-theme="light"] {
-  --tn-bg: var(--light-surface);
-  --tn-border: var(--brand-indigo);
-  --tn-text: var(--brand-indigo);
-  --tn-subtext: #555A72;
-  --tn-accent: var(--brand-accent);
-  --tn-hover-bg: rgba(35, 43, 105, 0.08);
-  --tn-option-bg: rgba(0, 0, 0, 0.05);
-  --tn-gradient: linear-gradient(135deg, var(--brand-accent), var(--brand-neutral));
-  --tn-shadow: 0 4px 14px rgba(26, 30, 52, 0.05);
-  --tn-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.2);
-  --tn-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.05);
-  --tn-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --tn-placeholder: #555A72;
-  --tn-toast-success: var(--theme-green);
-  --tn-border-light: rgba(35, 43, 105, 0.14);
-  --tn-stroke: rgba(35, 43, 105, 0.12);
-  --tn-focus: var(--brand-accent);
-  --tn-surface-active: rgba(232, 137, 13, 0.12);
-  --tn-card-bg: var(--light-surface);
-  --tn-card-border: 1px solid rgba(35, 43, 105, 0.08);
-  --tn-dialog-bg: var(--light-base);
-  --tn-webview-bg: rgba(229,229,229,0.55);
-  --tn-webview-toolbar-bg: rgba(201,201,201,0.7);
+  --ghost-bg: #DDD8CA;
+  --ghost-border: #232b69;
+  --ghost-text: #232b69;
+  --ghost-subtext: #626579;
+  --ghost-accent: #4A55A2;
+  --ghost-hover-bg: rgba(35, 43, 105, 0.08);
+  --ghost-option-bg: rgba(0, 0, 0, 0.05);
+  --ghost-gradient: linear-gradient(135deg, #6673AE 0%, #9786B4 100%);
+  --ghost-shadow: 0 4px 14px rgba(26, 30, 52, 0.05);
+  --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.2);
+  --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --ghost-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+  --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  --ghost-glow: rgba(102, 115, 174, 0.16);
+  --ghost-placeholder: #6E7080;
+  --ghost-toast-success: #3b82f6;
+  --ghost-toast-info: #8b5cf6;
+  --ghost-toast-border: rgba(35, 43, 105, 0.15);
+  --ghost-toast-bg: rgba(212, 207, 191, 0.75);
+  --ghost-toast-text: #232b69;
+  --ghost-border-light: rgba(35, 43, 105, 0.14);
+  --ghost-stroke: rgba(35, 43, 105, 0.12);
+  --ghost-focus: #626FA6;
+  --ghost-surface-active: rgba(74, 85, 162, 0.12);
+  --ghost-toggle-knob-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --ghost-toggle-shadow-off: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  --ghost-card-bg: #E3E2D8;
+  --ghost-card-border: 1px solid rgba(35, 43, 105, 0.08);
+  --ghost-list-item-bg: #DDD8CA;
+  --ghost-list-item-border: 1px solid transparent;
+  --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 60%, rgba(255, 255, 255, 0.25) 85%, rgba(0, 0, 0, 0.06) 100%);
+  --ghost-card-edge-bg: rgba(0, 0, 0, 0.04);
+  --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.2);
+  --ghost-card-title-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+  --ghost-menu-bg-hover: rgba(35, 43, 105, 0.1);
+  --ghost-tooltip-bg: rgba(212, 207, 191, 0.85);
+  --ghost-tooltip-border: rgba(35, 43, 105, 0.2);
+  --ghost-tooltip-text: #232b69;
+  --ghost-tooltip-glow: rgba(110, 142, 251, 0.3);
+  --ghost-book-bg: #E3E2D8;
+  --ghost-book-cover-bg: var(--ghost-book-bg);
+  --ghost-book-cover-border: rgba(35, 43, 105, 0.08);
+  --ghost-book-cover-shadow: 0 12px 30px rgba(31, 38, 135, 0.08), inset 1px 1px 0px rgba(255, 255, 255, 0.3), inset -1px -1px 0px rgba(0, 0, 0, 0.05);
+  --ghost-hover-highlight: #6e8efb;
+  --ghost-dialog-bg: #E9E5D8;
 }
 
 [data-theme="dark"] {
-  --tn-bg: var(--dark-surface);
-  --tn-border: var(--brand-neutral);
-  --tn-text: var(--brand-neutral);
-  --tn-subtext: #B8B4A8;
-  --tn-accent: var(--brand-accent);
-  --tn-hover-bg: rgba(212, 207, 191, 0.08);
-  --tn-option-bg: rgba(255, 255, 255, 0.05);
-  --tn-gradient: linear-gradient(135deg, var(--brand-accent), var(--brand-neutral));
-  --tn-shadow: 0 4px 18px rgba(4, 7, 18, 0.16);
-  --tn-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.5);
-  --tn-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.15);
-  --tn-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.25);
-  --tn-placeholder: #B8B4A8;
-  --tn-toast-success: var(--theme-green);
-  --tn-border-light: rgba(212, 207, 191, 0.14);
-  --tn-stroke: rgba(212, 207, 191, 0.10);
-  --tn-focus: var(--brand-accent);
-  --tn-surface-active: rgba(232, 137, 13, 0.12);
-  --tn-card-bg: var(--dark-surface);
-  --tn-card-border: 1px solid rgba(255, 255, 255, 0.08);
-  --tn-dialog-bg: var(--dark-base);
-  --tn-webview-bg: rgba(26,26,26,0.55);
-  --tn-webview-toolbar-bg: rgba(54,54,54,0.7);
+  --ghost-bg: #1B2137;
+  --ghost-border: #D4CFBF;
+  --ghost-text: #E9E5D8;
+  --ghost-subtext: #A3A7B7;
+  --ghost-accent: #E8E4D9;
+  --ghost-hover-bg: rgba(212, 207, 191, 0.08);
+  --ghost-option-bg: rgba(255, 255, 255, 0.05);
+  --ghost-gradient: linear-gradient(135deg, #6575B6 0%, #A194C0 100%);
+  --ghost-shadow: 0 4px 18px rgba(4, 7, 18, 0.16);
+  --ghost-shadow-large: 0 20px 40px rgba(0, 0, 0, 0.5);
+  --ghost-shadow-toast: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --ghost-shadow-input: 0 2px 6px rgba(0, 0, 0, 0.15);
+  --ghost-shadow-input-focus: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --ghost-slider-drag-shadow: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.3));
+  --ghost-slider-hover-shadow: drop-shadow(0 6px 12px rgba(255, 255, 255, 0.25));
+  --ghost-slider-normal-shadow: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.15));
+  --ghost-glow: rgba(161, 148, 192, 0.16);
+  --ghost-placeholder: #9499AD;
+  --ghost-toast-success: #4ade80;
+  --ghost-toast-info: #B3A4D2;
+  --ghost-toast-border: rgba(212, 207, 191, 0.15);
+  --ghost-toast-bg: rgba(16, 20, 38, 0.85);
+  --ghost-toast-text: #E9E5D8;
+  --ghost-border-light: rgba(212, 207, 191, 0.14);
+  --ghost-stroke: rgba(212, 207, 191, 0.10);
+  --ghost-focus: #A8B1DE;
+  --ghost-surface-active: rgba(141, 151, 202, 0.15);
+  --ghost-toggle-knob-shadow: 0 2px 6px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(255, 255, 255, 0.1);
+  --ghost-toggle-shadow-off: inset 0 2px 6px rgba(255, 255, 255, 0.1);
+  --ghost-card-bg: #1C1E2E;
+  --ghost-card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --ghost-list-item-bg: #1D2336;
+  --ghost-list-item-border: 1px solid transparent;
+  --ghost-card-spine: linear-gradient(to right, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.05) 60%, rgba(255, 255, 255, 0.03) 85%, rgba(0, 0, 0, 0.15) 100%);
+  --ghost-card-edge-bg: rgba(0, 0, 0, 0.2);
+  --ghost-card-edge-border: 1px solid rgba(255, 255, 255, 0.04);
+  --ghost-card-title-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+  --ghost-menu-bg-hover: rgba(255, 255, 255, 0.1);
+  --ghost-tooltip-bg: rgba(26, 32, 60, 0.85);
+  --ghost-tooltip-border: rgba(212, 207, 191, 0.2);
+  --ghost-tooltip-text: #D4CFBF;
+  --ghost-tooltip-glow: rgba(203, 108, 230, 0.4);
+  --ghost-book-bg: #1C1E2E;
+  --ghost-book-cover-bg: var(--ghost-book-bg);
+  --ghost-book-cover-border: rgba(255, 255, 255, 0.08);
+  --ghost-book-cover-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), inset 1px 1px 0px rgba(255, 255, 255, 0.05), inset -1px -1px 0px rgba(0, 0, 0, 0.2);
+  --ghost-hover-highlight: #B7BDE2;
+  --ghost-dialog-bg: #181D30;
 }
 
 /* ==========================================================================
@@ -228,12 +250,13 @@ html {
   justify-content: flex-start;
   height: 100%;
   margin: 0;
-  width: 56px;
+  width: 72px;
   box-sizing: border-box;
   flex-shrink: 0;
   position: relative;
   z-index: 50;
-  background-color: transparent;
+  background-color: var(--ghost-option-bg);
+  border-right: 1px solid var(--ghost-stroke);
 }
 
 .content-workspace {
@@ -253,17 +276,18 @@ html {
 /* Keyboard focus stays visible even on controls with inline outline resets. */
 button:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--tn-focus) !important;
+  outline: 2px solid var(--ghost-focus) !important;
   outline-offset: 3px;
 }
 
 button,
 input,
 textarea {
-  font-family: var(--font-family-ui);
+  font-family: inherit;
 }
 
-button, input, textarea, select, option, h1, h2, h3, h4, h5, h6, b, strong {
-  font-family: var(--font-family-ui);
-  font-weight: var(--font-weight-ui);
+@media (max-width: 700px) {
+  .left-sidebar {
+    width: 64px;
+  }
 }

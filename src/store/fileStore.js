@@ -100,7 +100,7 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    updateStorySynopsis: async (storyName, content, { silent = false } = {}) => {
+    updateStorySynopsis: async (storyName, content) => {
         try {
             const storyInfo = await invoke("update_story_synopsis", { storyName, content });
             const normalized = normalizeStoryInfo(storyInfo);
@@ -113,7 +113,7 @@ export const useFileStore = create((set, get) => ({
                 }
                 return {};
             });
-            if (!silent) showSuccessToast(i18next.t("notice.synopsisUpdated"));
+            showSuccessToast(i18next.t("notice.synopsisUpdated"));
             return normalized;
         } catch (error) {
             showErrorToast(operationFailed("updateSynopsis"), error);
@@ -122,9 +122,9 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    updateStoryCover: async (storyName, cover, touchLastUpdate = true, coverTextColor) => {
+    updateStoryCover: async (storyName, cover, touchLastUpdate = true) => {
         try {
-            const storyInfo = await invoke("update_story_cover", { storyName, cover, touchLastUpdate, coverTextColor });
+            const storyInfo = await invoke("update_story_cover", { storyName, cover, touchLastUpdate });
             const normalized = normalizeStoryInfo(storyInfo);
             set((state) => {
                 const index = state.storyList.findIndex((story) => story.story_name === storyName);
