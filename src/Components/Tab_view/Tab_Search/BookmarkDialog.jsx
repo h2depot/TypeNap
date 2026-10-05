@@ -3,9 +3,10 @@ import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, us
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { restrictToVerticalAxis, restrictToParentElement } from "@dnd-kit/modifiers";
-import { ArrowUp, ArrowDown, GripVertical, Trash2 } from "lucide-react";
+import { GripVertical } from 'lucide-react';
+import { Trash2, UpArrow, DownArrow } from '../../../assets/IconList';
 import { useTranslation } from "react-i18next";
-import { GhostButton, GhostDialog, GhostIconButton } from "../../GhostDesignSystem";
+import { TN_Button, TN_Dialog, TN_IconButton } from "../../TNDesignSystem";
 import { useStatsStore } from "../../../store/saving/stats";
 import { ShortcutIcon } from "./SiteIcon";
 import styles from "./tab_search.module.css";
@@ -29,13 +30,13 @@ function BookmarkRow({ item, index, count, busy, onMove, onDelete }) {
                 <span className={styles.bookmarkUrl} title={item.url}>{item.url}</span>
             </div>
             <div className={styles.bookmarkActions}>
-                <GhostIconButton icon={<ArrowUp size={16} />} size="small" variant="ghost"
+                <TN_IconButton icon={<UpArrow size={16} />} size="small" variant="ghost"
                     aria-label={t("search.moveBookmarkUp", { name: item.label })}
                     disabled={busy || index === 0} onClick={() => onMove(index, index - 1)} />
-                <GhostIconButton icon={<ArrowDown size={16} />} size="small" variant="ghost"
+                <TN_IconButton icon={<DownArrow size={16} />} size="small" variant="ghost"
                     aria-label={t("search.moveBookmarkDown", { name: item.label })}
                     disabled={busy || index === count - 1} onClick={() => onMove(index, index + 1)} />
-                <GhostIconButton icon={<Trash2 size={16} />} size="small" variant="ghost"
+                <TN_IconButton icon={<Trash2 size={16} />} size="small" variant="ghost"
                     aria-label={t("search.deleteBookmark", { name: item.label })}
                     disabled={busy} onClick={() => onDelete(item.url)} />
             </div>
@@ -105,7 +106,7 @@ export default function BookmarkDialog({ isOpen, onClose }) {
     };
 
     return (
-        <GhostDialog isOpen={isOpen} onClose={onClose} title={t("search.bookmarks")} maxWidth="680px">
+        <TN_Dialog isOpen={isOpen} onClose={onClose} title={t("search.bookmarks")} maxWidth="680px">
             <div ref={contentRef} className={styles.bookmarkManager} aria-busy={busy}>
                 <p className={styles.bookmarkHint}>{t("search.bookmarkInstructions")}</p>
                 {error && <div role="alert">{error}</div>}
@@ -127,9 +128,9 @@ export default function BookmarkDialog({ isOpen, onClose }) {
                     </DndContext>
                 )}
                 <div className={styles.shortcutActions}>
-                    <GhostButton variant="secondary" onClick={onClose}>{t("common.close")}</GhostButton>
+                    <TN_Button variant="secondary" onClick={onClose}>{t("common.close")}</TN_Button>
                 </div>
             </div>
-        </GhostDialog>
+        </TN_Dialog>
     );
 }

@@ -4,6 +4,7 @@ import { useTabStore } from "../store/tabStore";
 import { useStatsStore } from "../store/saving/stats";
 import { useToastStore } from "../store/toastStore";
 import i18next from "../store/languageController";
+import { textToDocument } from '../Components/TextBox/plainTextEditor';
 
 document.addEventListener("contextmenu", async (e) => {
     e.preventDefault();
@@ -12,6 +13,7 @@ document.addEventListener("contextmenu", async (e) => {
         const y = e.clientY;
 
         const target = e.target;
+        const editor = target.closest('[data-typenap-editor]')?.typenapEditor;
         const isEditable = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
         const hasSelection = window.getSelection().toString().length > 0;
 
@@ -42,7 +44,36 @@ document.addEventListener("contextmenu", async (e) => {
             options.push({ isSeparator: true });
         }
 
-        if (isEditable) {
+        if (editor) {
+            const { from, to } = editor.state.selection;
+            const selectedText = editor.state.doc.textBetween(from, to, '\n');
+            const restoreSelection = () => !editor.isDestroyed && editor.chain().focus().setTextSelection({ from, to }).run();
+            const copySelection = async (cut = false) => {
+                try {
+                    await navigator.clipboard.writeText(selectedText);
+                    if (restoreSelection() && cut) editor.commands.deleteSelection();
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            };
+            options.push({ label: i18next.t('contextMenu.cut'), disabled: !selectedText, onClick: () => copySelection(true) });
+            options.push({ label: i18next.t('contextMenu.copy'), disabled: !selectedText, onClick: () => copySelection() });
+            options.push({
+                label: i18next.t('contextMenu.paste'),
+                onClick: async () => {
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        if (restoreSelection()) {
+                            editor.commands.insertContent(textToDocument(text).content);
+                        }
+                    } catch (err) { console.error('Failed to paste:', err); }
+                },
+            });
+            options.push({ label: i18next.t('contextMenu.selectAll'), onClick: () => {
+                if (!editor.isDestroyed) editor.chain().focus().selectAll().run();
+            } });
+            options.push({ isSeparator: true });
+        } else if (isEditable) {
             const start = target.selectionStart;
             const end = target.selectionEnd;
 
@@ -117,10 +148,18 @@ document.addEventListener("contextmenu", async (e) => {
         }
 
         // Tab-specific options
-        const { tabsList, selectedIndex } = useTabStore.getState();
-        const currentTab = tabsList[selectedIndex];
+        const { appMode, tabsList, selectedIndex } = useTabStore.getState();
+        const currentTab = appMode === "workspace" ? tabsList[selectedIndex] : null;
 
-        if (currentTab?.type === "library") {
+        if (appMode === "workspace") {
+            options.push({
+                label: i18next.t("tabLauncher.title"),
+                submenu: "tab-launcher",
+            });
+            options.push({ isSeparator: true });
+        }
+
+        if (appMode === "library") {
             options.push({
                 label: i18next.t("contextMenu.newStory"),
                 onClick: () => {

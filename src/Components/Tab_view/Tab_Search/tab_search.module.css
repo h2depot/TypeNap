@@ -6,7 +6,7 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    color: var(--ghost-text);
+    color: var(--tn-text);
     overflow: hidden;
 }
 
@@ -19,11 +19,11 @@
     gap: 8px;
     width: 100%;
     padding: 6px 12px;
-    background: var(--ghost-webview-toolbar-bg);
+    background: var(--tn-webview-toolbar-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: none;
-    border-bottom: 1px solid var(--ghost-stroke);
+    border-bottom: 1px solid var(--tn-stroke);
     box-sizing: border-box;
     flex-shrink: 0;
     transition: background-color 0.3s ease;
@@ -33,6 +33,36 @@
     display: flex;
     align-items: center;
     gap: 2px;
+}
+
+.toolbarButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    color: var(--tn-text);
+    cursor: pointer;
+}
+
+.toolbarButton:hover:not(:disabled) {
+    background: var(--tn-hover-bg);
+}
+
+.toolbarButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.toolbarButton:focus-visible {
+    outline: 2px solid var(--tn-focus);
+    outline-offset: -2px;
 }
 
 .urlBarWrapper {
@@ -58,7 +88,7 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-    background: var(--ghost-webview-bg);
+    background: var(--tn-webview-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     display: flex;
@@ -84,7 +114,7 @@
     position: absolute;
     width: 400px;
     height: 400px;
-    background: var(--ghost-gradient);
+    background: var(--tn-gradient);
     border-radius: 50%;
     filter: blur(120px);
     opacity: 0.10;
@@ -105,20 +135,23 @@
     margin-top: -30px;
 }
 
-.brandTitle {
-    font-size: 40px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    background: var(--ghost-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.searchHeading {
+    max-width: 100%;
+    flex-shrink: 0;
     margin: 0;
     user-select: none;
 }
 
+.searchHeading svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
 .centerSearchWrapper {
     width: 100%;
-    box-shadow: var(--ghost-shadow-large);
+    box-shadow: var(--tn-shadow-large);
     border-radius: 24px;
 }
 
@@ -142,7 +175,7 @@
     cursor: pointer;
     padding: 0;
     width: 72px;
-    color: var(--ghost-text);
+    color: var(--tn-text);
     text-decoration: none;
     outline: none;
     transition: transform 0.2s ease;
@@ -156,27 +189,27 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: var(--ghost-bg);
-    border: 1px solid var(--ghost-stroke);
+    background: var(--tn-bg);
+    border: 1px solid var(--tn-stroke);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--ghost-shadow);
-    color: var(--ghost-text);
+    box-shadow: var(--tn-shadow);
+    color: var(--tn-text);
     transition: all 0.2s ease;
     backdrop-filter: blur(8px);
 }
 
 .shortcutItem:hover .shortcutIconWrapper {
-    background: var(--ghost-hover-bg);
-    border-color: var(--ghost-focus);
-    box-shadow: var(--ghost-shadow-large);
+    background: var(--tn-hover-bg);
+    border-color: var(--tn-focus);
+    box-shadow: var(--tn-shadow-large);
 }
 
 .shortcutLabel {
     font-size: 12px;
-    font-weight: 500;
-    color: var(--ghost-subtext);
+    font-weight: var(--font-weight-ui);
+    color: var(--tn-subtext);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -186,7 +219,7 @@
 }
 
 .shortcutItem:hover .shortcutLabel {
-    color: var(--ghost-text);
+    color: var(--tn-text);
 }
 
 .shortcutForm,
@@ -219,10 +252,10 @@
     right: 0;
     z-index: 5;
     padding: 6px;
-    border: 1px solid var(--ghost-stroke);
+    border: 1px solid var(--tn-stroke);
     border-radius: 12px;
-    background: var(--ghost-dialog-bg);
-    box-shadow: var(--ghost-shadow-large);
+    background: var(--tn-dialog-bg);
+    box-shadow: var(--tn-shadow-large);
     max-height: 280px;
     overflow-y: auto;
 }
@@ -245,7 +278,7 @@
     border: 0;
     border-radius: 8px;
     background: transparent;
-    color: var(--ghost-text);
+    color: var(--tn-text);
     text-align: left;
     cursor: pointer;
     font: inherit;
@@ -264,7 +297,7 @@
 
 .suggestion:hover,
 .suggestionSelected {
-    background: var(--ghost-hover-bg);
+    background: var(--tn-hover-bg);
 }
 
 .browserMenu {
@@ -274,10 +307,10 @@
     z-index: 10;
     min-width: 200px;
     padding: 6px;
-    border: 1px solid var(--ghost-stroke);
+    border: 1px solid var(--tn-stroke);
     border-radius: 12px;
-    background: var(--ghost-dialog-bg);
-    box-shadow: var(--ghost-shadow-large);
+    background: var(--tn-dialog-bg);
+    box-shadow: var(--tn-shadow-large);
 }
 
 .browserMenuItem {
@@ -288,7 +321,7 @@
     padding: 10px 12px;
     border: 0;
     border-radius: 8px;
-    color: var(--ghost-text);
+    color: var(--tn-text);
     background: transparent;
     cursor: pointer;
     font: inherit;
@@ -298,7 +331,7 @@
 
 .browserMenuItem:hover,
 .browserMenuItem:focus-visible {
-    background: var(--ghost-hover-bg);
+    background: var(--tn-hover-bg);
 }
 
 .bookmarkManager {
@@ -310,7 +343,7 @@
 .bookmarkHint {
     margin: 0;
     font-size: 13px;
-    color: var(--ghost-subtext);
+    color: var(--tn-subtext);
 }
 
 .bookmarkList {
@@ -328,9 +361,9 @@
     align-items: center;
     gap: 10px;
     padding: 10px 8px;
-    border: 1px solid var(--ghost-stroke);
+    border: 1px solid var(--tn-stroke);
     border-radius: 12px;
-    background: var(--ghost-dialog-bg);
+    background: var(--tn-dialog-bg);
 }
 
 .bookmarkRow>svg {
@@ -344,7 +377,7 @@
     border: 0;
     border-radius: 6px;
     background: transparent;
-    color: var(--ghost-subtext);
+    color: var(--tn-subtext);
     cursor: grab;
     touch-action: none;
 }
@@ -375,12 +408,12 @@
 
 .bookmarkName {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: var(--font-weight-ui);
 }
 
 .bookmarkUrl {
     font-size: 12px;
-    color: var(--ghost-subtext);
+    color: var(--tn-subtext);
 }
 
 .bookmarkActions {
@@ -390,7 +423,7 @@
 
 .bookmarkManager button:focus-visible,
 .browserMenuItem:focus-visible {
-    outline: 2px solid var(--ghost-focus);
+    outline: 2px solid var(--tn-focus);
     outline-offset: 2px;
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Bubbles, Search } from "lucide-react";
+import { Bubbles } from 'lucide-react';
+import { Search } from '../../../assets/IconList';
 import { isTauri } from "@tauri-apps/api/core";
 import { useBrowserStore } from "../../../store/webbrowser/browserStore";
 

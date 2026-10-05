@@ -1,8 +1,8 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { Search } from '../../../assets/IconList';
 import { isTauri } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
-import { GhostTextField, GhostURLField } from "../../GhostDesignSystem";
+import { TN_TextField, TN_URLField } from "../../TNDesignSystem";
 import { useBrowserStore } from "../../../store/webbrowser/browserStore";
 import { createSuggestionLoader } from "../../../store/webbrowser/suggestionLoader";
 import styles from "./tab_search.module.css";
@@ -42,7 +42,7 @@ export default function SearchSuggestField({ value, onChange, onSubmit, enabled,
         wrapper.current?.querySelector("input")?.blur();
         onSubmit(text);
     };
-    const Field = toolbar ? GhostURLField : GhostTextField;
+    const Field = toolbar ? TN_URLField : TN_TextField;
     return <div ref={wrapper} className={`${styles.suggestField} ${toolbar ? styles.suggestToolbar : ""}`}>
         <Field {...props} value={value}
             role="combobox" aria-autocomplete="list" aria-expanded={items.length > 0}

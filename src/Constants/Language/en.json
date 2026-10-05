@@ -1,4 +1,23 @@
 {
+  "tabLauncher": {
+    "title": "Add a tab",
+    "search": "Open Search",
+    "placeholder": "Find a story…",
+    "recent": "Recent stories",
+    "results": "Search results",
+    "open": "Open",
+    "all": "View all stories",
+    "create": "Create a new story",
+    "loading": "Loading stories…",
+    "failed": "Could not load stories. Reopen this panel to try again."
+  },
+  "navigation": {"label": "Main navigation", "workspace": "Workspace", "resume": "Back to workspace", "openTabs": "{{count}} tabs", "addSearch": "Open a research tab", "chooseStory": "Open a story from Library"},
+  "windowControls": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close window"
+  },
   "search": {
     "more": "More options",
     "bookmarks": "Bookmarks",
@@ -118,21 +137,28 @@
     "noRecentFiles": "No recent files."
   },
   "story": {
+    "overview": {"title": "Overview", "navigation": "Story navigation", "contents": "Chapters", "textColor": "Cover text color", "hideCoverText": "Hide cover text"},
     "create": {
       "nameLabel": "Story name",
       "namePlaceholder": "Enter a story name...",
       "duplicateName": "A story with this name already exists.",
       "submit": "Create story"
     },
-    "cover": { "color": "Cover colour", "chooseImage": "Choose a background image", "changeTitle": "Change cover colour" },
+    "cover": { "color": "Cover colour", "chooseImage": "Edit background image", "changeTitle": "Edit background image" },
     "summary": {
       "totalCharacters": "Characters: {{count}}",
       "lastUpdated": "Last updated: {{date}}",
       "synopsis": "Synopsis",
-      "synopsisPlaceholder": "Enter a synopsis..."
+      "synopsisPlaceholder": "Enter a synopsis...",
+      "saving": "Saving…",
+      "saveFailed": "Save failed · Retry"
     },
     "actions": { "restoreBackup": "Restore backup" },
     "files": {
+      "searchPlaceholder": "Search by manuscript name...",
+      "resultCount": "Showing {{count}} of {{total}} manuscripts",
+      "noResults": "No matching manuscripts.",
+      "sort": { "title": "Name", "order": "Story order" },
       "description": "Text file",
       "fetchFailed": "Could not load the file list: ",
       "empty": "No files.",
@@ -169,6 +195,40 @@
   "background": { "title": "Background settings", "chooseColor": "Choose a colour", "chooseImage": "Choose an image" },
   "scan": { "title": "Scan results", "found": "Found {{count}} unwanted files:", "deleted": "Unwanted files deleted." },
   "settings": {
+    "design": {
+      "general": "General",
+      "sidebarCaption": "Make room for your best writing.",
+      "footer": "A space to write your way.",
+      "nav": {
+        "general": "Appearance, writing & language",
+        "environment": "Images, recovery & storage",
+        "help": "Guides & licenses",
+        "statistics": "Your writing activity"
+      },
+      "description": {
+        "general": "A few thoughtful adjustments to make this space yours.",
+        "environment": "Keep your images and files organized, and your writing space tidy.",
+        "help": "Helpful shortcuts and the content behind TypeNap.",
+        "statistics": "Look back at the words and writing habits you have built."
+      },
+      "appearance": "Appearance",
+      "appearanceDescription": "Create a space that helps you focus.",
+      "theme": "Color theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "writing": "Writing",
+      "writingDescription": "Fine-tune the feel of your everyday writing.",
+      "fontSize": "Text size",
+      "preview": "PREVIEW",
+      "sample": "Beyond the window, a story without a name is waiting to unfold.",
+      "languageSearch": "Language & search",
+      "files": "Files & images",
+      "filesDescription": "Clean up unwanted files or recover them from a backup.",
+      "deletion": "Permanent deletion",
+      "deletionDescription": "Permanently deleted files cannot be restored. Unlock to access this action.",
+      "resources": "Guides & information"
+    },
     "title": "Settings",
     "theme": {
       "changed": "Changed to {{theme}}",
@@ -201,19 +261,44 @@
     "deleteLock": { "title": "Lock data deletion", "description": "Prevent accidental data deletion." },
     "delete": { "title": "Delete all data", "description": "Delete all data permanently." },
     "help": { "title": "Help" },
+    "statistics": {
+      "title": "Statistics",
+      "total": "Total characters",
+      "recent": "Characters in the last 7 days",
+      "longestStreak": "Longest writing streak",
+      "currentStreak": "Current writing streak",
+      "days": "days",
+      "streakDescription": "Writing streaks count UTC days when saving increases the character count. Deletions do not reduce that day's writing record. A streak ending yesterday remains active until today ends. The longest streak is calculated from saved daily records.",
+      "unit": "characters",
+      "activity": "Writing activity in the last 365 days",
+      "less": "Less",
+      "more": "More",
+      "loading": "Loading activity…",
+      "description": "Counts accumulate character increases when saving. Deletions count as zero and never subtract characters. Dates use UTC, and the last 7 days include today. Activity levels are 1–499 / 500–1,999 / 2,000–3,999 / 4,000+ characters. Days without records are shown as zero."
+    },
     "shortcuts": {
       "title": "Keyboard shortcuts",
-      "description": "View keyboard shortcuts.",
-      "save": "Save this document",
-      "closeTab": "Close this tab",
+      "description": "View shortcuts for navigation, tabs, saving and creation.",
+      "note": "Navigation switches between fixed views. While a dialog or the tab menu is open, only Esc is available. Shortcuts are disabled during IME composition. When a Web page inside Search has focus, that page handles keyboard input.",
+      "openWorkspace": "Return to Workspace",
+      "openLibrary": "Go to Library",
+      "openSettings": "Go to Settings",
+      "addTab": "Open the tab menu (choose or create a story / Search)",
+      "addSearch": "Open a new Search tab",
       "nextTab": "Go to the next tab",
       "previousTab": "Go to the previous tab",
-      "openSettings": "Open settings",
-      "openLibrary": "Open library",
-      "openHome": "Open home",
-      "create": "Create new",
-      "search": "Search this document",
-      "closeDialog": "Close the dialog"
+      "closeTab": "Close this tab (confirm unsaved manuscript changes)",
+      "save": "Save this manuscript or story synopsis",
+      "search": "Open manuscript search",
+      "create": "Create a story in Library, or a text file in a story tab",
+      "closeDialog": "Close dialogs, the tab menu or manuscript search",
+      "scopes": {
+        "global": "Across app views",
+        "tab": "While viewing a Workspace tab",
+        "document": "Workspace manuscript or story tab",
+        "work": "Workspace manuscript tab",
+        "create": "Library or Workspace story tab"
+      }
     },
     "licenses": {
       "title": "Third-party licences",
@@ -223,6 +308,7 @@
       "aiGeneratedImages": "The images in the initial set were generated with OpenAI Codex."
     },
     "backgroundDialog": {
+      "noColor": "No colour",
       "title": "Set background",
       "chooseColour": "Choose a colour",
       "chooseImage": "Choose an image",
@@ -316,6 +402,10 @@
     "default": "Could not start the app."
   },
   "library": {
+    "description": "Manage your stories here. Open a story to add it as a workspace tab.",
+    "resultCount": "Showing {{count}} of {{total}} stories",
+    "noResults": "No stories match your search.",
+
     "title": "Library",
     "searchPlaceholder": "Search stories",
     "filter": "Filter",

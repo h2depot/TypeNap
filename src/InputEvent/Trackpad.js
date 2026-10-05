@@ -12,9 +12,9 @@ export default function Trackpad() {
             const now = Date.now();
             if (now - lastTriggerTime.current < cooldownMs) return;
 
-            const { tabsList, selectedIndex, setSelectedIndex } = useTabStore.getState();
+            const { appMode, tabsList, selectedIndex, setSelectedIndex } = useTabStore.getState();
             const count = tabsList.length;
-            if (count <= 1) return;
+            if (appMode !== "workspace" || count <= 1) return;
 
             lastTriggerTime.current = now;
 

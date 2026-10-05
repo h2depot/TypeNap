@@ -3,19 +3,11 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Webview } from '@tauri-apps/api/webview';
 import { LogicalPosition, LogicalSize } from '@tauri-apps/api/dpi';
 import { isTauri } from '@tauri-apps/api/core';
-import {
-    ChevronLeft,
-    ChevronRight,
-    RotateCw,
-    MoreVertical,
-    Globe,
-    Search,
-    Plus,
-    Bookmark
-} from "lucide-react";
+import { MoreVertical, Bookmark } from 'lucide-react';
+import { Search, Plus, LeftArrow, RightArrow, Reload, Globe } from '../../../assets/IconList';
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { GhostButton, GhostDialog, GhostIconButton, GhostTextField } from "../../GhostDesignSystem";
+import { TN_Button, TN_Dialog, TN_IconButton, TN_TextField } from "../../TNDesignSystem";
 import { useTabStore } from "../../../store/tabStore";
 import { useBrowserStore } from "../../../store/webbrowser/browserStore";
 import { useAppSettings } from "../../../store/saving/appSettings";
@@ -26,6 +18,7 @@ import SearchSuggestField from "./SearchSuggestField";
 import { bookmarkUrl } from "../../../store/webbrowser/bookmarkUrl";
 import { useToastStore } from "../../../store/toastStore";
 import BookmarkDialog from "./BookmarkDialog";
+import SearchHeading from "./SearchHeading";
 
 const normalizeUrl = (value) => {
     const input = value.trim();
@@ -38,6 +31,7 @@ const normalizeUrl = (value) => {
 };
 
 export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true }) {
+    const tabLauncherOpen = useTabStore((state) => state.tabLauncherOpen);
     const { t } = useTranslation();
     const shortcuts = useStatsStore((state) => state.stats.bookmarks);
     const statsReady = useStatsStore((state) => state.isReady);
@@ -196,10 +190,10 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
 
     useLayoutEffect(() => {
         // Native child Webviews cover HTML overlays; hide them while managing bookmarks.
-        activeRef.current = isActive && !showHome && !menuOpen && !bookmarkDialogOpen;
+        activeRef.current = isActive && !showHome && !menuOpen && !bookmarkDialogOpen && !tabLauncherOpen;
         if (isActive) setHasBeenActive(true);
         syncWebviewRef.current?.();
-    }, [isActive, showHome, menuOpen, bookmarkDialogOpen]);
+    }, [isActive, showHome, menuOpen, bookmarkDialogOpen, tabLauncherOpen]);
 
     const openUrl = async (value) => {
         const request = ++requestRef.current;
@@ -383,30 +377,33 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
             {/* Frameless Slim Navigation Toolbar */}
             <div className={styles.toolbar}>
                 <div className={styles.navGroup}>
-                    <GhostIconButton
-                        icon={<ChevronLeft size={17} />}
-                        size="small"
-                        variant="ghost"
+                    <button
+                        type="button"
+                        className={styles.toolbarButton}
                         aria-label="Back"
                         disabled={!webviewLabel || !navigation || showHome}
                         onClick={() => handleNavigation("back")}
-                    />
-                    <GhostIconButton
-                        icon={<ChevronRight size={17} />}
-                        size="small"
-                        variant="ghost"
+                    >
+                        <LeftArrow size={17} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.toolbarButton}
                         aria-label="Forward"
                         disabled={!webviewLabel || (!showHome && (!navigation || navigation.canGoForward === false))}
                         onClick={() => handleNavigation("forward")}
-                    />
-                    <GhostIconButton
-                        icon={<RotateCw size={15} />}
-                        size="small"
-                        variant="ghost"
+                    >
+                        <RightArrow size={17} aria-hidden="true" />
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.toolbarButton}
                         aria-label="Reload"
                         disabled={!webviewLabel || showHome}
                         onClick={() => handleNavigation("reload")}
-                    />
+                    >
+                        <Reload size={15} aria-hidden="true" />
+                    </button>
                 </div>
 
                 {/* URL Input Bar */}
@@ -431,10 +428,9 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
                 <div className={styles.actionGroup} ref={menuRef} onBlur={(event) => {
                     if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false);
                 }}>
-                    <GhostIconButton
-                        icon={<MoreVertical size={16} />}
-                        size="small"
-                        variant="ghost"
+                    <button
+                        type="button"
+                        className={styles.toolbarButton}
                         aria-label={t("search.more")}
                         aria-haspopup="menu"
                         aria-expanded={menuOpen}
@@ -443,7 +439,9 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
                         onKeyDown={(event) => {
                             if (event.key === "ArrowDown") { event.preventDefault(); setMenuOpen(true); }
                         }}
-                    />
+                    >
+                        <MoreVertical size={16} aria-hidden="true" />
+                    </button>
                     {menuOpen && <div id={menuId} role="menu" aria-label={t("search.more")} className={styles.browserMenu}>
                         <button ref={menuItemRef} type="button" role="menuitem" className={styles.browserMenuItem}
                             onClick={() => { setMenuOpen(false); setBookmarkDialogOpen(true); }}>
@@ -466,6 +464,7 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, ease: "easeOut" }}
                     >
+                        <SearchHeading />
                         {/* Chrome-like Center Search Box */}
                         <div className={styles.centerSearchWrapper}>
                             <SearchSuggestField
@@ -497,7 +496,7 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
                                 </button>
                             ))}
                             <div className={styles.shortcutItem}>
-                                <GhostIconButton
+                                <TN_IconButton
                                     icon={<Plus size={20} />}
                                     disabled={!statsReady}
 
@@ -514,26 +513,26 @@ export default function Tab_Search({ tabId, url: savedUrl = "", isActive = true 
                 </div>
             </div>
             <BookmarkDialog isOpen={bookmarkDialogOpen && isActive} onClose={closeBookmarkDialog} />
-            <GhostDialog isOpen={shortcutDialogOpen && isActive && showHome} onClose={closeShortcutDialog} title={t("search.addShortcut", "ショートカットを追加")}>
+            <TN_Dialog isOpen={shortcutDialogOpen && isActive && showHome} onClose={closeShortcutDialog} title={t("search.addShortcut", "ショートカットを追加")}>
                 <form className={styles.shortcutForm} onSubmit={addShortcut} onKeyDown={(event) => {
                     if (event.key === "Escape") closeShortcutDialog();
                     if (event.key === "Enter" && event.nativeEvent.isComposing) event.preventDefault();
                 }}>
                     <label className={styles.shortcutField}>
                         {t("search.shortcutName", "名前")}
-                        <GhostTextField value={shortcutName} onChange={(event) => setShortcutName(event.target.value)} disabled={savingShortcut} autoFocus />
+                        <TN_TextField value={shortcutName} onChange={(event) => setShortcutName(event.target.value)} disabled={savingShortcut} autoFocus />
                     </label>
                     <label className={styles.shortcutField}>
                         URL
-                        <GhostTextField value={shortcutUrl} onChange={(event) => setShortcutUrl(event.target.value)} disabled={savingShortcut} placeholder="https://example.com" />
+                        <TN_TextField value={shortcutUrl} onChange={(event) => setShortcutUrl(event.target.value)} disabled={savingShortcut} placeholder="https://example.com" />
                     </label>
                     {shortcutError && <div role="alert">{shortcutError}</div>}
                     <div className={styles.shortcutActions}>
-                        <GhostButton variant="secondary" onClick={closeShortcutDialog} disabled={savingShortcut}>{t("common.cancel", "キャンセル")}</GhostButton>
-                        <GhostButton type="submit" disabled={savingShortcut || !statsReady}>OK</GhostButton>
+                        <TN_Button variant="secondary" onClick={closeShortcutDialog} disabled={savingShortcut}>{t("common.cancel", "キャンセル")}</TN_Button>
+                        <TN_Button variant="proceed" type="submit" disabled={savingShortcut || !statsReady}>OK</TN_Button>
                     </div>
                 </form>
-            </GhostDialog>
+            </TN_Dialog>
         </div>
     );
 }

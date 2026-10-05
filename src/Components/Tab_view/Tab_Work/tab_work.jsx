@@ -23,7 +23,7 @@ export default function TabWork({ story_name, title }) {
     const workspace = workspaces[workspaceId];
 
     const [isTitleEdible, setIsTitleEdible] = useState(false);
-    const [charLength, setCharLength] = useState(workspace?.content?.length || 0);
+    const charLength = workspace?.content?.length ?? 0;
 
     const saveWorkspaceContent = useCallback(async () => {
         const latestWorkspace = useTxtStore.getState().workspaces[workspaceId];
@@ -87,7 +87,6 @@ export default function TabWork({ story_name, title }) {
 
     const handleChangeContent = (newText) => {
         updateContent(workspaceId, newText);
-        setCharLength(newText.length);
     };
 
     const handleRename = async (newTitle) => {

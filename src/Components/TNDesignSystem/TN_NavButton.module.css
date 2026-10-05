@@ -1,0 +1,46 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--tn-text, #232b69);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.surface {
+  box-sizing: border-box;
+  padding: var(--nav-icon-padding, 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.button[data-selected='false']:hover:not(:disabled) .surface {
+  background: var(--tn-hover-bg, rgba(35, 43, 105, 0.08));
+}
+
+.button[data-selected='true'] .surface {
+  background: var(--nav-selected-bg, #232B69);
+  color: #E5E5E5;
+}
+
+:global([data-theme='dark']) .button[data-selected='true'] .surface {
+  background: var(--nav-selected-bg, #D4CFBF);
+  color: #1A1A1A;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

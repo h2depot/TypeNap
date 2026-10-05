@@ -120,7 +120,7 @@ fn unused_id(ids: &[Uuid], mut generate: impl FnMut() -> Uuid) -> Uuid {
     loop {
         let candidate = generate();
         // Deliberately use a linear search, including on each retry.
-        if !ids.iter().any(|existing| *existing == candidate) {
+        if !ids.contains(&candidate) {
             return candidate;
         }
     }

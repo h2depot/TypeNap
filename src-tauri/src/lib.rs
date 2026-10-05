@@ -18,7 +18,16 @@ pub fn run() {
                 !webview.label().starts_with("search-") || url.scheme() == "https"
             })
             .build())
-        .plugin(tauri_plugin_window_state::Builder::new().build())
+        .plugin(
+            tauri_plugin_window_state::Builder::new()
+                // Keep decorations controlled by tauri.conf.json, even when an
+                // older saved window state contains decorated: true.
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::all()
+                        & !tauri_plugin_window_state::StateFlags::DECORATIONS,
+                )
+                .build(),
+        )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_os::init())
@@ -74,9 +83,9 @@ pub fn run() {
             bgimage_manager::add_user_image,
             bgimage_manager::delete_user_image,
             bgimage_manager::get_whole_image_list,
-            soundeffect::soundeffect::run_sound_effect,
-            soundeffect::soundeffect::run_enter_sound_effect,
-            soundeffect::soundeffect::load_wavfile
+            soundeffect::commands::run_sound_effect,
+            soundeffect::commands::run_enter_sound_effect,
+            soundeffect::commands::load_wavfile
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -3,6 +3,17 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import TerminateAppDialog from "../Components/Dialog/TerminateAppDialog";
 import { useTabStore } from "./tabStore";
 import { useTxtStore } from "./txtStore";
+import { useStoryStore } from "./storyStore";
+import i18next from "./languageController";
+
+const unsavedWorkFiles = () => {
+    const { tabsList } = useTabStore.getState();
+    const { workspaces } = useTxtStore.getState();
+    return tabsList.filter(tab => tab.type === 'work')
+        .map(tab => workspaces[tab.props?.workspaceID ?? `${tab.props?.story_name}/${tab.props?.title}`])
+        .filter(workspace => workspace?.isEdited)
+        .map(workspace => `${workspace.story_name} / ${workspace.title}`);
+};
 
 export default function AppTerminateController() {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,28 +22,32 @@ export default function AppTerminateController() {
         const appWindow = getCurrentWindow();
         let unlisten;
         let active = true;
+        let flushing = false;
 
-        appWindow.onCloseRequested((event) => {
-            const tabsList = useTabStore.getState().tabsList;
-            if (tabsList.length === 0) return;
-
-            const workspaces = useTxtStore.getState().workspaces;
-            const unsavedFiles = tabsList
-                .filter((tab) => tab.type === "work")
-                .map((tab) => {
-                    const storyName = tab.props?.story_name;
-                    const title = tab.props?.title;
-                    const workspaceId = tab.props?.workspaceID ?? `${storyName}/${title}`;
-                    return workspaces[workspaceId];
-                })
-                .filter((workspace) => workspace?.isEdited)
-                .map((workspace) => `${workspace.story_name} / ${workspace.title}`);
-
-            if (unsavedFiles.length === 0) return;
-
-            event.preventDefault();
-            setFiles(unsavedFiles);
-            setIsOpen(true);
+        appWindow.onCloseRequested(async (event) => {
+            if (flushing) { event.preventDefault(); return; }
+            const pendingSynopsis = Object.values(useStoryStore.getState().workspaces)
+                .some(workspace => workspace.synopsisIsSaving);
+            if (pendingSynopsis) {
+                event.preventDefault();
+                flushing = true;
+                try {
+                    await useStoryStore.getState().waitForSynopsisSaves();
+                } catch (error) {
+                    console.error('Failed to finish synopsis saves before closing', error);
+                } finally { flushing = false; }
+                if (active) await appWindow.close();
+                return;
+            }
+            const synopses = Object.entries(useStoryStore.getState().workspaces)
+                .filter(([, workspace]) => workspace.synopsisIsEdited)
+                .map(([name]) => `${name} / ${i18next.t('story.summary.synopsis')}`);
+            const unsavedFiles = [...unsavedWorkFiles(), ...synopses];
+            if (unsavedFiles.length) {
+                event.preventDefault();
+                setFiles(unsavedFiles);
+                setIsOpen(true);
+            }
         }).then((dispose) => {
             if (active) unlisten = dispose;
             else dispose();

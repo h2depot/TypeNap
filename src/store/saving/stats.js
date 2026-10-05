@@ -7,6 +7,7 @@ import initialBookmarksJa from "../../Constants/InitShortCutsURL/initURL.ja.json
 import initialBookmarksEn from "../../Constants/InitShortCutsURL/initURL.en.json";
 import { bookmarkUrl } from "../webbrowser/bookmarkUrl";
 import { useAppSettings } from "./appSettings";
+import { migrateDailyChars, getWritingStreak } from "./statsSummary";
 
 const showErrorToast = (message, error) => {
     useToastStore.getState().addToast(i18next.t("common.errorWithDetail", { message, error: String(error) }), "error");
@@ -14,18 +15,12 @@ const showErrorToast = (message, error) => {
 
 const store = new LazyStore("stats.json");
 let bookmarkSaveQueue = Promise.resolve();
+let characterSaveQueue = Promise.resolve();
 
 const defaultStats = {
     total_chars: 0,
-    weekly_chars: {
-        sun: { date: 0, chars: 0 },
-        mon: { date: 0, chars: 0 },
-        tue: { date: 0, chars: 0 },
-        wed: { date: 0, chars: 0 },
-        thu: { date: 0, chars: 0 },
-        fri: { date: 0, chars: 0 },
-        sat: { date: 0, chars: 0 },
-    },
+    daily_chars: {},
+    writing_streak: { current_days: 0, longest_days: 0, last_writing_date: null, as_of_date: null },
     recent_file: [],
     recent_tabs: [],
     selected_tab: {},
@@ -57,38 +52,34 @@ export const useStatsStore = create((set, get) => ({
                     needSave = true;
                 }
 
-                if (key !== "weekly_chars") {
-                    loadedStats[key] = savedValue;
-                    continue;
-                }
-
-                const todayStr = await invoke("get_current_date");
-                const todayDate = new Date(todayStr);
-                const startOfWeek = new Date(todayDate);
-                startOfWeek.setDate(todayDate.getDate() - todayDate.getDay());
-                startOfWeek.setHours(0, 0, 0, 0);
-
-                const currentWeeklyChars = savedValue;
-                const newWeeklyChars = {};
-
-                for (const day of Object.keys(defaultStats[key])) {
-                    const dayData = currentWeeklyChars[day] || { date: 0, chars: 0 };
-                    if (dayData.date === 0) {
-                        newWeeklyChars[day] = { date: 0, chars: 0 };
-                        continue;
-                    }
-
-                    const savedDate = new Date(dayData.date);
-                    newWeeklyChars[day] = savedDate < startOfWeek ? { date: 0, chars: 0 } : dayData;
-                }
-
-                loadedStats[key] = newWeeklyChars;
+                loadedStats[key] = savedValue;
             }
 
+            const totalChars = Number.isFinite(loadedStats.total_chars) ? Math.max(0, loadedStats.total_chars) : 0;
+            if (totalChars !== loadedStats.total_chars) {
+                loadedStats.total_chars = totalChars;
+                await store.set("total_chars", totalChars);
+                needSave = true;
+            }
+
+            // Persist migration before removing legacy entries.
+            const weeklyChars = await store.get("weekly_chars");
+            const dailyChars = migrateDailyChars(loadedStats.daily_chars, weeklyChars);
+            if (weeklyChars != null || JSON.stringify(dailyChars) !== JSON.stringify(loadedStats.daily_chars)) {
+                loadedStats.daily_chars = dailyChars;
+                await store.set("daily_chars", dailyChars);
+                needSave = true;
+            }
+
+            const writingStreak = getWritingStreak(dailyChars, await invoke("get_current_date"));
+            if (JSON.stringify(writingStreak) !== JSON.stringify(loadedStats.writing_streak)) {
+                loadedStats.writing_streak = writingStreak;
+                await store.set("writing_streak", writingStreak);
+                needSave = true;
+            }
             if (needSave) {
                 await store.save();
             }
-
             set((state) => ({
                 stats: {
                     ...state.stats,
@@ -96,6 +87,10 @@ export const useStatsStore = create((set, get) => ({
                 },
                 isReady: true,
             }));
+            if (weeklyChars != null) {
+                await store.delete("weekly_chars");
+                await store.save();
+            }
         } catch (error) {
             showErrorToast(i18next.t("notice.statsLoadFailed"), error);
             console.error("Failed to load stats:", error);
@@ -146,51 +141,48 @@ export const useStatsStore = create((set, get) => ({
         return save;
     },
 
-    addTotalChars: async (value) => {
-        try {
-            set((state) => ({
-                stats: {
-                    ...state.stats,
-                    total_chars: state.stats.total_chars + value,
-                },
-            }));
-
-            await store.set("total_chars", get().stats.total_chars);
-            await store.save();
-        } catch (error) {
-            showErrorToast(i18next.t("notice.statsSaveFailed"), error);
-            console.error("Failed to save setting [total_chars]:", error);
-        }
+    recordCharacterChange: (value) => {
+        const save = characterSaveQueue.then(async () => {
+            try {
+                if (!get().isReady) throw new Error("Stats are not ready");
+                if (!Number.isFinite(value) || value <= 0) return;
+                const date = await invoke("get_current_date");
+                const totalChars = get().stats.total_chars + value;
+                const dailyChars = {
+                    ...get().stats.daily_chars,
+                    [date]: (get().stats.daily_chars[date] ?? 0) + value,
+                };
+                const writingStreak = getWritingStreak(dailyChars, date);
+                await store.set("total_chars", totalChars);
+                await store.set("daily_chars", dailyChars);
+                await store.set("writing_streak", writingStreak);
+                await store.save();
+                set((state) => ({ stats: { ...state.stats, total_chars: totalChars, daily_chars: dailyChars, writing_streak: writingStreak } }));
+            } catch (error) {
+                showErrorToast(i18next.t("notice.statsSaveFailed"), error);
+                console.error("Failed to save character statistics:", error);
+            }
+        });
+        characterSaveQueue = save.catch(() => {});
+        return save;
     },
 
-    addWeeklyChars: async (value) => {
-        try {
-            const day = await invoke("get_day_of_week");
-            const date = await invoke("get_current_date");
-
-            set((state) => {
-                const dayStats = state.stats.weekly_chars[day] || { date: 0, chars: 0 };
-
-                return {
-                    stats: {
-                        ...state.stats,
-                        weekly_chars: {
-                            ...state.stats.weekly_chars,
-                            [day]: {
-                                date,
-                                chars: dayStats.chars + value,
-                            },
-                        },
-                    },
-                };
-            });
-
-            await store.set("weekly_chars", get().stats.weekly_chars);
-            await store.save();
-        } catch (error) {
-            showErrorToast(i18next.t("notice.statsSaveFailed"), error);
-            console.error("Failed to save setting [weekly_chars]:", error);
-        }
+    refreshWritingStreak: () => {
+        const save = characterSaveQueue.then(async () => {
+            try {
+                if (!get().isReady) return;
+                const writingStreak = getWritingStreak(get().stats.daily_chars, await invoke("get_current_date"));
+                if (JSON.stringify(writingStreak) === JSON.stringify(get().stats.writing_streak)) return;
+                await store.set("writing_streak", writingStreak);
+                await store.save();
+                set((state) => ({ stats: { ...state.stats, writing_streak: writingStreak } }));
+            } catch (error) {
+                showErrorToast(i18next.t("notice.statsSaveFailed"), error);
+                console.error("Failed to refresh writing streak:", error);
+            }
+        });
+        characterSaveQueue = save.catch(() => {});
+        return save;
     },
 
     addRecentFile: async (storyName, txtName) => {

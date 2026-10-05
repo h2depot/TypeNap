@@ -1,16 +1,20 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContextMenuStore } from "../../store/contextMenuStore";
+import TabLauncher from "../Workspace/TabLauncher";
+import { RightArrow } from "../../assets/IconList";
 
 const NomalContextMenu = () => {
     const { isOpen, x, y, options, closeMenu } = useContextMenuStore();
     const menuRef = useRef(null);
     const [coords, setCoords] = useState({ x: 0, y: 0 });
     const [isMeasured, setIsMeasured] = useState(false);
+    const [submenuAnchor, setSubmenuAnchor] = useState(null);
 
     useLayoutEffect(() => {
         if (!isOpen) {
             setIsMeasured(false);
+            setSubmenuAnchor(null);
             return;
         }
 
@@ -51,6 +55,7 @@ const NomalContextMenu = () => {
                 <div
                     ref={menuRef}
                     id="nomal-context-menu"
+                    onMouseLeave={() => setSubmenuAnchor(null)}
                     style={{
                         position: "fixed",
                         left: isMeasured ? coords.x : x,
@@ -67,11 +72,11 @@ const NomalContextMenu = () => {
                         transition={{ type: "spring", stiffness: 450, damping: 28 }}
                         style={{
                             minWidth: "180px",
-                            backgroundColor: "var(--ghost-bg)",
+                            backgroundColor: "var(--tn-dialog-bg)",
                             backdropFilter: "blur(12px)",
-                            border: "2px solid var(--ghost-border)",
+                            border: "1px solid #D4CFBF",
                             borderRadius: "14px",
-                            boxShadow: "var(--ghost-shadow-large)",
+                            boxShadow: "var(--tn-shadow-large)",
                             padding: "6px",
                             display: "flex",
                             flexDirection: "column",
@@ -87,7 +92,7 @@ const NomalContextMenu = () => {
                                         key={`sep-${idx}`}
                                         style={{
                                             height: "1px",
-                                            background: "var(--ghost-border-light)",
+                                            background: "var(--tn-border-light)",
                                             margin: "4px 8px",
                                         }}
                                     />
@@ -98,9 +103,20 @@ const NomalContextMenu = () => {
                                 <motion.button
                                     key={`item-${idx}`}
                                     disabled={item.disabled}
-                                    whileHover={!item.disabled ? { x: 4, backgroundColor: "var(--ghost-hover-bg)" } : {}}
+                                    aria-haspopup={item.submenu ? "dialog" : undefined}
+                                    aria-expanded={item.submenu ? Boolean(submenuAnchor) : undefined}
+                                    onMouseEnter={(e) => setSubmenuAnchor(item.submenu && !item.disabled ? e.currentTarget : null)}
+                                    onFocus={(e) => setSubmenuAnchor(item.submenu && !item.disabled ? e.currentTarget : null)}
+                                    onKeyDown={(e) => {
+                                        if (item.submenu && e.key === "ArrowRight") {
+                                            e.preventDefault();
+                                            setSubmenuAnchor(e.currentTarget);
+                                            document.querySelector('#tab-launcher input')?.focus();
+                                        }
+                                    }}
+                                    whileHover={!item.disabled ? { backgroundColor: "var(--tn-hover-bg)" } : {}}
                                     whileTap={!item.disabled ? { scale: 0.98 } : {}}
-                                    onClick={(e) => handleItemClick(e, item.onClick)}
+                                    onClick={(e) => item.submenu ? setSubmenuAnchor(e.currentTarget) : handleItemClick(e, item.onClick)}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -109,9 +125,9 @@ const NomalContextMenu = () => {
                                         padding: "8px 12px",
                                         border: "none",
                                         background: "transparent",
-                                        color: item.isDanger ? "#ef4444" : "var(--ghost-text)",
+                                        color: item.isDanger ? "#ef4444" : "var(--tn-text)",
                                         fontSize: "13px",
-                                        fontWeight: "600",
+                                        fontWeight: 'var(--font-weight-ui)',
                                         borderRadius: "8px",
                                         cursor: item.disabled ? "not-allowed" : "pointer",
                                         opacity: item.disabled ? 0.45 : 1,
@@ -120,10 +136,12 @@ const NomalContextMenu = () => {
                                     }}
                                 >
                                     {item.label}
+                                    {item.submenu && <RightArrow size={16} style={{ marginLeft: "auto" }} aria-hidden="true" />}
                                 </motion.button>
                             );
                         })}
                     </motion.div>
+                    {submenuAnchor && <TabLauncher contextAnchor={submenuAnchor} onDismiss={closeMenu} />}
                 </div>
             )}
         </AnimatePresence>
