@@ -12,8 +12,6 @@ const GhostTextField = ({
   showClearButton = true,
   borderRadius = '16px',
   width = '100%',
-  onFocus,
-  onBlur,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -102,8 +100,8 @@ const GhostTextField = ({
             onChange={onChange}
             placeholder={resolvedPlaceholder}
             disabled={disabled}
-            onFocus={(event) => { setIsFocused(true); onFocus?.(event); }}
-            onBlur={(event) => { setIsFocused(false); onBlur?.(event); }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             style={{
               flex: 1,
               minWidth: 0,

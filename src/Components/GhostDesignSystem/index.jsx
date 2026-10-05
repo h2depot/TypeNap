@@ -17,4 +17,3 @@ export { default as GhostToggle } from './GhostToggle';
 export { default as GhostTooltip } from './GhostTooltip';
 export { default as SpiritCard } from './SpiritCard';
 export { SpiritListView, SpiritListItem } from './SpiritListView';
-export { default as GhostURLField } from './GhostURLField';

@@ -204,7 +204,6 @@ export const GhostToastContainer = ({
 }) => {
   return (
     <div
-      data-toast-container
       style={{
         position: 'fixed',
         bottom: '24px',

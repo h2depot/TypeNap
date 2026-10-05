@@ -18,7 +18,6 @@ const defaultSettings = {
   bgimage: {},
   fontSize: 16, // 12~24
   SavingTab: "On", // "On", "Off"
-  SearchingEngine: "Google", // "Google", "Bing", "DuckDuckGo", "Yahoo"
 };
 
 export const useAppSettings = create((set, get) => ({

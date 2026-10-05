@@ -3,17 +3,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useToastStore } from "../toastStore";
 import i18next from "../languageController";
-import initialBookmarksJa from "../../Constants/InitShortCutsURL/initURL.ja.json";
-import initialBookmarksEn from "../../Constants/InitShortCutsURL/initURL.en.json";
-import { bookmarkUrl } from "../webbrowser/bookmarkUrl";
-import { useAppSettings } from "./appSettings";
 
 const showErrorToast = (message, error) => {
     useToastStore.getState().addToast(i18next.t("common.errorWithDetail", { message, error: String(error) }), "error");
 };
 
 const store = new LazyStore("stats.json");
-let bookmarkSaveQueue = Promise.resolve();
 
 const defaultStats = {
     total_chars: 0,
@@ -28,8 +23,7 @@ const defaultStats = {
     },
     recent_file: [],
     recent_tabs: [],
-    selected_tab: {},
-    bookmarks: []
+    selected_tab: {}
 };
 
 export const useStatsStore = create((set, get) => ({
@@ -50,9 +44,7 @@ export const useStatsStore = create((set, get) => ({
                 }
 
                 if (savedValue == null) {
-                    const language = useAppSettings.getState().settings.language;
-                    const initialBookmarks = language === "ja" ? initialBookmarksJa : initialBookmarksEn;
-                    savedValue = key === "bookmarks" ? initialBookmarks : defaultStats[key];
+                    savedValue = defaultStats[key];
                     await store.set(key, savedValue);
                     needSave = true;
                 }
@@ -101,49 +93,6 @@ export const useStatsStore = create((set, get) => ({
             console.error("Failed to load stats:", error);
             set({ isReady: true });
         }
-    },
-
-    addBookmark: (bookmark) => {
-        const save = bookmarkSaveQueue.then(async () => {
-            if (!get().isReady) throw new Error("Stats are not ready");
-            if (get().stats.bookmarks.some((item) => bookmarkUrl(item.url) === bookmarkUrl(bookmark.url))) return;
-            const bookmarks = [...get().stats.bookmarks, bookmark];
-            await store.set("bookmarks", bookmarks);
-            await store.save();
-            set((state) => ({ stats: { ...state.stats, bookmarks } }));
-        });
-        bookmarkSaveQueue = save.catch(() => {});
-        return save;
-    },
-
-    removeBookmark: (url) => {
-        const save = bookmarkSaveQueue.then(async () => {
-            if (!get().isReady) throw new Error("Stats are not ready");
-            const bookmarks = get().stats.bookmarks.filter((item) => bookmarkUrl(item.url) !== bookmarkUrl(url));
-            await store.set("bookmarks", bookmarks);
-            await store.save();
-            set((state) => ({ stats: { ...state.stats, bookmarks } }));
-        });
-        bookmarkSaveQueue = save.catch(() => {});
-        return save;
-    },
-
-    moveBookmark: (url, targetUrl) => {
-        const save = bookmarkSaveQueue.then(async () => {
-            if (!get().isReady) throw new Error("Stats are not ready");
-            // Resolve positions inside the queue so concurrent edits keep their changes.
-            const bookmarks = [...get().stats.bookmarks];
-            const from = bookmarks.findIndex((item) => bookmarkUrl(item.url) === bookmarkUrl(url));
-            const to = bookmarks.findIndex((item) => bookmarkUrl(item.url) === bookmarkUrl(targetUrl));
-            if (from < 0 || to < 0 || from === to) return;
-            const [item] = bookmarks.splice(from, 1);
-            bookmarks.splice(to, 0, item);
-            await store.set("bookmarks", bookmarks);
-            await store.save();
-            set((state) => ({ stats: { ...state.stats, bookmarks } }));
-        });
-        bookmarkSaveQueue = save.catch(() => {});
-        return save;
     },
 
     addTotalChars: async (value) => {
