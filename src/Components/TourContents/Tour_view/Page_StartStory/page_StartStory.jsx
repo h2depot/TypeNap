@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { TN_ImageOption } from "../../../TNDesignSystem";
+import { GhostImageOption } from "../../../GhostDesignSystem";
 import { useBgImageStore } from "../../../../store/bgImageStore";
 import { useAppSettings } from "../../../../store/saving/appSettings";
 import styles from "./page_StartStory.module.css";
@@ -53,7 +53,7 @@ export default function PageStartStory() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.18 + index * 0.1, duration: 0.4 }}
                     >
-                        <TN_ImageOption
+                        <GhostImageOption
                             image={image}
                             selected={background?.path === image.path}
                             onSelect={selectBackground}

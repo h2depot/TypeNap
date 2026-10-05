@@ -233,8 +233,9 @@ export const useTxtStore = create((set, get) => ({
 
             const markContentSaved = async () => {
                 const charDiff = contentToSave.length - (workspace.savedContentLength ?? 0);
-                if (charDiff > 0) {
-                    await useStatsStore.getState().recordCharacterChange(charDiff);
+                if (charDiff !== 0) {
+                    await useStatsStore.getState().addTotalChars(charDiff);
+                    await useStatsStore.getState().addWeeklyChars(charDiff);
                 }
 
                 get().markAsSaved(workspaceId, contentToSave);

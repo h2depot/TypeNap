@@ -1,13 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import styles from "./textbox.module.css";
-import TN_IconButton from "../TNDesignSystem/TN_IconButton";
-import TN_Tooltip from "../TNDesignSystem/TN_Tooltip";
-import { Search, X, LeftArrow, DownArrow, UpArrow, Save } from '../../assets/IconList';
+import GhostIconButton from "../GhostDesignSystem/GhostIconButton";
+import GhostTooltip from "../GhostDesignSystem/GhostTooltip";
+import { CircleCheck, CircleAlert, ArrowRight, ArrowDown, Search, ArrowUp, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { EditorContent, useEditor } from '@tiptap/react';
-import { PlainStarterKit, PlainParagraph, PlainTextClipboard, textToDocument, documentToText } from './plainTextEditor';
-import { SearchHighlight, searchHighlightKey } from './searchHighlight';
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export default function TextBox({ workspaceId, title, content, onChangeContent, isTitleEdible = false, setIsTitleEdible, onRename, isSaved, onSaveClick, charLength, fontSize }) {
     const { t } = useTranslation();
@@ -16,85 +14,87 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
     const [selectedCharLength, setSelectedCharLength] = useState(0);
     const [selectedVisible, setSelectedVisible] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+    const [serchQuery, setSerchQuery] = useState("");
     const [activeSearchIndex, setActiveSearchIndex] = useState(0);
-    const searchInputRef = useRef(null);
-    const normalizedSearchQuery = searchQuery.trim();
+    const textareaRef = useRef(null);
+    const highlightRef = useRef(null);
+    const normalizedSearchQuery = serchQuery.trim();
     const bodyContent = content || "";
 
-    const [searchMatches, setSearchMatches] = useState([]);
-    const editor = useEditor({
-        extensions: [PlainStarterKit, PlainParagraph, PlainTextClipboard,
-            SearchHighlight.configure({ match: styles.searchMark, active: styles.searchMarkActive })],
-        content: textToDocument(bodyContent),
-        enableInputRules: false,
-        enablePasteRules: false,
-        editorProps: {
-            attributes: {
-                class: styles.textbox, spellcheck: 'false', 'data-typenap-editor': 'true',
-                role: 'textbox', 'aria-multiline': 'true', 'aria-label': t('editor.bodyPlaceholder'),
-            },
-        },
-        onUpdate: ({ editor }) => onChangeContent(documentToText(editor.state.doc)),
-        onSelectionUpdate: ({ editor }) => {
-            const { from, to } = editor.state.selection;
-            const length = editor.state.doc.textBetween(from, to, '\n').length;
-            setSelectedCharLength(length);
-            setSelectedVisible(length > 0);
-        },
-        onTransaction: ({ editor }) => {
-            const search = searchHighlightKey.getState(editor.state);
-            setSearchMatches(search.matches);
-            setActiveSearchIndex(search.activeIndex);
-        },
-    }, [workspaceId]);
-
-    useEffect(() => {
-        if (!editor) return;
-        const normalizedContent = bodyContent.replace(/\r\n?/g, '\n');
-        if (documentToText(editor.state.doc) !== normalizedContent) {
-            editor.commands.setContent(textToDocument(bodyContent), { emitUpdate: false });
+    const searchMatches = useMemo(() => {
+        if (!normalizedSearchQuery) {
+            return [];
         }
-    }, [editor, bodyContent]);
 
-    useEffect(() => {
-        if (!editor) return;
-        editor.commands.setTextBoxSearch(searchVisible ? normalizedSearchQuery : '', 0);
-    }, [editor, normalizedSearchQuery, searchVisible]);
+        const matcher = new RegExp(escapeRegExp(normalizedSearchQuery), "gi");
+        return Array.from(bodyContent.matchAll(matcher), (match) => ({
+            start: match.index,
+            end: match.index + match[0].length,
+        }));
+    }, [bodyContent, normalizedSearchQuery]);
 
-    useEffect(() => {
-        if (!editor) return;
-        const dom = editor.view.dom;
-        dom.typenapEditor = editor;
-        return () => { delete dom.typenapEditor; };
-    }, [editor]);
+    const highlightedContent = useMemo(() => {
+        if (!normalizedSearchQuery || searchMatches.length === 0) {
+            return bodyContent;
+        }
+
+        const fragments = [];
+        let cursor = 0;
+
+        searchMatches.forEach((match, index) => {
+            if (match.start > cursor) {
+                fragments.push(bodyContent.slice(cursor, match.start));
+            }
+
+            fragments.push(
+                <mark
+                    key={`${match.start}-${match.end}`}
+                    className={index === activeSearchIndex ? styles.searchMarkActive : styles.searchMark}
+                >
+                    {bodyContent.slice(match.start, match.end)}
+                </mark>
+            );
+            cursor = match.end;
+        });
+
+        if (cursor < bodyContent.length) {
+            fragments.push(bodyContent.slice(cursor));
+        }
+
+        return fragments;
+    }, [activeSearchIndex, bodyContent, normalizedSearchQuery, searchMatches]);
 
     useEffect(() => {
         setEditedTitle(title);
     }, [title]);
 
+    useEffect(() => {
+        setActiveSearchIndex(0);
+    }, [normalizedSearchQuery]);
+
+    useEffect(() => {
+        if (activeSearchIndex >= searchMatches.length) {
+            setActiveSearchIndex(Math.max(searchMatches.length - 1, 0));
+        }
+    }, [activeSearchIndex, searchMatches.length]);
+
     const toggleWritingMode = () => {
         setIsVertical(!isVertical);
     };
 
-    useEffect(() => {
-        const handleOpenSearch = (e) => {
-            if (e.detail?.workspaceID === workspaceId) {
-                setSearchVisible((visible) => !visible);
-            }
-        };
-        const closeSearch = () => setSearchVisible(false);
-        window.addEventListener('open-search', handleOpenSearch);
-        window.addEventListener('close-dialogs', closeSearch);
-        return () => {
-            window.removeEventListener('open-search', handleOpenSearch);
-            window.removeEventListener('close-dialogs', closeSearch);
-        };
-    }, [workspaceId]);
+    const toggleSearch = () => {
+        setSearchVisible(!searchVisible);
+    };
 
     useEffect(() => {
-        if (searchVisible) searchInputRef.current?.focus();
-    }, [searchVisible]);
+        const handleOpenSearch = (e) => {
+            if (e.detail.workspaceID === workspaceId) {
+                toggleSearch();
+            }
+        };
+        window.addEventListener('open-search', handleOpenSearch);
+        return () => window.removeEventListener('open-search', handleOpenSearch);
+    }, [workspaceId, searchVisible]);
 
     const handleInputClick = () => {
         if (!isTitleEdible) {
@@ -102,12 +102,32 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
         }
     };
 
+    const handleSelect = (e) => {
+        const length = e.target.selectionEnd - e.target.selectionStart;
+        setSelectedCharLength(length);
+        setSelectedVisible(length > 0);
+    };
+
+    const syncHighlightScroll = (e) => {
+        if (!highlightRef.current) {
+            return;
+        }
+
+        highlightRef.current.scrollTop = e.target.scrollTop;
+        highlightRef.current.scrollLeft = e.target.scrollLeft;
+    };
+
     const moveSearchResult = (direction) => {
-        if (!editor || searchMatches.length === 0) return;
+        if (searchMatches.length === 0) {
+            return;
+        }
+
         const nextIndex = (activeSearchIndex + direction + searchMatches.length) % searchMatches.length;
         const nextMatch = searchMatches[nextIndex];
-        editor.chain().setTextBoxSearch(normalizedSearchQuery, nextIndex)
-            .setTextSelection(nextMatch).focus().scrollIntoView().run();
+
+        setActiveSearchIndex(nextIndex);
+        textareaRef.current?.focus();
+        textareaRef.current?.setSelectionRange(nextMatch.start, nextMatch.end);
     };
 
     const handleSave = () => {
@@ -122,10 +142,9 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
     };
 
     const handleTitleKeyDown = (e) => {
-        if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229 || e.nativeEvent?.keyCode === 229) return;
         if (e.key === "Enter") {
-            // Blur is the single commit path for both Enter and focus changes.
-            e.target.blur();
+            handleSave();
+            e.target.blur(); 
         } else if (e.key === "Escape") {
             setEditedTitle(title);
             setIsTitleEdible(false);
@@ -137,7 +156,7 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
             <div className={styles.toolbar}>
                 {searchVisible && <div className={styles.searchUi}>
                     <Search size={16} className={styles.searchIcon} />
-                    <input ref={searchInputRef} type="text" placeholder="Search..." className={styles.searchInput} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                    <input type="text" placeholder="Search..." className={styles.searchInput} value={serchQuery} onChange={(e) => setSerchQuery(e.target.value)} />
                     <span className={styles.searchResultText}>
                         {normalizedSearchQuery
                             ? searchMatches.length > 0
@@ -145,9 +164,9 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
                                 : t("editor.search.noResults")
                             : t("editor.search.label")}
                     </span>
-                    <button className={styles.icon_btn} onClick={() => moveSearchResult(-1)} disabled={searchMatches.length === 0}><UpArrow size={16} /></button>
-                    <button className={styles.icon_btn} onClick={() => moveSearchResult(1)} disabled={searchMatches.length === 0}><DownArrow size={16} /></button>
-                    <button className={styles.icon_btn} onClick={() => { setSearchVisible(false); setSearchQuery(""); }}><X size={16} /></button>
+                    <button className={styles.icon_btn} onClick={() => moveSearchResult(-1)} disabled={searchMatches.length === 0}><ArrowUp size={16} /></button>
+                    <button className={styles.icon_btn} onClick={() => moveSearchResult(1)} disabled={searchMatches.length === 0}><ArrowDown size={16} /></button>
+                    <button className={styles.icon_btn} onClick={() => { setSearchVisible(false); setSerchQuery(""); }}><X size={16} /></button>
                 </div>}
 
                 <div className={styles.toolbarRight}>
@@ -160,21 +179,21 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
                         className={`${styles.saveStatus} ${isSaved ? styles.saved : styles.unsaved}`}
                         onClick={onSaveClick}
                     >
-                        <Save size={16} /> {t(isSaved ? "editor.saved" : "editor.unsaved")}
+                        {isSaved ? <><CircleCheck size={16} /> {t("editor.saved")}</> : <><CircleAlert size={16} /> {t("editor.unsaved")}</>}
                     </button>
-                    <TN_Tooltip content={t(isVertical ? "editor.writingMode.horizontal" : "editor.writingMode.vertical")} position="left">
-                        <TN_IconButton
-                            icon={isVertical ? <LeftArrow /> : <DownArrow />}
+                    <GhostTooltip content={t(isVertical ? "editor.writingMode.horizontal" : "editor.writingMode.vertical")} position="left">
+                        <GhostIconButton
+                            icon={isVertical ? <ArrowRight /> : <ArrowDown />}
                             onClick={toggleWritingMode}
                             variant="secondary"
                             size="small"
                         />
-                    </TN_Tooltip>
+                    </GhostTooltip>
                 </div>
             </div>
 
             <div className={`${styles.contentWrapper} ${isVertical ? styles.vertical : styles.horizontal}`}>
-                <div className={styles.editorContainer}>
+                <div className={styles.textareaContainer}>
                     <input
                         type="text"
                         className={`${styles.titlebox} ${isTitleEdible ? styles.edible : styles.clickable}`}
@@ -189,15 +208,29 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
                     />
                     <div className={styles.divider}></div>
                     <div className={styles.editorShell}>
-                        <EditorContent
-                            editor={editor}
-                            className={styles.editorContent}
-                            style={{ fontSize: `${fontSize ?? 16}px` }}
+                        <div
+                            ref={highlightRef}
+                            className={styles.highlightLayer}
+                            aria-hidden="true"
+                            style={{
+                                fontSize: `${fontSize}px`
+                            }}
+                        >
+                            {highlightedContent}
+                        </div>
+                        <textarea
+                            ref={textareaRef}
+                            className={styles.textbox}
+                            placeholder={t("editor.bodyPlaceholder")}
+                            value={bodyContent}
+                            onChange={(e) => onChangeContent(e.target.value)}
+                            onSelect={handleSelect}
+                            onScroll={syncHighlightScroll}
+                            spellCheck={false}
+                            style={{
+                                fontSize: `${fontSize}px`
+                            }}
                         />
-                        {editor?.isEmpty && <div className={styles.bodyPlaceholder}
-                            style={{ fontSize: `${fontSize ?? 16}px` }} aria-hidden="true">
-                            {t("editor.bodyPlaceholder")}
-                        </div>}
                     </div>
                 </div>
             </div>

@@ -21,8 +21,6 @@ pub struct StoryInfo {
     char_cnt: usize,
     #[serde(default)]
     cover: String,
-    #[serde(default)]
-    cover_text_color: String,
 }
 
 pub fn get_library_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -60,7 +58,6 @@ fn empty_story_info(story_name: &str) -> StoryInfo {
         created_at: time_manager::current_timestamp(),
         char_cnt: 0,
         cover: String::new(),
-        cover_text_color: String::new(),
     }
 }
 
@@ -105,9 +102,6 @@ fn read_story_info(library_path: &Path, story_name: &str) -> StoryInfo {
                     }
                     if let Some(char_cnt) = value.get("char_cnt").and_then(|v| v.as_u64()) {
                         info.char_cnt = char_cnt as usize;
-                    }
-                    if let Some(color) = value.get("cover_text_color").and_then(|v| v.as_str()) {
-                        info.cover_text_color = color.to_string();
                     }
                     if let Some(cover) = value.get("cover").and_then(|v| v.as_str()) {
                         info.cover = cover.to_string();
@@ -528,15 +522,11 @@ pub async fn update_story_cover(
     story_name: &str,
     cover: &str,
     touch_last_update: Option<bool>,
-    cover_text_color: Option<String>,
 ) -> Result<StoryInfo, String> {
     let library_path = get_library_path(&app)?;
     let mut story_info = read_story_info(&library_path, story_name);
 
     story_info.cover = cover.to_string();
-    if let Some(color) = cover_text_color {
-        story_info.cover_text_color = color;
-    }
     if touch_last_update.unwrap_or(true) {
         story_info.last_update = time_manager::current_timestamp();
     }

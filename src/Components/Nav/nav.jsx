@@ -1,43 +1,73 @@
 import React from "react";
-import { Library, Settings, Workspace } from '../../assets/IconList';
+import { House, Library, Search, Settings, X } from "lucide-react";
 import { useTabStore } from "../../store/tabStore";
 import styles from "./nav.module.css";
-import { TN_NavButton, TN_Tooltip } from "../TNDesignSystem";
+import { GhostIconButton, GhostTooltip } from "../GhostDesignSystem";
 
-export default function Navigation() {
-    const { appMode, setAppMode } = useTabStore();
+export default function Nav() {
+    const { addTab, closeTab, selectedIndex, tabsList } = useTabStore();
+    const activeType = tabsList[selectedIndex]?.type;
 
     return (
         <nav className={styles.container} aria-label="Main navigation">
-            <TN_NavButton
-                className={styles.workspace}
-                icon={<Workspace size={32} />}
-                selected={appMode === "workspace"}
-                onClick={() => setAppMode("workspace")}
-                aria-label="Workspace"
-            />
             <div className={styles.group}>
-                <TN_Tooltip content="Library" position="right">
-                    <TN_NavButton
-                        icon={<Library />}
-                        onClick={() => setAppMode("library")}
-                        selected={appMode === "library"}
-                        aria-label="Library"
-                        aria-current={appMode === "library" ? "page" : undefined}
+                <GhostTooltip content="Home" position="right">
+                    <GhostIconButton
+                        icon={<House />}
+                        onClick={() => addTab("home", "Home")}
+                        variant={activeType === "home" ? "primary" : "ghost"}
+                        size="large"
+                        borderRadius="14px"
+                        aria-label="Home"
+                        aria-current={activeType === "home" ? "page" : undefined}
                     />
-                </TN_Tooltip>
+                </GhostTooltip>
+                <GhostTooltip content="Library" position="right">
+                    <GhostIconButton
+                        icon={<Library />}
+                        onClick={() => addTab("library", "Library")}
+                        variant={activeType === "library" ? "primary" : "ghost"}
+                        size="large"
+                        borderRadius="14px"
+                        aria-label="Library"
+                        aria-current={activeType === "library" ? "page" : undefined}
+                    />
+                </GhostTooltip>
+                <GhostTooltip content="Search" position="right">
+                    <GhostIconButton
+                        icon={<Search />}
+                        onClick={() => addTab("search", "Search")}
+                        variant={activeType === "search" ? "primary" : "ghost"}
+                        size="large"
+                        borderRadius="14px"
+                        aria-label="Search"
+                        aria-current={activeType === "search" ? "page" : undefined}
+                    />
+                </GhostTooltip>
             </div>
 
             <div className={styles.group}>
-                <TN_Tooltip content="Settings" position="right">
-                    <TN_NavButton
+                <GhostTooltip content="Settings" position="right">
+                    <GhostIconButton
                         icon={<Settings />}
-                        onClick={() => setAppMode("settings")}
-                        selected={appMode === "settings"}
+                        onClick={() => addTab("settings", "Settings")}
+                        variant={activeType === "settings" ? "primary" : "ghost"}
+                        size="large"
+                        borderRadius="14px"
                         aria-label="Settings"
-                        aria-current={appMode === "settings" ? "page" : undefined}
+                        aria-current={activeType === "settings" ? "page" : undefined}
                     />
-                </TN_Tooltip>
+                </GhostTooltip>
+                <GhostTooltip content="Close Tab" position="right">
+                    <GhostIconButton
+                        icon={<X />}
+                        onClick={() => closeTab(selectedIndex)}
+                        variant="ghost"
+                        size="large"
+                        borderRadius="14px"
+                        aria-label="Close Tab"
+                    />
+                </GhostTooltip>
             </div>
         </nav>
     );

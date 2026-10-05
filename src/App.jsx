@@ -1,13 +1,9 @@
-import { TNThemeContext } from './Components/TNDesignSystem/theme';
 import React, { useState, useEffect } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import "./App.css";
-import Navigation from "./Components/Nav/nav";
-import WorkspaceTabs from "./Components/Workspace/WorkspaceTabs";
-import Workspace from "./Components/Workspace/Workspace";
-import FixedView from "./Components/FixedView";
-import WindowControls from "./Components/WindowControls/WindowControls";
+import Nav from "./Components/Nav/nav";
+import Tabs from "./Components/Tabs/tabs";
 import { useAppSettings } from "./store/saving/appSettings";
 import { useFileStore } from "./store/fileStore";
 import { useStatsStore } from "./store/saving/stats";
@@ -16,9 +12,9 @@ import { useToastStore } from "./store/toastStore";
 import KeyboardShortcutEvent from "./InputEvent/KeyboardShortcutEvent";
 import KeyboardSoundEffectEvent from "./InputEvent/KeyboardSoundEffectEvent";
 import Trackpad from "./InputEvent/Trackpad";
-import WelcomeTour from "./Components/TourContents/SplashScreen";
+import SplashScreen from "./Components/TourContents/SplashScreen";
 import tourPages from "./Components/TourContents/TourPages";
-import { TN_Button, TN_DialogErrorHandling, TN_ToastContainer } from "./Components/TNDesignSystem";
+import { GhostButton, GhostDialogErrorHandling, GhostToastContainer } from "./Components/GhostDesignSystem";
 import { AnimatePresence, motion } from "framer-motion";
 import "./InputEvent/ContextMenu";
 import NomalContextMenu from "./Components/ContextMenu/NomalContextMenu";
@@ -35,8 +31,6 @@ import {
   normalizeInitializationError,
 } from "./store/initializerInterface";
 
-import { normalizeBackgroundPath, backgroundShellColor, backgroundContentColor } from "./Constants/colors";
-
 function App() {
   const { t } = useTranslation();
   const initSettings = useAppSettings((state) => state.initSettings);
@@ -46,11 +40,10 @@ function App() {
   const fileInitializationError = useFileStore((state) => state.initializationError);
   const initStats = useStatsStore((state) => state.initStats);
   const isStatsReady = useStatsStore((state) => state.isReady);
-  const appMode = useTabStore((state) => state.appMode);
   const initTabStore = useTabStore((state) => state.initialize);
   const themeSetting = useAppSettings((state) => state.settings.theme);
   const languageSetting = useAppSettings((state) => state.settings.language);
-  const bgImagePath = normalizeBackgroundPath(useAppSettings((state) => state.settings.bgimage?.path));
+  const bgImagePath = useAppSettings((state) => state.settings.bgimage?.path);
   const [systemTheme, setSystemTheme] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
@@ -74,11 +67,10 @@ function App() {
     : (themeSetting === "Light Theme" ? "light" : "dark");
   const isBgColor = bgImagePath?.startsWith("#") || bgImagePath?.startsWith("var(");
 
-  const [tourDismissed, setTourDismissed] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [isInitializerReady, setIsInitializerReady] = useState(false);
   const [settingsVersion, setSettingsVersion] = useState(null);
   const [tourCompleted, setTourCompleted] = useState(null);
-  const showTour = tourCompleted === false && !tourDismissed;
   const [backendInitializationError, setBackendInitializationError] = useState(null);
   const initializationError = backendInitializationError || fileInitializationError;
 
@@ -119,11 +111,9 @@ function App() {
   useEffect(() => {
     if (!isInitializerReady || settingsVersion === null) return;
 
-    // Resolve the initial OS language before choosing the default bookmarks.
-    initSettings(settingsVersion).then(() => {
-      return initStats();
-    });
+    initSettings(settingsVersion);
     initFileStore();
+    initStats();
   }, [isInitializerReady, settingsVersion, initSettings, initFileStore, initStats]);
 
   useEffect(() => {
@@ -142,6 +132,10 @@ function App() {
     changeLanguage(languageSetting);
   }, [isSettingsReady, languageSetting]);
 
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
   const handleTourComplete = async () => {
     try {
       await setTouredState(true);
@@ -149,7 +143,7 @@ function App() {
     } catch (error) {
       console.error("Failed to save tour state:", error);
     } finally {
-      setTourDismissed(true);
+      setShowSplash(false);
     }
   };
 
@@ -165,12 +159,10 @@ function App() {
   const removeToast = useToastStore((state) => state.removeToast);
 
   return (
-    <TNThemeContext.Provider value={currentTheme}>
-    {(showTour || !isSettingsReady || !isFileStoreReady || !isStatsReady) && <WindowControls standalone />}
     <AnimatePresence mode="wait">
-      {showTour ? (
+      {showSplash ? (
         <motion.div
-          key="tour"
+          key="splash"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
           style={{
@@ -186,8 +178,11 @@ function App() {
             alignItems: 'center'
           }}
         >
-          <WelcomeTour
+          <SplashScreen
+            theme={currentTheme}
             tourPages={tourPages}
+            tourCompleted={tourCompleted}
+            onComplete={handleSplashComplete}
             onTourComplete={handleTourComplete}
           />
         </motion.div>
@@ -199,33 +194,30 @@ function App() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="row"
-            data-background={isBgColor ? "color" : bgImagePath ? "image" : "none"}
             style={{
               width: '100%',
               height: '100vh',
-              backgroundColor: isBgColor ? backgroundShellColor(bgImagePath) : undefined,
+              backgroundColor: isBgColor ? bgImagePath : undefined,
               '--app-bg-image': bgImagePath && !isBgColor ? `url("${convertFileSrc(bgImagePath)}")` : 'none',
-              '--app-workspace-bg': isBgColor ? backgroundContentColor(bgImagePath) : bgImagePath ? 'var(--app-glass-content)' : 'var(--app-default-content)',
+              '--app-workspace-bg': bgImagePath ? 'var(--tb-container-bg-translucent)' : 'var(--tb-container-bg)',
             }}
           >
             <KeyboardShortcutEvent />
             <KeyboardSoundEffectEvent />
             <Trackpad />
             <div className="left-sidebar">
-              <Navigation />
+              <Nav />
             </div>
             <div className="content-workspace">
-              <WorkspaceTabs />
-              <Workspace isActive={appMode === "workspace"} />
-              {appMode !== "workspace" && <FixedView appMode={appMode} />}
+              <Tabs />
             </div>
           </motion.div>
         )
       )}
       <NomalContextMenu />
       <AppTerminateController />
-      <TN_ToastContainer toasts={toasts} onClose={removeToast} />
-      <TN_DialogErrorHandling
+      <GhostToastContainer toasts={toasts} onClose={removeToast} />
+      <GhostDialogErrorHandling
         isOpen={Boolean(initializationError)}
         title={t("app.initializationError.title")}
         maxWidth="520px"
@@ -233,20 +225,19 @@ function App() {
         <p style={{ margin: '0 0 12px' }}>
           {initializationError?.message}
         </p>
-        <p style={{ margin: '0 0 24px', color: 'var(--tn-subtext)' }}>
+        <p style={{ margin: '0 0 24px', color: 'var(--ghost-subtext)' }}>
           {t("app.initializationError.message")}
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-          <TN_Button variant="danger" onClick={handleExit}>
+          <GhostButton variant="danger" onClick={handleExit}>
             {t("app.exit")}
-          </TN_Button>
-          <TN_Button variant="primary" onClick={handleReload}>
+          </GhostButton>
+          <GhostButton variant="primary" onClick={handleReload}>
             {t("app.reload")}
-          </TN_Button>
+          </GhostButton>
         </div>
-      </TN_DialogErrorHandling>
+      </GhostDialogErrorHandling>
     </AnimatePresence>
-    </TNThemeContext.Provider>
 
 
   );
