@@ -31,3 +31,5 @@ devcert.pfx
 devcert.pfx
 msix-dist/
 *.msix
+
+Package.appxmanifest

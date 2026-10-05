@@ -19,15 +19,16 @@
         "minHeight": 600,
         "center": true,
         "resizable": true,
+        "decorations": false,
         "maximized": false,
-        "backgroundColor": "#101426"
+        "backgroundColor": "#1A1A1A"
       }
     ],
     "security": {
       "csp": {
         "default-src": "'self'",
         "connect-src": "ipc: http://ipc.localhost",
-        "img-src": "'self' asset: http://asset.localhost blob: data:",
+        "img-src": "'self' asset: http://asset.localhost blob: data: https:",
         "style-src": "'self' 'unsafe-inline'"
       },
       "assetProtocol": {

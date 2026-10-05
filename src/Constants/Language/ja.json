@@ -1,4 +1,42 @@
 {
+  "tabLauncher": {
+    "title": "タブを追加",
+    "search": "Searchを開く",
+    "placeholder": "Storyを探す…",
+    "recent": "最近のStory",
+    "results": "検索結果",
+    "open": "開いています",
+    "all": "すべてのStoryを見る",
+    "create": "新しいStoryを作成",
+    "loading": "Storyを読み込み中…",
+    "failed": "Storyを読み込めませんでした。パネルを開き直して再試行してください。"
+  },
+  "navigation": {"label": "メインナビゲーション", "workspace": "ワークスペース", "resume": "ワークスペースに戻る", "openTabs": "{{count}} タブ", "addSearch": "調べものタブを開く", "chooseStory": "ライブラリから作品を開く"},
+  "windowControls": {
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "restore": "元のサイズに戻す",
+    "close": "ウィンドウを閉じる"
+  },
+  "search": {
+    "more": "その他のメニュー",
+    "bookmarks": "ブックマーク",
+    "bookmarkInstructions": "ドラッグまたは上下ボタンで並び替えられます。変更は自動で保存されます。",
+    "noBookmarks": "保存したブックマークはありません。",
+    "reorderBookmark": "{{name}}を並び替え",
+    "moveBookmarkUp": "{{name}}を上へ移動",
+    "moveBookmarkDown": "{{name}}を下へ移動",
+    "deleteBookmark": "{{name}}を削除",
+    "bookmarkSaveFailed": "ブックマークを保存できませんでした。",
+    "bookmarkSaved": "ブックマークを保存しました。",
+    "bookmarkSavedPartially": "ブックマークを保存しましたが、タイトルまたはアイコンの情報を取得できませんでした。",
+    "suggestions": "検索候補",
+    "addShortcut": "ショートカットを追加",
+    "shortcutName": "名前",
+    "shortcutNameRequired": "名前を入力してください。",
+    "shortcutInvalidUrl": "登録できるURLを入力してください。",
+    "shortcutSaveFailed": "ショートカットを保存できませんでした。"
+  },
   "common": {
     "cancel": "キャンセル",
     "close": "閉じる",
@@ -16,6 +54,9 @@
     "deleting": "削除中...",
     "restoring": "復元中...",
     "clearInput": "入力を消去",
+    "bookmark": "ブックマーク",
+    "addBookmark": "ブックマークに追加",
+    "removeBookmark": "ブックマークを解除",
     "closeDialog": "ダイアログを閉じる",
     "errorWithDetail": "{{message}} エラー: {{error}}",
     "inputPlaceholder": "入力してください...",
@@ -96,21 +137,28 @@
     "noRecentFiles": "最近開いたファイルはありません。"
   },
   "story": {
+    "overview": {"title": "作品概要", "navigation": "作品ナビゲーション", "contents": "本文一覧", "textColor": "表紙の文字色", "hideCoverText": "表紙の文字を非表示"},
     "create": {
       "nameLabel": "ストーリーの名前",
       "namePlaceholder": "新しいストーリーの名前を入力...",
       "duplicateName": "同じ名前のストーリーが既に存在します。",
       "submit": "ストーリーを作成する"
     },
-    "cover": { "color": "カバーの色", "chooseImage": "背景画像から選ぶ", "changeTitle": "カバー色を変更" },
+    "cover": { "color": "カバーの色", "chooseImage": "背景画像を編集", "changeTitle": "背景画像を編集" },
     "summary": {
       "totalCharacters": "総文字数: {{count}}字",
       "lastUpdated": "最終更新: {{date}}",
       "synopsis": "あらすじ",
-      "synopsisPlaceholder": "あらすじを入力..."
+      "synopsisPlaceholder": "あらすじを入力...",
+      "saving": "保存中…",
+      "saveFailed": "保存失敗・再試行"
     },
     "actions": { "restoreBackup": "バックアップを復元" },
     "files": {
+      "searchPlaceholder": "本文の名前で検索...",
+      "resultCount": "{{total}}件中 {{count}}件を表示",
+      "noResults": "一致する本文がありません。",
+      "sort": { "title": "名前順", "order": "作品内の順番" },
       "description": "テキストファイル",
       "fetchFailed": "ファイルリストの取得に失敗しました: ",
       "empty": "ファイルがありません。",
@@ -147,6 +195,40 @@
   "background": { "title": "背景画像設定", "chooseColor": "単色を選択", "chooseImage": "画像を選択" },
   "scan": { "title": "スキャン結果", "found": "以下の {{count}} 個の不要なファイルが見つかりました:", "deleted": "不要なファイルを削除しました。" },
   "settings": {
+    "design": {
+      "general": "一般設定",
+      "sidebarCaption": "あなたの書く環境を、心地よく。",
+      "footer": "書く時間を、あなたらしく。",
+      "nav": {
+        "general": "外観・執筆・言語",
+        "environment": "画像・復元・データ管理",
+        "help": "使い方・ライセンス",
+        "statistics": "執筆の記録と活動"
+      },
+      "description": {
+        "general": "見た目から書き心地まで、あなたに合う設定を。",
+        "environment": "画像やファイルを整理して、執筆環境を整えましょう。",
+        "help": "操作のヒントと、TypeNapを支えるコンテンツ。",
+        "statistics": "積み重ねてきた言葉と、日々の執筆を振り返りましょう。"
+      },
+      "appearance": "外観",
+      "appearanceDescription": "集中できる、心地よい見た目に。",
+      "theme": "カラーテーマ",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム",
+      "writing": "執筆",
+      "writingDescription": "毎日の書き心地を、自分好みに。",
+      "fontSize": "文字サイズ",
+      "preview": "プレビュー",
+      "sample": "窓の向こうに、まだ名前のない物語が広がっている。",
+      "languageSearch": "言語と検索",
+      "files": "ファイルと画像",
+      "filesDescription": "不要なファイルの整理や、バックアップからの復元。",
+      "deletion": "データの完全削除",
+      "deletionDescription": "完全削除したデータは復元できません。ロックを解除して操作します。",
+      "resources": "ガイドと情報"
+    },
     "title": "設定",
     "theme": {
       "changed": "{{theme}}に変更しました",
@@ -156,6 +238,7 @@
     },
     "background": { "title": "背景", "solidColor": "単色背景", "image": "背景画像" },
     "language": { "title": "言語", "description": "アプリの表示言語を変更します。", "japanese": "日本語" },
+    "searchEngine": { "title": "検索エンジン", "description": "Web検索に使用する検索エンジンを選択します。" },
     "soundEffect": {
       "title": "効果音",
       "description": "タイピング時の効果音を設定します。",
@@ -178,19 +261,44 @@
     "deleteLock": { "title": "データ完全削除のロック", "description": "誤操作を防ぐため、データ完全削除をロックします。" },
     "delete": { "title": "データを完全に削除", "description": "すべてのデータを復元不可能な状態で完全に削除します。" },
     "help": { "title": "ヘルプ" },
+    "statistics": {
+      "title": "統計情報",
+      "total": "総文字数",
+      "recent": "直近1週間の文字数",
+      "longestStreak": "最長連続執筆日数",
+      "currentStreak": "現在の連続執筆日数",
+      "days": "日",
+      "streakDescription": "連続執筆日数は、保存時に文字数が増えた日をUTC基準で数えます。削除してもその日の執筆記録は減りません。今日はまだ執筆していなくても、昨日まで連続していれば継続中として表示します。最長日数は保存されている日別記録から算出します。",
+      "unit": "文字",
+      "activity": "直近365日の執筆活動",
+      "less": "少ない",
+      "more": "多い",
+      "loading": "活動記録を読み込んでいます…",
+      "description": "保存時に増えた文字数を累積しています。削除分は0として扱い、文字数を減算しません。日付はUTC基準で、直近1週間は今日を含む7日間です。活動の濃淡は1〜499／500〜1,999／2,000〜3,999／4,000文字以上の4段階です。記録がない日は0として表示されます。"
+    },
     "shortcuts": {
-      "title": "ショートカットキー一覧",
-      "description": "使用できるショートカットキーを確認します。",
-      "save": "現在の文書を保存",
-      "closeTab": "現在のタブを閉じる",
-      "nextTab": "次のタブへ移動",
-      "previousTab": "前のタブへ移動",
-      "openSettings": "設定を開く",
-      "openLibrary": "ライブラリを開く",
-      "openHome": "ホームを開く",
-      "create": "新規作成",
-      "search": "文書内を検索",
-      "closeDialog": "ダイアログを閉じる"
+      "title": "キーボードショートカット",
+      "description": "画面の切り替え、タブ操作、保存・作成に使うキーを確認します。",
+      "note": "画面の切り替えは固定画面への移動です。ダイアログやタブ追加メニューを開いている間は Esc のみ使用できます。日本語などの変換中は実行しません。Search 内の Web ページにフォーカスがある場合、キー操作はそのページが処理します。",
+      "openWorkspace": "Workspace に戻る",
+      "openLibrary": "Library に移動",
+      "openSettings": "Settings に移動",
+      "addTab": "タブ追加メニューを開く（ストーリー選択・作成／Search）",
+      "addSearch": "新しい Search タブを開く",
+      "nextTab": "次のタブに移動",
+      "previousTab": "前のタブに移動",
+      "closeTab": "現在のタブを閉じる（未保存の原稿は確認）",
+      "save": "現在の原稿、またはストーリーのあらすじを保存",
+      "search": "原稿内の検索欄を開く",
+      "create": "Library ではストーリー、ストーリータブではテキストファイルを作成",
+      "closeDialog": "ダイアログ・タブ追加メニュー・原稿の検索欄を閉じる",
+      "scopes": {
+        "global": "アプリの画面全体",
+        "tab": "Workspace のタブ表示中",
+        "document": "Workspace の原稿・ストーリータブ",
+        "work": "Workspace の原稿タブ",
+        "create": "Library・Workspace のストーリータブ"
+      }
     },
     "licenses": {
       "title": "サードパーティのライセンス",
@@ -200,6 +308,7 @@
       "aiGeneratedImages": "初期セットの画像はOpenAI Codexを使用して生成されました。"
     },
     "backgroundDialog": {
+      "noColor": "カラーなし",
       "title": "背景を設定",
       "chooseColour": "色を選択",
       "chooseImage": "画像を選択",
@@ -293,6 +402,10 @@
     "default": "アプリを初期化できませんでした。"
   },
   "library": {
+    "description": "作品を管理する場所です。作品を開くと、ワークスペースのタブに追加されます。",
+    "resultCount": "{{total}} 作品中 {{count}} 作品を表示",
+    "noResults": "検索に一致する作品はありません。",
+
     "title": "ライブラリ",
     "searchPlaceholder": "ストーリーを検索",
     "filter": "フィルター",

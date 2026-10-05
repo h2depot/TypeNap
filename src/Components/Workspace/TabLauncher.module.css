@@ -1,0 +1,47 @@
+.panel {
+    position: fixed;
+    z-index: 11000;
+    width: min(340px, calc(100vw - 16px));
+    box-sizing: border-box;
+    padding: 8px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: none;
+    border-radius: 16px;
+    background: var(--tn-dialog-bg);
+    color: var(--tn-text);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    -webkit-app-region: no-drag;
+}
+.contextPanel { border: 1px solid #D4CFBF; }
+:global([data-theme='dark']) .panel { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
+.action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+.action > svg { flex-shrink: 0; }
+.action > span:not(.cover):not(.badge) { flex: 1; }
+.action:hover { background: var(--tn-hover-bg); }
+.action:focus-visible, .searchField:focus-within { outline: 2px solid var(--tn-text); outline-offset: -2px; }
+.divider { height: 1px; background: var(--tn-border-light); margin: 6px 4px; }
+.searchField { display: flex; align-items: center; gap: 8px; margin: 10px 4px; padding: 10px; border-radius: 9px; background: var(--tn-hover-bg); }
+.searchField input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; font-size: 13px; }
+.searchField input::placeholder { color: var(--tn-subtext); }
+.caption { padding: 4px 10px 6px; font-size: 11px; color: var(--tn-subtext); }
+.stories { max-height: 250px; overflow-y: auto; overscroll-behavior: contain; }
+.cover { display: grid; place-items: center; flex: 0 0 24px; height: 30px; border-radius: 3px 5px 5px 3px; background: #b6ac98; color: #232b69; box-shadow: inset 3px 0 0 #0002; }
+.storyName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge { flex-shrink: 0; padding: 3px 6px; border-radius: 5px; background: var(--tn-hover-bg); color: var(--tn-subtext); font-size: 10px; }
+.empty { padding: 8px 10px; font-size: 12px; line-height: 1.7; color: var(--tn-subtext); }
