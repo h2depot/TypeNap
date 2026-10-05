@@ -1,0 +1,24 @@
+import createOriginalIcon from '../createOriginalIcon.js';
+
+const RightArrow = createOriginalIcon('right-arrow', [
+  [
+    "path",
+    {
+      "d": "M21.558 10.7789C22.3128 11.418 22.3128 12.5819 21.558 13.221L16.1671 17.7859C14.9281 18.8351 13.0946 17.5849 13.6189 16.0483L14.8238 12.5166C14.938 12.1817 14.938 11.8183 14.8238 11.4834L13.6189 7.95172C13.0946 6.41506 14.9281 5.16484 16.1671 6.21406L21.558 10.7789Z",
+      "fill": "currentColor"
+    }
+  ],
+  [
+    "rect",
+    {
+      "x": "2",
+      "y": "10",
+      "width": "14",
+      "height": "4",
+      "rx": "1.2",
+      "fill": "currentColor"
+    }
+  ]
+]);
+
+export default RightArrow;

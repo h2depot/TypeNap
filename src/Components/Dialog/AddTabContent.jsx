@@ -4,10 +4,10 @@ import { useTabStore } from "../../store/tabStore";
 import { useFileStore } from "../../store/fileStore";
 import { useAppSettings } from "../../store/saving/appSettings";
 import { useBgImageStore } from "../../store/bgImageStore";
-import { GhostTextField, GhostButton, GhostIconButton, GhostImageOption, GhostTooltip } from "../GhostDesignSystem";
+import { TN_TextField, TN_Button, TN_IconButton, TN_ImageOption, TN_Tooltip } from "../TNDesignSystem";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus } from "lucide-react";
-import { SOLID_PALETTE_COLORS } from "../../constants/colors";
+import { Plus } from '../../assets/IconList';
+import { SOLID_PALETTE_COLORS } from "../../Constants/colors";
 import { useTranslation } from "react-i18next";
 
 export default function AddTabContent({ onComplete }) {
@@ -77,20 +77,20 @@ export default function AddTabContent({ onComplete }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{
                     fontSize: '14px',
-                    fontWeight: 600,
+                    fontWeight: 'var(--font-weight-ui)',
                     color: currentTheme === 'light' ? '#232b69' : '#D4CFBF',
                     opacity: 0.8
                 }}>
                     {t("story.create.nameLabel")}
                 </label>
-                <GhostTextField
+                <TN_TextField
                     value={tabName}
                     onChange={(e) => setTabName(e.target.value)}
                     placeholder={t("story.create.namePlaceholder")}
                     autoFocus
                 />
                 {storyNameExists && (
-                    <div style={{ color: "#d9534f", fontSize: "13px", fontWeight: 600 }}>
+                    <div style={{ color: "#d9534f", fontSize: "13px", fontWeight: 'var(--font-weight-ui)' }}>
                         {t("story.create.duplicateName")}
                     </div>
                 )}
@@ -99,7 +99,7 @@ export default function AddTabContent({ onComplete }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{
                     fontSize: '14px',
-                    fontWeight: 600,
+                    fontWeight: 'var(--font-weight-ui)',
                     color: currentTheme === 'light' ? '#232b69' : '#D4CFBF',
                     opacity: 0.8
                 }}>
@@ -137,7 +137,7 @@ export default function AddTabContent({ onComplete }) {
                                                 inset: 0,
                                                 borderRadius: "50%",
                                                 padding: "2px",
-                                                background: "var(--ghost-gradient, linear-gradient(135deg, #a777e3, #6e8efb))",
+                                                background: "var(--tn-gradient, linear-gradient(135deg, #a777e3, #6e8efb))",
                                                 WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                                                 WebkitMaskComposite: "xor",
                                                 maskComposite: "exclude",
@@ -156,15 +156,15 @@ export default function AddTabContent({ onComplete }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <label style={{
                     fontSize: '14px',
-                    fontWeight: 600,
+                    fontWeight: 'var(--font-weight-ui)',
                     color: currentTheme === 'light' ? '#232b69' : '#D4CFBF',
                     opacity: 0.8
                 }}>
-                    {t("story.cover.chooseImage")}
+                    {t("background.chooseImage")}
                 </label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '4px' }}>
                     {wholeImageList.map((image) => (
-                        <GhostImageOption
+                        <TN_ImageOption
                             key={image.path}
                             image={image}
                             selected={coverColor === image.path}
@@ -173,8 +173,8 @@ export default function AddTabContent({ onComplete }) {
                             height={70}
                         />
                     ))}
-                    <GhostTooltip content={t("image.addNew")} position="bottom">
-                        <GhostIconButton
+                    <TN_Tooltip content={t("image.addNew")} position="bottom">
+                        <TN_IconButton
                             variant="primary"
                             size="medium"
                             borderRadius="8px"
@@ -182,12 +182,12 @@ export default function AddTabContent({ onComplete }) {
                             onClick={handleAddImageClick}
                             disabled={isAddingImage || isSubmitting}
                         />
-                    </GhostTooltip>
+                    </TN_Tooltip>
                 </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
-                <GhostButton
+                <TN_Button
                     onClick={(e) => {
                         e.preventDefault();
                         if (onComplete) onComplete();
@@ -195,14 +195,14 @@ export default function AddTabContent({ onComplete }) {
                     variant="secondary"
                 >
                     {t("common.cancel")}
-                </GhostButton>
-                <GhostButton
+                </TN_Button>
+                <TN_Button
                     onClick={handleSubmit}
-                    variant="primary"
+                    variant="proceed"
                     disabled={tabName.trim() === "" || storyNameExists || isSubmitting}
                 >
                     {t("story.create.submit")}
-                </GhostButton>
+                </TN_Button>
             </div>
         </form>
     );
