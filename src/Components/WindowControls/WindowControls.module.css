@@ -1,0 +1,55 @@
+.controls,
+.standalone {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 50px;
+    color: var(--tn-text);
+}
+
+.standalone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+}
+
+/* Keep native window actions flush with the top, independent of the nav spacing. */
+.controls {
+    align-self: flex-start;
+    height: 100%;
+}
+
+.dragRegion {
+    flex: 1;
+    align-self: stretch;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: var(--tn-hover-bg);
+}
+
+.button.close:hover {
+    background: #c42b1c;
+    color: white;
+}
+
+.button:focus-visible {
+    outline-offset: -3px !important;
+}

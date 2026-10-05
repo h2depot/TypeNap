@@ -2,7 +2,9 @@ name: Build Test
 
 on:
   push:
-    branches: ["main", "Develop"]
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
 
 permissions:
   contents: read
@@ -37,6 +39,13 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
+
+      - name: Run JavaScript tests
+        shell: pwsh
+        run: |
+          $testFiles = @(Get-ChildItem -LiteralPath src -Recurse -File -Filter '*.test.js' | ForEach-Object { $_.FullName })
+          if ($testFiles.Count -eq 0) { throw 'No JavaScript test files found' }
+          node --experimental-vm-modules --test @testFiles
 
       - name: Run Rust tests
         run: cargo test --manifest-path src-tauri/Cargo.toml --locked

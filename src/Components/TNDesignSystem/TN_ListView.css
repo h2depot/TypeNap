@@ -1,0 +1,70 @@
+[data-tn-list-view] > [data-tn-list-item] + [data-tn-list-item] {
+  border-top: 1px solid var(--list-divider);
+}
+
+[data-tn-list-item] {
+  --list-divider: rgba(255, 255, 255, 0.6);
+  --list-hover: rgba(255, 255, 255, 0.18);
+  --list-pressed: rgba(0, 0, 0, 0.035);
+  --list-shadow: rgba(35, 43, 69, 0.07);
+  background-color: transparent;
+}
+
+[data-tn-list-item][data-theme='dark'] {
+  --list-divider: rgba(255, 255, 255, 0.2);
+  --list-hover: rgba(255, 255, 255, 0.035);
+  --list-pressed: rgba(255, 255, 255, 0.065);
+  --list-shadow: rgba(0, 0, 0, 0.18);
+}
+
+[data-tn-list-item][data-clickable='true'] {
+  transition: background-color 180ms ease-out;
+}
+
+[data-tn-list-item][data-clickable='true']::before {
+  content: '';
+  position: absolute;
+  inset: 3px 5px;
+  border-radius: 14px;
+  background: var(--list-hover);
+  box-shadow: 0 5px 18px var(--list-shadow), 0 0 14px 5px var(--list-hover);
+  filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+
+[data-clickable='true'] > [data-tn-list-content],
+[data-clickable='true'] [data-tn-list-chevron] {
+  transition: transform 180ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-tn-list-item][data-clickable='true']:hover:not(:has([data-tn-list-control]:hover))::before {
+    opacity: 1;
+  }
+
+  [data-tn-list-item][data-clickable='true']:hover:not(:has([data-tn-list-control]:hover)) [data-tn-list-chevron] {
+    transform: translateX(2px);
+  }
+}
+
+[data-tn-list-item][data-clickable='true']:active:not(:has([data-tn-list-control]:active)) {
+  background-color: var(--list-pressed);
+  transition-duration: 80ms;
+}
+
+[data-tn-list-item][data-clickable='true']:active:not(:has([data-tn-list-control]:active)) > [data-tn-list-content] {
+  transform: translateY(1px);
+  transition-duration: 80ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tn-list-item][data-clickable='true'],
+  [data-tn-list-item][data-clickable='true']::before,
+  [data-clickable='true'] > [data-tn-list-content],
+  [data-clickable='true'] [data-tn-list-chevron] {
+    transition: none;
+    transform: none !important;
+  }
+}

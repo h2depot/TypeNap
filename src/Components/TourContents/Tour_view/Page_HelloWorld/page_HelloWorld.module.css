@@ -12,7 +12,7 @@
     justify-content: center;
     gap: clamp(18px, 3vw, 36px);
     margin-bottom: 38px;
-    color: var(--ghost-text);
+    color: var(--tn-text);
 }
 
 .hello {
@@ -43,7 +43,7 @@
 .description {
     max-width: 680px;
     margin: 22px 0 0;
-    color: var(--ghost-subtext);
+    color: var(--tn-subtext);
     font-size: clamp(0.92rem, 1.5vw, 1.08rem);
     line-height: 1.9;
 }

@@ -1,0 +1,41 @@
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 24px 0;
+    border: 1px solid var(--tn-border-light);
+    border-radius: 16px;
+    background: var(--settings-surface, var(--tn-bg));
+    box-shadow: var(--tn-shadow);
+    margin: 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    min-width: 0;
+    text-align: center;
+}
+.card + .card { border-left: 1px solid var(--tn-border-light); }
+
+.label { order: 1; color: var(--tn-subtext); font-size: 14px; }
+.value {
+    margin: 0;
+    font-size: clamp(20px, 2.4vw, 28px);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+.unit { margin-left: 8px; font-size: 14px; font-weight: 400; color: var(--tn-subtext); }
+.note { margin: 20px 0 0; color: var(--tn-subtext); font-size: 13px; line-height: 1.7; }
+.heatmap { margin-top: 24px; }
+.streakNote { margin: 8px 0 0; color: var(--tn-subtext); font-size: 13px; line-height: 1.7; }
+@media (max-width: 600px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+    .card { padding: 20px 12px; }
+    .card:nth-child(3) { border-left: none; }
+    .card:nth-child(n + 3) { border-top: 1px solid var(--tn-border-light); }
+}

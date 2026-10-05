@@ -1,0 +1,270 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    color: var(--tn-text);
+}
+
+.window_header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 48px;
+    min-width: 0;
+    background-color: transparent;
+}
+
+.window_drag_region {
+    flex: 1 0 48px;
+    align-self: stretch;
+}
+
+.tabswitch_row {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 10px;
+    min-width: 0;
+    flex: 0 1 auto;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 2px;
+}
+
+.tabswitch_row::-webkit-scrollbar {
+    display: none;
+}
+
+.tab_wrapper {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin-right: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    position: relative;
+    box-sizing: border-box;
+    color: var(--tn-subtext);
+}
+
+.tab_active {
+    --tab-selected-bg: var(--tn-accent);
+    background-color: var(--tab-selected-bg);
+    color: #1A1A1A;
+}
+
+.tab_divider {
+    width: 1px;
+    height: 14px;
+    background-color: var(--tn-border-light);
+    opacity: 0.65;
+    align-self: center;
+    margin-left: 4px;
+    margin-right: 4px;
+    pointer-events: none;
+    transition: opacity 0.16s ease;
+}
+
+.divider_hidden {
+    opacity: 0;
+}
+
+.tab_wrapper:hover .tab_divider {
+    opacity: 0;
+}
+
+.tab_wrapper:has(+ .tab_wrapper:hover) .tab_divider {
+    opacity: 0;
+}
+
+.tab_dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+}
+
+.tab_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 34px;
+    width: 176px;
+    box-sizing: border-box;
+    gap: 9px;
+    padding: 0 8px 0 12px;
+}
+
+.tab:not(.tab_active):hover {
+    color: var(--tn-text);
+    background-color: var(--tn-hover-bg);
+}
+
+.tab:not(.tab_active):hover .tab_header {
+    background-color: transparent;
+}
+
+.tab_active:hover {
+    background-color: var(--tab-selected-bg);
+}
+
+.tab_icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 16px;
+    opacity: 0.7;
+    transition: opacity 0.16s ease, color 0.16s ease;
+}
+
+.tab:hover .tab_icon,
+.tab_active .tab_icon {
+    opacity: 1;
+}
+
+.tab_active .tab_icon {
+    color: inherit;
+}
+
+.tab_text {
+    flex-grow: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: var(--font-weight-ui);
+    user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.close_btn {
+    background: none;
+    border: none;
+    color: var(--tn-subtext);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 5px;
+    opacity: 0.5;
+    transition: background-color 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+}
+
+.tab:not(.tab_active):hover .close_btn {
+    color: var(--tn-text);
+}
+
+.tab_active .close_btn {
+    color: inherit;
+    opacity: 1;
+}
+
+.tab:hover .close_btn,
+.tab_wrapper:focus-within .close_btn {
+    opacity: 1;
+}
+
+.tab_wrapper:focus-visible,
+.close_btn:focus-visible,
+.add_btn:focus-visible {
+    outline-offset: -2px !important;
+}
+
+.close_btn:hover {
+    background-color: var(--tn-hover-bg);
+}
+
+.tab_active .close_btn:hover {
+    background-color: rgba(26, 26, 26, 0.12);
+}
+
+.content {
+    flex: 1 1 0;
+    margin: 0 6px 6px 0;
+    padding: 0;
+    min-height: 0;
+    min-width: 0;
+    border-radius: 10px;
+    border: 1px solid var(--tn-stroke);
+    background-color: var(--app-workspace-bg, var(--tb-container-bg));
+    overflow: auto;
+}
+
+.add_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-left: 6px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--tn-subtext);
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+.add_btn:hover { background: var(--tn-hover-bg); color: var(--tn-text); }
+.empty { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+.view_container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    color: var(--tn-text);
+}
+
+.modeLabel {
+    margin-left: 16px;
+    padding-right: 16px;
+    border-right: 1px solid var(--tn-border-light);
+    flex-shrink: 0;
+    font-size: 11px;
+    line-height: 18px;
+    letter-spacing: 0.04em;
+    color: var(--tn-subtext);
+    user-select: none;
+}
+.resumeWorkspace { display: flex; align-items: center; gap: 10px; margin-left: 24px; padding: 7px 12px; border: 1px solid var(--tn-border-light); border-radius: 8px; background: transparent; color: var(--tn-text); font-size: 12px; cursor: pointer; }
+.resumeWorkspace:hover { background: var(--tn-hover-bg); }
+.tabCount { color: var(--tn-subtext); font-size: 11px; }
+.workspaceIntro { max-width: 560px; padding: 32px; text-align: center; }
+.workspaceIntro h1 { font-size: 26px; line-height: 1.5; }
+.introActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 28px 0; }
+@media (max-width: 700px) {
+    .modeLabel { margin-left: 8px; padding-right: 10px; letter-spacing: 0; }
+    .tabswitch_row { margin-left: 6px; }
+    .tab_header { width: 152px; }
+    .resumeWorkspace { margin-left: 12px; }
+    .tabCount { display: none; }
+    .window_drag_region { flex-basis: 16px; }
+}
+
+.workspaceLogo { display: block; width: 440px; max-width: 100%; height: auto; margin: 0 auto 32px; color: var(--tn-text); }
+
+@media (prefers-reduced-motion: reduce) {
+    .tab, .tab_divider, .tab_icon, .close_btn, .add_btn {
+        transition: none;
+    }
+}
