@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { create } from 'zustand';
+import { normalizeImagePath } from '../utils/imagePaths.js';
 
 const source = (await readFile(new URL('./storyStore.js', import.meta.url), 'utf8'))
     .replace(/^import .*;\r?\n/gm, '')
@@ -12,7 +13,7 @@ function fixture() {
     const requests = [];
     const useFileStore = { getState: () => ({ updateStorySynopsis: (name, content, options) =>
         new Promise((resolve, reject) => requests.push({ name, content, options, resolve, reject })) }) };
-    const store = new Function('create', 'useFileStore', `${source}\nreturn useStoryStore;`)(create, useFileStore);
+    const store = new Function('create', 'useFileStore', 'normalizeImagePath', `${source}\nreturn useStoryStore;`)(create, useFileStore, normalizeImagePath);
     store.getState().initWorkspace('Story', [], 0, { synopsis: 'saved' });
     return { store, requests, workspace: () => store.getState().workspaces.Story };
 }

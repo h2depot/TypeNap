@@ -1,3 +1,4 @@
+import { contentId } from './contentsInfo.js';
 import React, { useEffect, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import TerminateAppDialog from "../Components/Dialog/TerminateAppDialog";
@@ -10,7 +11,7 @@ const unsavedWorkFiles = () => {
     const { tabsList } = useTabStore.getState();
     const { workspaces } = useTxtStore.getState();
     return tabsList.filter(tab => tab.type === 'work')
-        .map(tab => workspaces[tab.props?.workspaceID ?? `${tab.props?.story_name}/${tab.props?.title}`])
+        .map(tab => workspaces[contentId(tab.props)])
         .filter(workspace => workspace?.isEdited)
         .map(workspace => `${workspace.story_name} / ${workspace.title}`);
 };

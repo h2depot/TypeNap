@@ -1,4 +1,8 @@
-use super::{backup_manager, bgimage_manager, document_name, txt_info::TxtInfo};
+use super::{
+    image_manager,
+    contents_info::{ContentType, ContentsInfo, CreateContentsInput},
+    document_name, backup_manager,
+};
 use crate::utils::{path_gate, time_manager};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -13,6 +17,8 @@ pub struct StoryInfo {
     synopsis: String,
     #[serde(default, alias = "files")]
     chapters: Vec<String>,
+    #[serde(default)]
+    contents: Vec<ContentsInfo>,
     #[serde(default)]
     last_update: i64,
     #[serde(default)]
@@ -43,8 +49,8 @@ pub fn get_necropolis_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     Ok(get_backup_root_path(app)?.join("Necropolis"))
 }
 
-pub fn get_bgimage_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    bgimage_manager::get_bgimage_path(app)
+pub fn get_image_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    image_manager::get_image_path(app)
 }
 
 fn get_story_info_path(library_path: &Path, story_name: &str) -> Result<PathBuf, String> {
@@ -56,6 +62,7 @@ fn empty_story_info(story_name: &str) -> StoryInfo {
         story_name: story_name.to_string(),
         synopsis: String::new(),
         chapters: Vec::new(),
+        contents: Vec::new(),
         last_update: time_manager::current_timestamp(),
         created_at: time_manager::current_timestamp(),
         char_cnt: 0,
@@ -124,6 +131,10 @@ fn read_story_info(library_path: &Path, story_name: &str) -> StoryInfo {
     if story_info.story_name.is_empty() || story_info.story_name != story_name {
         story_info.story_name = story_name.to_string();
     }
+    if let Some(app_data) = library_path.parent() {
+        story_info.cover = super::image_rename::resolve_reference(app_data, &story_info.cover)
+            .unwrap_or_else(|_| image_manager::migrated_image_path(app_data, &story_info.cover));
+    }
     if story_info.created_at == 0 {
         story_info.created_at = if story_info.last_update > 0 {
             story_info.last_update
@@ -164,6 +175,12 @@ fn collect_story_chapters(story_path: &Path) -> (Vec<String>, usize) {
 }
 
 fn write_story_info(library_path: &Path, story_info: &StoryInfo) -> Result<(), String> {
+    if let Some(app_data) = library_path.parent() {
+        if app_data.join("Image/.rename-transaction").exists() {
+            super::image_rename::recover(app_data)?;
+            return Err("An interrupted image rename was recovered; retry this operation".into());
+        }
+    }
     let story_info_path = get_story_info_path(library_path, &story_info.story_name)?;
     if let Some(parent) = story_info_path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
@@ -182,7 +199,11 @@ pub fn sync_story_info(
     let (chapters, char_cnt) = collect_story_chapters(&story_path);
     let mut story_info = read_story_info(&library_path, story_name);
 
-    let changed = story_info.chapters != chapters || story_info.char_cnt != char_cnt;
+    let contents = super::content_path::list(&library_path, story_name)?;
+    let changed = story_info.chapters != chapters
+        || story_info.char_cnt != char_cnt
+        || story_info.contents != contents;
+    story_info.contents = contents;
 
     story_info.chapters = chapters;
     story_info.char_cnt = char_cnt;
@@ -206,13 +227,19 @@ pub async fn get_base_path(app: tauri::AppHandle) -> Result<PathBuf, String> {
 // Returns all saved stories.
 #[tauri::command]
 pub async fn get_story_list(app: tauri::AppHandle) -> Result<Vec<StoryInfo>, String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     let library_path = get_library_path(&app)?;
     let mut story_list = Vec::new();
 
-    if let Ok(entries) = fs::read_dir(library_path) {
+    if let Ok(entries) = fs::read_dir(&library_path) {
         for entry in entries.flatten() {
             if entry.path().is_dir() {
                 if let Some(name) = entry.file_name().to_str() {
+                    document_name::ensure_text_ids(
+                        &library_path,
+                        &get_backup_root_path(&app)?,
+                        name,
+                    )?;
                     story_list.push(sync_story_info(&app, name, false)?);
                 }
             }
@@ -224,9 +251,12 @@ pub async fn get_story_list(app: tauri::AppHandle) -> Result<Vec<StoryInfo>, Str
 
 // Returns the content of the specified text file.
 #[tauri::command]
-pub async fn get_txt_content(app: tauri::AppHandle, txt_info: TxtInfo) -> Result<String, String> {
+pub async fn get_txt_content(
+    app: tauri::AppHandle,
+    contents_info: ContentsInfo,
+) -> Result<String, String> {
     let library_path = get_library_path(&app)?;
-    let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
+    let text_path = super::content_path::resolve(&library_path, &contents_info)?;
     let txt_content = fs::read_to_string(text_path).map_err(|e| e.to_string())?;
     Ok(txt_content)
 }
@@ -237,44 +267,36 @@ pub async fn get_story_info(
     app: tauri::AppHandle,
     story_name: String,
 ) -> Result<StoryInfo, String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
+    document_name::ensure_text_ids(
+        &get_library_path(&app)?,
+        &get_backup_root_path(&app)?,
+        &story_name,
+    )?;
     sync_story_info(&app, &story_name, false)
 }
 
 // Returns all text files across every story.
 #[tauri::command]
-pub async fn get_whole_txt_list(app: tauri::AppHandle) -> Result<Vec<TxtInfo>, String> {
+pub async fn get_whole_txt_list(app: tauri::AppHandle) -> Result<Vec<ContentsInfo>, String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     let library_path = get_library_path(&app)?;
-    let mut whole_txt_list = Vec::new();
-
+    let mut contents = Vec::new();
     if let Ok(stories) = fs::read_dir(&library_path) {
-        for story in stories.flatten() {
-            if story.path().is_dir() {
-                let story_name = story.file_name().to_string_lossy().to_string();
-
-                if let Ok(files) = fs::read_dir(story.path()) {
-                    for file in files.flatten() {
-                        let path = file.path();
-                        if path.is_file()
-                            && path.extension().and_then(|e| e.to_str()) == Some("txt")
-                        {
-                            let title = path
-                                .file_stem()
-                                .unwrap_or_default()
-                                .to_string_lossy()
-                                .to_string();
-
-                            whole_txt_list.push(TxtInfo {
-                                story_name: story_name.clone(),
-                                title: document_name::display_title(&title).to_string(),
-                            });
-                        }
-                    }
-                }
+        for story in stories {
+            let story = story.map_err(|e| e.to_string())?;
+            if story.file_type().map_err(|e| e.to_string())?.is_dir() {
+                let name = story.file_name().to_string_lossy().to_string();
+                document_name::ensure_text_ids(&library_path, &get_backup_root_path(&app)?, &name)?;
+                contents.extend(
+                    super::content_path::list(&library_path, &name)?
+                        .into_iter()
+                        .filter(|info| info.content_type == ContentType::Txt),
+                );
             }
         }
     }
-
-    Ok(whole_txt_list)
+    Ok(contents)
 }
 
 // Creates a new story and its backup directory.
@@ -284,6 +306,7 @@ pub async fn create_story(
     story_name: String,
     cover_color: String,
 ) -> Result<(), String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     let library_path = get_library_path(&app)?;
     let backup_path = get_backup_path(&app)?;
 
@@ -294,7 +317,7 @@ pub async fn create_story(
     fs::create_dir_all(story_backup_path).map_err(|e| e.to_string())?;
 
     let mut story_info = empty_story_info(&story_name);
-    story_info.cover = cover_color;
+    story_info.cover = super::image_rename::resolve_reference(library_path.parent().ok_or("Invalid library root")?, &cover_color)?;
     write_story_info(&library_path, &story_info)?;
 
     Ok(())
@@ -303,6 +326,7 @@ pub async fn create_story(
 // Deletes the specified story.
 #[tauri::command]
 pub async fn delete_story(app: tauri::AppHandle, story_name: String) -> Result<(), String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|e| e.to_string())?;
     let library_path = get_library_path(&app)?;
     let story_path = path_gate::story_dir(&library_path, &story_name)?;
     if story_path.is_dir() {
@@ -322,6 +346,7 @@ pub async fn rename_story(
     old_story_name: String,
     new_story_name: String,
 ) -> Result<(), String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|e| e.to_string())?;
     let library_path = get_library_path(&app)?;
     let backup_path = get_backup_path(&app)?;
 
@@ -345,18 +370,22 @@ pub async fn rename_story(
 
 // Creates a new text file and its backup.
 #[tauri::command]
-pub async fn create_txt(app: tauri::AppHandle, txt_info: TxtInfo) -> Result<(), String> {
-    super::document_manager::create_document_txt(app, txt_info).await
+pub async fn create_txt(
+    app: tauri::AppHandle,
+    input: CreateContentsInput,
+) -> Result<ContentsInfo, String> {
+    super::document_manager::create_document_txt(app, input).await
 }
 
 // Deletes the specified text file.
 #[tauri::command]
-pub async fn delete_txt(app: tauri::AppHandle, txt_info: TxtInfo) -> Result<(), String> {
+pub async fn delete_txt(app: tauri::AppHandle, contents_info: ContentsInfo) -> Result<(), String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|e| e.to_string())?;
     let library_path = get_library_path(&app)?;
-    let text_path = path_gate::text_file(&library_path, &txt_info.story_name, &txt_info.title)?;
-    backup_manager::retire_txt_backup(&app, &txt_info.story_name, &txt_info.title)?;
+    let text_path = super::content_path::resolve(&library_path, &contents_info)?;
+    backup_manager::retire_backup(&app, &contents_info)?;
     fs::remove_file(text_path).map_err(|e| e.to_string())?;
-    sync_story_info(&app, &txt_info.story_name, true)?;
+    sync_story_info(&app, &contents_info.story_name, true)?;
     Ok(())
 }
 
@@ -367,7 +396,7 @@ pub async fn scan(app: tauri::AppHandle) -> Result<Vec<String>, String> {
     let library_path = get_library_path(&app)?;
     let alive_backup_path = get_backup_path(&app)?;
     let necropolis_path = get_necropolis_path(&app)?;
-    let bgimage_path = get_bgimage_path(&app)?;
+    let image_path = get_image_path(&app)?;
     let mut path_list = Vec::new();
 
     scan_dir(
@@ -376,7 +405,7 @@ pub async fn scan(app: tauri::AppHandle) -> Result<Vec<String>, String> {
         &library_path,
         &alive_backup_path,
         &necropolis_path,
-        &bgimage_path,
+        &image_path,
         &mut path_list,
     );
 
@@ -389,7 +418,7 @@ fn scan_dir(
     library_path: &Path,
     alive_backup_path: &Path,
     necropolis_path: &Path,
-    bgimage_path: &Path,
+    image_path: &Path,
     path_list: &mut Vec<String>,
 ) {
     if let Ok(entries) = fs::read_dir(dir_path) {
@@ -403,7 +432,7 @@ fn scan_dir(
                     library_path,
                     alive_backup_path,
                     necropolis_path,
-                    bgimage_path,
+                    image_path,
                     path_list,
                 );
                 continue;
@@ -415,7 +444,7 @@ fn scan_dir(
                 library_path,
                 alive_backup_path,
                 necropolis_path,
-                bgimage_path,
+                image_path,
             ) {
                 path_list.push(path.to_string_lossy().into_owned());
             }
@@ -429,7 +458,7 @@ fn is_expected_scan_file(
     library_path: &Path,
     alive_backup_path: &Path,
     necropolis_path: &Path,
-    bgimage_path: &Path,
+    image_path: &Path,
 ) -> bool {
     if path == app_data_dir.join("settings.json")
         || path == app_data_dir.join("stats.json")
@@ -448,7 +477,8 @@ fn is_expected_scan_file(
         }
 
         return path.file_name().and_then(|name| name.to_str()) == Some("story_metadata.json")
-            || path.extension().and_then(|extension| extension.to_str()) == Some("txt");
+            || path.extension().and_then(|extension| extension.to_str()) == Some("txt")
+            || super::content_path::inspect("", path).is_some();
     }
 
     if path.starts_with(alive_backup_path) {
@@ -472,16 +502,9 @@ fn is_expected_scan_file(
                 .is_some_and(|name| name == "metadata.json" || name == "manifest.json");
     }
 
-    if path.starts_with(bgimage_path) {
-        return path
-            .extension()
-            .and_then(|extension| extension.to_str())
-            .is_some_and(|extension| {
-                matches!(
-                    extension.to_ascii_lowercase().as_str(),
-                    "jpg" | "jpeg" | "png"
-                )
-            });
+    if path.starts_with(image_path) {
+        if path == image_path.join(".renames.json") || path.starts_with(image_path.join(".rename-transaction")) { return true; }
+        return image_manager::is_supported_image_file(path);
     }
 
     false
@@ -509,6 +532,7 @@ pub async fn update_story_synopsis(
     content: &str,
     touch_last_update: Option<bool>,
 ) -> Result<StoryInfo, String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     let library_path = get_library_path(&app)?;
     let mut story_info = read_story_info(&library_path, story_name);
 
@@ -530,10 +554,11 @@ pub async fn update_story_cover(
     touch_last_update: Option<bool>,
     cover_text_color: Option<String>,
 ) -> Result<StoryInfo, String> {
+    let _guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     let library_path = get_library_path(&app)?;
     let mut story_info = read_story_info(&library_path, story_name);
 
-    story_info.cover = cover.to_string();
+    story_info.cover = super::image_rename::resolve_reference(library_path.parent().ok_or("Invalid library root")?, cover)?;
     if let Some(color) = cover_text_color {
         story_info.cover_text_color = color;
     }

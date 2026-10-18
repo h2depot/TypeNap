@@ -3,6 +3,8 @@ import { LazyStore } from "@tauri-apps/plugin-store";
 import { locale } from "@tauri-apps/plugin-os";
 import { useToastStore } from "../toastStore";
 import i18next from "../languageController";
+import { normalizeImagePath } from '../../utils/imagePaths.js';
+import { withImageReferenceWrite } from '../imageReferenceWrites.js';
 
 const showErrorToast = (message, error) => {
   useToastStore.getState().addToast(i18next.t("common.errorWithDetail", { message, error: String(error) }), "error");
@@ -17,6 +19,7 @@ const defaultSettings = {
   sound_effect: "None", // "None", "ChillWood", "Raindrop", "TypeWriter"
   bgimage: {},
   fontSize: 16, // 12~24
+  writingFont: "gothic", // "mincho", "gothic"
   SavingTab: "On", // "On", "Off"
   SearchingEngine: "Google", // "Google", "Bing", "DuckDuckGo", "Yahoo"
 };
@@ -46,6 +49,13 @@ export const useAppSettings = create((set, get) => ({
           }
         }
 
+        const background = loadedSettings.bgimage;
+        if (background?.path && normalizeImagePath(background.path) !== background.path) {
+          loadedSettings.bgimage = { ...background, path: normalizeImagePath(background.path) };
+          await store.set('bgimage', loadedSettings.bgimage);
+          hasMissingSettings = true;
+        }
+
         if (hasMissingSettings) {
           await store.save();
         }
@@ -65,7 +75,8 @@ export const useAppSettings = create((set, get) => ({
     }
   },
 
-  updateSetting: async (key, value) => {
+  updateSetting: (key, value) => withImageReferenceWrite(async () => {
+    if (key === 'bgimage' && value?.path) value = { ...value, path: normalizeImagePath(value.path) };
     let stateChanged = false;
     set((state) => {
       if (state.settings[key] === value) {
@@ -89,5 +100,5 @@ export const useAppSettings = create((set, get) => ({
       showErrorToast(i18next.t("notice.settingsSaveFailed"), error);
       console.error(`Failed to save setting [${key}]:`, error);
     }
-  },
+  }),
 }));

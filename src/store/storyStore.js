@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useFileStore } from "./fileStore";
+import { normalizeImagePath } from '../utils/imagePaths.js';
 
 const synopsisSaveQueues = new Map();
 
@@ -7,7 +8,7 @@ const currentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const validTimestamp = (timestamp) => timestamp > 0;
 
-const nonEmptyCover = (cover) => (typeof cover === "string" && cover.trim() ? cover : null);
+const nonEmptyCover = (cover) => (typeof cover === "string" && cover.trim() ? normalizeImagePath(cover) : null);
 
 export const useStoryStore = create((set, get) => ({
     workspaces: {},
@@ -35,6 +36,7 @@ export const useStoryStore = create((set, get) => ({
                     [storyName]: {
                         storyName,
                         filesList,
+                        contentsList: storyInfo.contents ?? [],
                         charCnt,
                         synopsis,
                         synopsisDraft: synopsis,
@@ -62,6 +64,7 @@ export const useStoryStore = create((set, get) => ({
                     [storyName]: {
                         ...workspace,
                         filesList: storyInfo.chapters ?? storyInfo.files ?? [],
+                        contentsList: storyInfo.contents ?? [],
                         charCnt: storyInfo.char_cnt,
                         ...(!workspace.synopsisIsEdited && !workspace.synopsisIsSaving ? {
                             synopsis: storyInfo.synopsis ?? "",

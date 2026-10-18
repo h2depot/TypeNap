@@ -1,32 +1,34 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import { EyeOff_TN, Plus } from '../../../assets/IconList';
+import { EyeOff_TN } from '../../../assets/IconList';
 import { useTranslation } from 'react-i18next';
 import { useFileStore } from '../../../store/fileStore';
 import { useStoryStore } from '../../../store/storyStore';
 import { useTabStore } from '../../../store/tabStore';
 import { useTxtStore } from '../../../store/txtStore';
-import { useBgImageStore } from '../../../store/bgImageStore';
+import { useImageStore } from '../../../store/imageStore';
+import { normalizeImagePath } from '../../../utils/imagePaths.js';
 import { SOLID_PALETTE_COLORS } from '../../../Constants/colors';
 import { TN_BookCard_Preview, TN_Button, TN_Dialog, TN_TextField, TN_IconButton, TN_Tooltip } from '../../TNDesignSystem';
 import styles from './tab_story.module.css';
+import paletteStyles from '../../Dialog/ColorPalette.module.css';
 import SynopsisEditor from './SynopsisEditor';
+import ImageCollectionPicker from '../../Dialog/ImageCollectionPicker';
 
 export default function TabStoryOverview({ story_name, workspace, isTitleDialogOpen, onCloseTitleDialog }) {
     const { t } = useTranslation();
     const { renameStory } = useFileStore();
     const { updateStoryInfo, renameStoryWorkspace, waitForSynopsisSave } = useStoryStore();
     const { renameStoryTabs } = useTabStore();
-    const { fetchImageList, addUserImage, wholeImageList } = useBgImageStore();
+    const { fetchImageList, addUserImage, wholeImageList } = useImageStore();
     const [editedTitle, setEditedTitle] = useState(story_name);
     const [savingTitle, setSavingTitle] = useState(false);
     const [savingColor, setSavingColor] = useState(false);
     useEffect(() => setEditedTitle(story_name), [story_name, isTitleDialogOpen]);
     const [isCoverDialogOpen, setIsCoverDialogOpen] = useState(false);
-    const [editedCoverColor, setEditedCoverColor] = useState("");
+    const [coverDraft, setEditedCoverColor] = useState("");
+    const editedCoverColor = normalizeImagePath(coverDraft);
 
     const handleSaveTitle = async (e) => {
         if (e) e.preventDefault();
@@ -78,11 +80,13 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
                 filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp"] }]
             });
             if (selected) {
-                await addUserImage(selected);
+                const image = await addUserImage(selected);
+                setEditedCoverColor(image.path);
                 await fetchImageList();
             }
         } catch (error) {
             console.error("Failed to select or add image", error);
+            throw error;
         }
     };
 
@@ -103,9 +107,9 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
                 onClick={() => { setEditedCoverColor(workspace.cover); setIsCoverDialogOpen(true); }} />
             <div className={styles.overviewFields}>
                 <span>{t('story.overview.textColor')}</span>
-                <div className={styles.palette}>
+                <div className={paletteStyles.palette}>
                     {SOLID_PALETTE_COLORS.map(color =>
-                        <button key={color} type="button" className={styles.swatch} style={{ backgroundColor: color }}
+                        <button key={color} type="button" className={paletteStyles.swatch} style={{ backgroundColor: color }}
                             aria-label={`${t('story.overview.textColor')} ${color}`} aria-pressed={workspace.coverTextColor === color}
                             disabled={savingColor} onClick={() => saveTextColor(color)} />)}
                     <TN_Tooltip content={t('story.overview.hideCoverText')}>
@@ -147,13 +151,14 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
                 isOpen={isCoverDialogOpen}
                 onClose={() => setIsCoverDialogOpen(false)}
                 title={t("story.cover.changeTitle")}
+                maxWidth="860px"
             >
                 <form onSubmit={handleSaveCover} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     <div className={styles.overviewFields}>
                         <span>{t('background.chooseColor')}</span>
-                        <div className={styles.palette}>
+                        <div className={paletteStyles.palette}>
                             {SOLID_PALETTE_COLORS.map((color, index) => (
-                                <button key={color} type="button" className={styles.swatch}
+                                <button key={color} type="button" className={paletteStyles.swatch}
                                     style={{ backgroundColor: color }}
                                     aria-label={`${t('background.chooseColor')} ${index + 1}`}
                                     aria-pressed={editedCoverColor === color}
@@ -170,69 +175,9 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
                         }}>
                             {t("background.chooseImage")}
                         </label>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '4px' }}>
-                            {wholeImageList.map((image) => {
-                                const isSelected = editedCoverColor === image.path;
-                                return (
-                                    <div
-                                        key={image.path}
-                                        onClick={() => setEditedCoverColor(image.path)}
-                                        style={{
-                                            position: "relative",
-                                            width: "80px",
-                                            height: "70px",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            cursor: "pointer",
-                                            borderRadius: "8px",
-                                            overflow: "hidden",
-                                            background: "var(--tn-hover-bg)"
-                                        }}>
-                                        <AnimatePresence>
-                                            {isSelected && (
-                                                <motion.div
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.25, ease: "easeOut" }}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        inset: 0,
-                                                        borderRadius: '8px',
-                                                        padding: '2px',
-                                                        background: 'var(--tn-gradient, linear-gradient(135deg, #a777e3, #6e8efb))',
-                                                        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                                                        WebkitMaskComposite: 'xor',
-                                                        maskComposite: 'exclude',
-                                                        pointerEvents: 'none',
-                                                        zIndex: 10
-                                                    }}
-                                                />
-                                            )}
-                                        </AnimatePresence>
-                                        {image.path && (
-                                            <>
-                                                <img
-                                                    src={convertFileSrc(image.path)}
-                                                    alt={image.name}
-                                                    style={{ width: "100%", height: "100%", objectFit: "cover", minHeight: 0 }}
-                                                />
-                                            </>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                            <TN_Tooltip content={t("image.addNew")} position="bottom">
-                                <TN_IconButton
-                                    variant="primary"
-                                    size="medium"
-                                    borderRadius="8px"
-                                    icon={<Plus size={18} />}
-                                    onClick={handleAddImageClick}
-                                    type="button"
-                                />
-                            </TN_Tooltip>
-                        </div>
+                        {isCoverDialogOpen && <ImageCollectionPicker images={wholeImageList} selectedPath={editedCoverColor}
+                            onSelect={setEditedCoverColor} onImport={handleAddImageClick} />}
+
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>

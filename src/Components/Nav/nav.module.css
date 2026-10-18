@@ -15,12 +15,20 @@
     align-self: center;
 }
 
+.workspaceAnchor {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .workspace {
     --nav-selected-bg: #E8890D;
     --nav-icon-padding: 4px;
-    position: absolute;
-    top: 4px;
-    left: 4px;
     color: var(--tn-text);
 }
 
@@ -37,10 +45,24 @@
 
 .workspace[data-selected='true'] {
     background: color-mix(in srgb, var(--tn-text) 12%, transparent);
-    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--tn-text) 45%, transparent),
-        0 2px 8px color-mix(in srgb, var(--tn-text) 16%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--tn-text) 16%, transparent);
 }
 
 .workspace[data-selected='true'] svg {
     transform: scale(1.08);
+}
+
+.container button svg {
+    transition: color 180ms ease;
+}
+
+.container button[data-selected='false']:hover:not(:disabled) svg,
+.container button[data-selected='false']:focus-visible:not(:disabled) svg {
+    color: #E8890D;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .container button svg {
+        transition: none;
+    }
 }

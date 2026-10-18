@@ -42,8 +42,8 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
   const theme = useTNTheme(themeOverride);
   const isClickable = !!onClick && !disabled;
 
-  const textColor = theme === 'light' ? '#303030' : '#F5F5F5';
-  const subTextColor = theme === 'light' ? 'rgba(48, 48, 48, 0.65)' : 'rgba(245, 245, 245, 0.65)';
+  const textColor = theme === 'light' ? '#232B69' : '#D4CFBF';
+  const subTextColor = theme === 'light' ? 'rgba(35, 43, 105, 0.65)' : 'rgba(212, 207, 191, 0.65)';
 
   return (
     <div

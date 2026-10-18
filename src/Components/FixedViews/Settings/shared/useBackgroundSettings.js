@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useBgImageStore } from "../../../../store/bgImageStore";
+import { useImageStore } from "../../../../store/imageStore";
+import { normalizeImagePath } from '../../../../utils/imagePaths.js';
 
-// Both background selection and image management support importing an image.
 export function useBackgroundSettings(initialPath) {
-    const addUserImage = useBgImageStore((state) => state.addUserImage);
-    const deleteUserImage = useBgImageStore((state) => state.deleteUserImage);
-    const fetchImageList = useBgImageStore((state) => state.fetchImageList);
-    const wholeImageList = useBgImageStore((state) => state.wholeImageList);
+    const addUserImage = useImageStore((state) => state.addUserImage);
+    const fetchImageList = useImageStore((state) => state.fetchImageList);
+    const wholeImageList = useImageStore((state) => state.wholeImageList);
 
     const [selectedBgImage, setSelectedBgImage] = useState(initialPath || "");
 
@@ -15,20 +14,18 @@ export function useBackgroundSettings(initialPath) {
         const file = await open({
             multiple: false,
             directory: false,
-            filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg"] }],
+            filters: [{ name: "Image", extensions: ["png", "jpg", "jpeg", "webp"] }],
         });
 
         if (!file) {
             return;
         }
 
-        await addUserImage(file);
-        const imageList = await fetchImageList();
-        const fileName = file.split(/[\\/]/).pop();
-        const addedImage = imageList.find((image) => image.kind === "user" && image.name === fileName);
-        setSelectedBgImage(addedImage?.path || file);
+        const addedImage = await addUserImage(file);
+        await fetchImageList();
+        setSelectedBgImage(addedImage.path);
     }, [addUserImage, fetchImageList]);
 
 
-    return { selectedBgImage, setSelectedBgImage, wholeImageList, fetchImageList, deleteUserImage, handleAddBackgroundImage };
+    return { selectedBgImage: normalizeImagePath(selectedBgImage), setSelectedBgImage, wholeImageList, fetchImageList, handleAddBackgroundImage };
 }

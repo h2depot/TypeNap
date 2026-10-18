@@ -291,6 +291,11 @@
     transition: all 0.3s ease;
 }
 
+/* Override the global [tabindex] focus ring on the body editor. */
+.textbox:focus-visible {
+    outline: none !important;
+}
+
 .textbox p {
     margin: 0;
 }
@@ -343,7 +348,7 @@
     height: 1px;
     margin: 0 40px;
     /* プレミアム感を出すグラデーション線 */
-    background: var(--tb-divider);
+    background: transparent;
 }
 
 /* Vertical Mode */
@@ -375,7 +380,7 @@
     width: 1px;
     height: calc(100% - 80px);
     margin: 40px 0;
-    background: var(--tb-divider-vert);
+    background: transparent;
 }
 
 .titlebox {

@@ -1,8 +1,12 @@
+import { contentsInfo, contentId } from './contentsInfo.js';
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import { useToastStore } from "../store/toastStore";
+import { useFileStore } from "./fileStore";
 import { useStatsStore } from "./saving/stats";
 import i18next from "./languageController";
+import { withImageReferenceWrite } from './imageReferenceWrites.js';
+import { normalizeImageContent } from '../utils/imagePaths.js';
 
 const showToast = (message, type = "info") => {
     useToastStore.getState().addToast(message, type);
@@ -41,12 +45,15 @@ const atomicWriteErrorMessage = (stage) => {
 };
 
 const saveQueues = new Map();
+const isJson = (info) => info?.content_type && info.content_type !== "txt";
 
 export const useTxtStore = create((set, get) => ({
 
     workspaces: {},
 
-    initWorkspace: (workspaceId, story_name, title, initialContent = "") => {
+    initWorkspace: (value, initialContent = "") => {
+        const info = contentsInfo(value);
+        const workspaceId = contentId(info);
         set((state) => {
             if (state.workspaces[workspaceId]) return state;
 
@@ -54,8 +61,11 @@ export const useTxtStore = create((set, get) => ({
                 workspaces: {
                     ...state.workspaces,
                     [workspaceId]: {
-                        story_name,
-                        title,
+                        story_name: info.story_name,
+                        title: info.name,
+                        contentsInfo: info,
+                        isLoading: true,
+                        loadError: null,
                         content: initialContent,
                         savedContentLength: initialContent.length,
                         isEdited: false,
@@ -77,7 +87,7 @@ export const useTxtStore = create((set, get) => ({
                     ...state.workspaces,
                     [workspaceId]: {
                         ...workspace,
-                        content: newContent,
+                        content: isJson(workspace.contentsInfo) ? normalizeImageContent(newContent) : newContent,
                         isEdited: true
                     }
                 }
@@ -132,84 +142,35 @@ export const useTxtStore = create((set, get) => ({
         });
     },
 
-    renameWorkspaceKey: (story_name, oldTitle, newTitle) => {
-        set((state) => {
-            const workspaceId = `${story_name}/${oldTitle}`;
-            const newWorkspaceId = `${story_name}/${newTitle}`;
-            const workspace = state.workspaces[workspaceId];
-
+    updateContentsInfo: (value) => {
+        const info = contentsInfo(value);
+        const id = contentId(info);
+        set(state => {
+            const workspace = state.workspaces[id];
             if (!workspace) return state;
-
-            const newWorkspaces = { ...state.workspaces };
-            newWorkspaces[newWorkspaceId] = {
-                ...workspace,
-                title: newTitle,
-            };
-            delete newWorkspaces[workspaceId];
-
-            return { workspaces: newWorkspaces };
+            return { workspaces: { ...state.workspaces, [id]: {
+                ...workspace, contentsInfo: info, story_name: info.story_name, title: info.name,
+            } } };
         });
     },
 
     renameStoryInWorkspaces: (oldStoryName, newStoryName) => {
-        set((state) => {
-            const newWorkspaces = {};
-            let hasChanges = false;
+        set(state => ({ workspaces: Object.fromEntries(Object.entries(state.workspaces).map(([id, workspace]) =>
+            [id, workspace.story_name === oldStoryName ? { ...workspace, story_name: newStoryName,
+                contentsInfo: { ...workspace.contentsInfo, story_name: newStoryName } } : workspace])) }));
+    },
 
-            for (const [key, workspace] of Object.entries(state.workspaces)) {
-                if (workspace.story_name === oldStoryName) {
-                    const newWorkspaceId = `${newStoryName}/${workspace.title}`;
-                    newWorkspaces[newWorkspaceId] = {
-                        ...workspace,
-                        story_name: newStoryName,
-                    };
-                    hasChanges = true;
-                } else {
-                    newWorkspaces[key] = workspace;
-                }
-            }
-
-            if (!hasChanges) return state;
-
-            return { workspaces: newWorkspaces };
-        });
+    renameContent: async (info, newTitle) => {
+        const renamed = await useFileStore.getState().updateTxtName(info, newTitle);
+        // Merge metadata into the latest draft, including edits made during IPC.
+        get().updateContentsInfo(renamed);
+        return renamed;
     },
 
     saveTitle: async (workspaceId, newTitle) => {
         const workspace = get().workspaces[workspaceId];
         if (!workspace) return;
-
-        try {
-            await invoke("save_document_title", {
-                txtInfo: {
-                    story_name: workspace.story_name,
-                    title: workspace.title,
-                },
-                newTitle: newTitle,
-            });
-
-            const newWorkspaceId = `${workspace.story_name}/${newTitle}`;
-
-            set((state) => {
-                const newWorkspaces = { ...state.workspaces };
-
-                newWorkspaces[newWorkspaceId] = {
-                    ...workspace,
-                    title: newTitle,
-                };
-
-                delete newWorkspaces[workspaceId];
-
-                return { workspaces: newWorkspaces };
-            });
-
-            console.log("Title renamed successfully from", workspaceId, "to", newWorkspaceId);
-            return newWorkspaceId;
-        } catch (err) {
-            showErrorToast(i18next.t("notice.saveError.title"), err);
-            console.error("Failed to rename title:", err);
-            throw err;
-        }
+        return get().renameContent(workspace.contentsInfo, newTitle);
     },
 
     saveContent: async (workspaceId) => {
@@ -226,14 +187,14 @@ export const useTxtStore = create((set, get) => ({
         }));
 
         const previousSave = saveQueues.get(workspaceId) ?? Promise.resolve();
-        const saveTask = previousSave.catch(() => undefined).then(async () => {
+        const saveTask = previousSave.catch(() => undefined).then(() => withImageReferenceWrite(async () => {
             const workspace = get().workspaces[workspaceId];
-            if (!workspace?.isEdited) return;
+            if (!workspace?.isEdited || workspace.isLoading) return;
             const contentToSave = workspace.content;
 
             const markContentSaved = async () => {
                 const charDiff = contentToSave.length - (workspace.savedContentLength ?? 0);
-                if (charDiff > 0) {
+                if (charDiff > 0 && !isJson(workspace.contentsInfo)) {
                     await useStatsStore.getState().recordCharacterChange(charDiff);
                 }
 
@@ -241,12 +202,9 @@ export const useTxtStore = create((set, get) => ({
             };
 
             try {
-                await invoke("save_document_content", {
-                    txtInfo: {
-                        story_name: workspace.story_name,
-                        title: workspace.title,
-                    },
-                    content: contentToSave,
+                await invoke(isJson(workspace.contentsInfo) ? "save_json_content" : "save_document_content", {
+                    contentsInfo: contentsInfo(workspace.contentsInfo),
+                    content: isJson(workspace.contentsInfo) ? JSON.parse(contentToSave) : contentToSave,
                 });
 
                 await markContentSaved();
@@ -273,7 +231,7 @@ export const useTxtStore = create((set, get) => ({
                 console.error("Failed to save content:", err);
                 throw err;
             }
-        });
+        }));
 
         saveQueues.set(workspaceId, saveTask);
 
@@ -296,24 +254,28 @@ export const useTxtStore = create((set, get) => ({
         }
     },
 
-    loadContent: async (workspaceId, story_name, title) => {
+    loadContent: async (info) => {
+        const workspaceId = contentId(info);
+        const before = get().workspaces[workspaceId];
+        if (!before) return;
         try {
-            const content = await invoke("load_txt", {
-                txtInfo: { story_name, title },
-            });
+            const descriptor = contentsInfo(info);
+            const loaded = await invoke(isJson(descriptor) ? "load_json" : "load_txt", { contentsInfo: descriptor });
+            const content = isJson(descriptor) ? normalizeImageContent(JSON.stringify(loaded, null, 2)) : loaded;
 
-            set((state) => ({
-                workspaces: {
-                    ...state.workspaces,
-                    [workspaceId]: {
-                        ...state.workspaces[workspaceId],
-                        content: content,
-                        savedContentLength: content.length,
-                        isEdited: false
-                    }
-                }
-            }));
+            set(state => {
+                const current = state.workspaces[workspaceId];
+                if (!current) return state;
+                // An asynchronous reload must not erase edits made while it ran.
+                const changed = current.content !== before.content || current.isEdited !== before.isEdited;
+                return { workspaces: { ...state.workspaces, [workspaceId]: {
+                    ...current, isLoading: false, loadError: null,
+                    ...(changed ? {} : { content, savedContentLength: content.length, isEdited: false }),
+                } } };
+            });
         } catch (err) {
+            set(state => state.workspaces[workspaceId] ? { workspaces: { ...state.workspaces,
+                [workspaceId]: { ...state.workspaces[workspaceId], isLoading: false, loadError: String(err) } } } : state);
             showErrorToast(i18next.t("notice.loadFileFailed"), err);
             console.error("ファイルの読み込みに失敗しました:", err);
         }

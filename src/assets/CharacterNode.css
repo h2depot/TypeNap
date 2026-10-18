@@ -1,0 +1,37 @@
+.character-node__stroke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Match the card body, excluding the SVG's right and bottom shadow space. */
+  width: calc(100% * 300 / 311);
+  height: calc(100% * 477.778 / 489);
+  box-sizing: border-box;
+  border: 4px solid #e8890d;
+  border-radius: 2.935187% / 1.843023%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.character-node:hover > .character-node__stroke {
+  opacity: 1;
+}
+
+.character-photo__incoming,
+.character-photo__outgoing {
+  transform-box: fill-box;
+  animation: character-photo-drop 520ms ease both;
+}
+
+.character-photo__outgoing {
+  animation-name: character-photo-fall;
+}
+
+@keyframes character-photo-drop {
+  from { transform: translateY(calc(-1 * var(--photo-slide-distance))); }
+  to { transform: translateY(0); }
+}
+
+@keyframes character-photo-fall {
+  from { transform: translateY(0); }
+  to { transform: translateY(var(--photo-slide-distance)); }
+}

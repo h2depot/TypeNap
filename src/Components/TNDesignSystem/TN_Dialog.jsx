@@ -3,19 +3,24 @@ import { useTNTheme } from './theme';
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, maxWidth = '500px' }) => {
+let openDialogCount = 0;
+let previousBodyOverflow = '';
+
+const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, maxWidth = '500px', bodyStyle }) => {
   const theme = useTNTheme(themeOverride);
   const { t } = useTranslation();
   const onCloseRef = useRef(onClose);
   useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
   useEffect(() => {
     if (!isOpen) return;
-    const previousOverflow = document.body.style.overflow;
+    if (openDialogCount === 0) previousBodyOverflow = document.body.style.overflow;
+    openDialogCount++;
     document.body.style.overflow = 'hidden';
     const close = () => onCloseRef.current?.();
     window.addEventListener('close-dialogs', close);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      openDialogCount--;
+      if (openDialogCount === 0) document.body.style.overflow = previousBodyOverflow;
       window.removeEventListener('close-dialogs', close);
     };
   }, [isOpen]);
@@ -126,6 +131,7 @@ const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, max
                 lineHeight: 1.5,
                 maxHeight: '70vh',
                 overflowY: 'auto',
+                ...bodyStyle,
               }}>
                 {children}
               </div>

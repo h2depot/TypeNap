@@ -1,15 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { History, Images, Lock, Trash2, Wrench } from '../../../../assets/IconList';
+import React, { useEffect, useState } from "react";
+import { History, Lock, Trash2, Wrench } from '../../../../assets/IconList';
 import { SettingsListView, SettingsRow, SettingsToggle } from "../shared/SettingsListView";
 import { useFileStore } from "../../../../store/fileStore";
-import BgDeleteDialog from "./bg_delete_dialog";
 import DataDeleteDialog from "./data_delete_dialog";
 import RestoreDialog from "./restore_dialog";
 import ScanDialog from "./scan_dialog";
 import { useTranslation } from "react-i18next";
 import { useAppSettings } from "../../../../store/saving/appSettings";
 import { useToastStore } from "../../../../store/toastStore";
-import { useBackgroundSettings } from "../shared/useBackgroundSettings";
 import styles from "../SettingsView.module.css";
 
 const restoreItemKey = (item) => [
@@ -39,9 +37,7 @@ const getStoryRestoreItems = (story) => {
 export default function EnvironmentSettings() {
     const { t } = useTranslation();
     const settings = useAppSettings((state) => state.settings);
-    const updateSetting = useAppSettings((state) => state.updateSetting);
     const addToast = useToastStore((state) => state.addToast);
-    const { selectedBgImage, setSelectedBgImage, wholeImageList, fetchImageList, deleteUserImage, handleAddBackgroundImage } = useBackgroundSettings(settings.bgimage?.path);
     const scan = useFileStore((state) => state.scan);
     const deleteNonTxtFiles = useFileStore((state) => state.deleteNonTxtFiles);
     const fetchDeletedFiles = useFileStore((state) => state.fetchDeletedFiles);
@@ -58,7 +54,6 @@ export default function EnvironmentSettings() {
     const [isRestoring, setIsRestoring] = useState(false);
     const [isDataDeletionLocked, setIsDataDeletionLocked] = useState(true);
     const [isDataDeleteDialogOpen, setIsDataDeleteDialogOpen] = useState(false);
-    const [isBgDeleteDialogOpen, setIsBgDeleteDialogOpen] = useState(false);
     const [selectedDeleteItems, setSelectedDeleteItems] = useState([]);
     const [selectedDeleteStoryKeys, setSelectedDeleteStoryKeys] = useState([]);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -67,15 +62,6 @@ export default function EnvironmentSettings() {
     const isDark = settings.theme === "Dark Theme";
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const currentTheme = isSystem ? systemTheme : (isDark ? "dark" : "light");
-    const userImageCount = useMemo(
-        () => wholeImageList.filter((image) => image.kind === "user").length,
-        [wholeImageList]
-    );
-
-
-    useEffect(() => {
-        fetchImageList().catch(console.error);
-    }, [isBgDeleteDialogOpen, fetchImageList]);
 
     useEffect(() => {
         let cancelled = false;
@@ -208,7 +194,7 @@ export default function EnvironmentSettings() {
     return (
         <>
             <div className={styles.groups}>
-            <SettingsListView title={t("settings.design.files")} description={t("settings.design.filesDescription")}>
+            <SettingsListView title={t("settings.design.files")}>
                 <SettingsRow
                     icon={<Wrench size={20} />}
                     title={t("settings.scan.title")}
@@ -226,13 +212,6 @@ export default function EnvironmentSettings() {
                 />
 
                 <SettingsRow
-                    icon={<Images size={20} />}
-                    title={t("settings.images.title")}
-                    description={t("settings.images.count", { count: userImageCount })}
-                    onClick={() => setIsBgDeleteDialogOpen(true)}
-                />
-
-                <SettingsRow
                     icon={<History size={20} />}
                     title={t("settings.restore.title")}
                     description={t("settings.restore.description")}
@@ -240,7 +219,7 @@ export default function EnvironmentSettings() {
                 />
 
             </SettingsListView>
-            <SettingsListView title={t("settings.design.deletion")} description={t("settings.design.deletionDescription")} tone="danger">
+            <SettingsListView title={t("settings.design.deletion")} tone="danger">
                 <SettingsRow
                     icon={<Lock size={20} />}
                     title={t("settings.deleteLock.title")}
@@ -329,20 +308,6 @@ export default function EnvironmentSettings() {
                 currentTheme={currentTheme}
             />
 
-            <BgDeleteDialog
-                isBgDeleteDialogOpen={isBgDeleteDialogOpen}
-                setIsBgDeleteDialogOpen={setIsBgDeleteDialogOpen}
-                wholeImageList={wholeImageList}
-                deleteUserImage={deleteUserImage}
-                fetchImageList={fetchImageList}
-                settings={settings}
-                updateSetting={updateSetting}
-                selectedBgImage={selectedBgImage}
-                setSelectedBgImage={setSelectedBgImage}
-                addToast={addToast}
-                currentTheme={currentTheme}
-                onAddImageClick={handleAddBackgroundImage}
-            />
         </>
     );
 }

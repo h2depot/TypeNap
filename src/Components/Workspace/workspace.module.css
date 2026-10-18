@@ -21,6 +21,7 @@
 }
 
 .tabswitch_row {
+    isolation: isolate;
     display: flex;
     flex-direction: row;
     margin: 0 0 0 10px;
@@ -44,6 +45,8 @@
     align-items: center;
     flex-shrink: 0;
     position: relative;
+    touch-action: pan-y;
+    -webkit-app-region: no-drag;
 }
 
 .tab {
@@ -93,8 +96,7 @@
 }
 
 .tab_dragging {
-    opacity: 0.5;
-    transform: scale(0.9);
+    z-index: 1;
 }
 
 .tab_header {
@@ -209,6 +211,7 @@
 }
 
 .add_btn {
+    -webkit-app-region: no-drag;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -246,9 +249,10 @@
     color: var(--tn-subtext);
     user-select: none;
 }
-.resumeWorkspace { display: flex; align-items: center; gap: 10px; margin-left: 24px; padding: 7px 12px; border: 1px solid var(--tn-border-light); border-radius: 8px; background: transparent; color: var(--tn-text); font-size: 12px; cursor: pointer; }
-.resumeWorkspace:hover { background: var(--tn-hover-bg); }
-.tabCount { color: var(--tn-subtext); font-size: 11px; }
+.workspaceContext { display: flex; align-items: center; gap: 10px; margin-left: 16px; min-width: 0; overflow: hidden; color: var(--tn-subtext); font-size: 12px; user-select: none; }
+.workspaceContextLabel { flex-shrink: 0; font-size: 11px; }
+.workspaceContextTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; color: var(--tn-text); }
+.tabCount { flex-shrink: 0; color: var(--tn-subtext); font-size: 11px; }
 .workspaceIntro { max-width: 560px; padding: 32px; text-align: center; }
 .workspaceIntro h1 { font-size: 26px; line-height: 1.5; }
 .introActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 28px 0; }
@@ -256,7 +260,8 @@
     .modeLabel { margin-left: 8px; padding-right: 10px; letter-spacing: 0; }
     .tabswitch_row { margin-left: 6px; }
     .tab_header { width: 152px; }
-    .resumeWorkspace { margin-left: 12px; }
+    .workspaceContext { margin-left: 10px; }
+    .workspaceContextLabel { display: none; }
     .tabCount { display: none; }
     .window_drag_region { flex-basis: 16px; }
 }

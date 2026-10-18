@@ -4,20 +4,23 @@ pub mod utils;
 pub mod webbrowser;
 
 use file_ops::{
-    backup_manager, bgimage_manager, document_manager, file_manager, initializer, txt_editor,
+    backup_manager, image_manager, document_manager, file_manager, initializer, json_editor,
+    txt_editor,
 };
-use utils::{battery_manager, time_manager};
 use tauri::Manager;
+use utils::{battery_manager, time_manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri::plugin::Builder::<tauri::Wry>::new("https-navigation")
-            .on_navigation(|webview, url| {
-                // Also enforce the policy for page links and redirects.
-                !webview.label().starts_with("search-") || url.scheme() == "https"
-            })
-            .build())
+        .plugin(
+            tauri::plugin::Builder::<tauri::Wry>::new("https-navigation")
+                .on_navigation(|webview, url| {
+                    // Also enforce the policy for page links and redirects.
+                    !webview.label().starts_with("search-") || url.scheme() == "https"
+                })
+                .build(),
+        )
         .plugin(
             tauri_plugin_window_state::Builder::new()
                 // Keep decorations controlled by tauri.conf.json, even when an
@@ -75,14 +78,23 @@ pub fn run() {
             time_manager::get_current_date,
             time_manager::get_day_of_week,
             txt_editor::load_txt,
+            txt_editor::save_txt_content,
+            txt_editor::save_txt_title,
+            json_editor::create_document_json,
+            json_editor::load_json,
+            json_editor::save_json_content,
+            json_editor::save_json_title,
             backup_manager::increment_backup,
             backup_manager::get_backup_history,
             backup_manager::get_deleted_files,
             backup_manager::restore_deleted_files,
             backup_manager::execute_complete_deletion,
-            bgimage_manager::add_user_image,
-            bgimage_manager::delete_user_image,
-            bgimage_manager::get_whole_image_list,
+            image_manager::add_user_image,
+            image_manager::delete_user_image,
+            image_manager::get_whole_image_list,
+            image_manager::plan_user_image_rename,
+            image_manager::rename_user_image,
+            image_manager::get_image_renames,
             soundeffect::commands::run_sound_effect,
             soundeffect::commands::run_enter_sound_effect,
             soundeffect::commands::load_wavfile

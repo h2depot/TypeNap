@@ -10,6 +10,8 @@ const TN_ImageOption = memo(function TN_ImageOption({
   width = 120,
   height = 105,
   showName = false,
+  disabled = false,
+  dimmed = false,
 }) {
   const { t } = useTranslation();
   const imageSrc = useMemo(() => image.path ? convertFileSrc(image.path) : "", [image.path]);
@@ -17,6 +19,7 @@ const TN_ImageOption = memo(function TN_ImageOption({
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={() => onSelect(image.path)}
       aria-pressed={selected}
       aria-label={image.name}
@@ -29,7 +32,8 @@ const TN_ImageOption = memo(function TN_ImageOption({
         flex: "0 0 auto",
         padding: 0,
         border: 0,
-        cursor: "pointer",
+        cursor: disabled ? "default" : "pointer",
+        opacity: disabled || dimmed ? 0.45 : 1,
         borderRadius: "8px",
         overflow: "hidden",
         color: "var(--tn-text)",

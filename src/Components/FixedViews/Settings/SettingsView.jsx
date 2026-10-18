@@ -79,9 +79,7 @@ export default function SettingsView() {
                     {selectedTab === id && (
                         <div className={styles.contentInner}>
                             <header className={styles.pageHeader}>
-                                <p className={styles.eyebrow}>PREFERENCES / {String(sections.findIndex((section) => section.id === id) + 1).padStart(2, "0")}</p>
                                 <h1 className={styles.heading}>{t(label)}</h1>
-                                <p className={styles.pageDescription}>{t(`settings.design.description.${id}`)}</p>
                             </header>
                             <Content />
                         </div>

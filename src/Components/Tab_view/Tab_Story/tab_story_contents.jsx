@@ -1,5 +1,6 @@
+import { contentId, contentsInfo } from '../../../store/contentsInfo.js';
 import React, { useState } from "react";
-import { EllipsisVertical, Page, PageSearch, Plus, ArrowUpWideNarrow, ArrowDownWideNarrow } from '../../../assets/IconList';
+import { EllipsisVertical, Page, User, Map, Entity, PageSearch, ArrowUpWideNarrow, ArrowDownWideNarrow } from '../../../assets/IconList';
 import styles from "./tab_story.module.css";
 import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
@@ -19,16 +20,20 @@ import {
     TN_Slider,
 } from "../../TNDesignSystem";
 import { useTranslation } from "react-i18next";
+import ContentTypeSelector from './ContentTypeSelector';
+import BackupPreview from '../../JSONBox/BackupPreview';
 
 export default function Tab_StoryContents({ story_name, workspace, isAddDialogOpen, setIsAddDialogOpen }) {
     const { t } = useTranslation();
     const { addTab, renameWorkTabs, removeWorkTabs } = useTabStore();
-    const { getStoryInfo, deleteTxt, createTxt, updateTxtName } = useFileStore();
+    const { getStoryInfo, deleteTxt, createTxt } = useFileStore();
     const { updateStoryInfo } = useStoryStore();
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [newFileName, setNewFileName] = useState("");
+    const [newContentType, setNewContentType] = useState('txt');
+    const newContentTypeLabel = { txt: 'Text', character: 'Character', world: 'World', entity: 'Entity' }[newContentType];
 
     const [isFileRenameDialogOpen, setIsFileRenameDialogOpen] = useState(false);
     const [renameTargetFile, setRenameTargetFile] = useState("");
@@ -47,10 +52,10 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
         { value: "title", label: t("story.files.sort.title") },
         { value: "order", label: t("story.files.sort.order") },
     ];
-    const files = workspace.filesList;
+    const files = (workspace.contentsList ?? []).filter((info) => ["txt", "character", "world", "entity"].includes(info.content_type));
     const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
     const visibleFiles = files
-        .map((title, index) => ({ title, index }))
+        .map((info, index) => ({ ...info, title: info.name, index }))
         .filter(({ title }) => title.toLocaleLowerCase().includes(normalizedSearchQuery))
         .sort((a, b) => {
             const comparison = sortBy === "order"
@@ -59,19 +64,19 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
             return isAscending ? comparison : -comparison;
         });
     const normalizedNewFileName = newFileName.trim().toLocaleLowerCase();
-    const newFileNameExists = normalizedNewFileName !== "" && files.some((fileName) => (
-        fileName.trim().toLocaleLowerCase() === normalizedNewFileName
+    const newFileNameExists = normalizedNewFileName !== "" && files.some((info) => (
+        info.name.trim().toLocaleLowerCase() === normalizedNewFileName
     ));
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
 
-        const title = deleteTarget;
+        const info = contentsInfo(deleteTarget);
 
         try {
-            await deleteTxt({ story_name, title });
-            removeWorkTabs(story_name, title);
-            useTxtStore.getState().removeWorkspace(`${story_name}/${title}`);
+            await deleteTxt(info);
+            removeWorkTabs(info);
+            useTxtStore.getState().removeWorkspace(contentId(info));
             setIsDeleteDialogOpen(false);
             setDeleteTarget(null);
             const storyInfo = await getStoryInfo(story_name);
@@ -83,23 +88,26 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
 
     const handleCreateTxt = async (e) => {
         if (e) e.preventDefault();
-        if (newFileName.trim() === "" || newFileNameExists) return;
+        if (!['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists) return;
         try {
-            await createTxt({ story_name, title: newFileName });
+            const created = newContentType !== 'txt'
+                ? await invoke("create_document_json", { input: { story_name, name: newFileName.trim(), content_type: newContentType } })
+                : await createTxt({ story_name, name: newFileName, content_type: "txt" });
             setIsAddDialogOpen(false);
-            const addedFileName = newFileName;
             setNewFileName("");
 
             const storyInfo = await getStoryInfo(story_name);
             updateStoryInfo(story_name, storyInfo);
 
-            addTab('work', addedFileName, { story_name: story_name, title: addedFileName });
+            addTab('work', created.name, { ...created, title: created.name });
         } catch (error) {
-            console.error("Text creation failed", error);
+            console.error("Content creation failed", error);
+            useToastStore.getState().addToast(String(error), "error");
         }
     };
 
-    const handleUpdateTxtName = async (oldFileName, newFileName) => {
+    const handleUpdateTxtName = async (info, newFileName) => {
+        const oldFileName = info.name;
         const nextFileName = newFileName.trim();
         if (!nextFileName || oldFileName === nextFileName) {
             setIsFileRenameDialogOpen(false);
@@ -109,11 +117,8 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
         }
 
         try {
-            await updateTxtName({ story_name, title: oldFileName }, nextFileName);
-
- 
-            useTxtStore.getState().renameWorkspaceKey(story_name, oldFileName, nextFileName);
-            renameWorkTabs(story_name, oldFileName, nextFileName);
+            const renamed = await useTxtStore.getState().renameContent(info, nextFileName);
+            renameWorkTabs(renamed);
 
 
             const storyInfo = await getStoryInfo(story_name);
@@ -126,11 +131,11 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
         }
     }
 
-    const handleOpenRestoreDialog = async (fileTitle) => {
+    const handleOpenRestoreDialog = async (value) => {
         try {
+            const info = contentsInfo(value);
             const history = await invoke("get_backup_history", {
-                storyName: story_name,
-                fileName: fileTitle
+                contentsInfo: info
             });
             if (!history || history.length === 0) {
                 useToastStore.getState().addToast(t("story.restore.noHistory"), "error");
@@ -140,7 +145,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
             const latestHistoryIndex = history.length - 1;
             setRestoreGenerationIndex(history[latestHistoryIndex]?.generationIndex ?? 0);
             setRestoreSliderValue(latestHistoryIndex);
-            setRestoreTargetFile(fileTitle);
+            setRestoreTargetFile(info);
             setIsRestoreDialogOpen(true);
         } catch (error) {
             console.error("Failed to fetch backup history", error);
@@ -156,23 +161,20 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
 
         try {
             await invoke("increment_backup", {
-                storyName: story_name,
-                fileName: restoreTargetFile,
-                _content: "",
-                content: ""
+                contentsInfo: restoreTargetFile,
             });
 
-            await invoke("save_document_content", {
-                txtInfo: { story_name, title: restoreTargetFile },
-                content: selectedHistory.content
+            await invoke(restoreTargetFile.content_type === "txt" ? "save_document_content" : "save_json_content", {
+                contentsInfo: restoreTargetFile,
+                content: restoreTargetFile.content_type === "txt" ? selectedHistory.content : JSON.parse(selectedHistory.content)
             });
 
-            const workspaceId = `${story_name}/${restoreTargetFile}`;
+            const workspaceId = contentId(restoreTargetFile);
             if (useTxtStore.getState().workspaces[workspaceId]) {
-                await useTxtStore.getState().loadContent(workspaceId, story_name, restoreTargetFile);
+                await useTxtStore.getState().loadContent(restoreTargetFile);
             }
 
-            useToastStore.getState().addToast(t("story.restore.success", { name: restoreTargetFile }), "success");
+            useToastStore.getState().addToast(t("story.restore.success", { name: restoreTargetFile.name }), "success");
             setIsRestoreDialogOpen(false);
             setRestoreTargetFile("");
             setBackupHistory([]);
@@ -225,12 +227,6 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     return (
         <>
             <div className={styles.mainContent}>
-                <header className={styles.contentsHeader}>
-                    <h3 className={styles.contentTitle}>{t("story.overview.contents")}</h3>
-                    <TN_Button variant="proceed" onClick={() => setIsAddDialogOpen(true)} borderRadius="10px">
-                        <Plus size={18} />{t("story.files.createTitle")}
-                    </TN_Button>
-                </header>
                 <div className={styles.contentsControls}>
                     <div className={styles.contentsSearchField}>
                         <TN_TextField
@@ -258,18 +254,20 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         />
                     </div>
                 </div>
-                <div className={styles.contentsResultCount} role="status">
-                    {t("story.files.resultCount", { count: visibleFiles.length, total: files.length })}
-                </div>
+                {normalizedSearchQuery && <div className={styles.contentsResultRow}>
+                    <div className={styles.contentsResultCount} role="status">
+                        {t("story.files.resultCount", { count: visibleFiles.length, total: files.length })}
+                    </div>
+                </div>}
                 <div className={styles.listScrollArea}>
                     <TN_ListView maxWidth="100%">
-                        {visibleFiles.map(({ title: fileTitle }) => (
+                        {visibleFiles.map((info) => (
                             <TN_ListItem
-                                key={fileTitle}
-                                icon={<Page size={20} />}
-                                title={fileTitle}
-                                description={t("story.files.description")}
-                                onClick={() => addTab('work', fileTitle, { story_name: story_name, title: fileTitle })}
+                                key={info.access_id}
+                                icon={React.createElement({ txt: Page, character: User, world: Map, entity: Entity }[info.content_type], { size: 20 })}
+                                title={info.name}
+                                description={info.content_type === "txt" ? t("story.files.description") : `${{ character: "Character", world: "World", entity: "Entity" }[info.content_type]} / JSONBox`}
+                                onClick={() => addTab('work', info.name, { story_name: info.story_name, name: info.name, access_id: info.access_id, content_type: info.content_type, title: info.name })}
                                 control={
                                     <TN_Menu
                                         trigger={
@@ -299,13 +297,13 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                                         items={[
                                             {
                                                 label: t("story.actions.restoreBackup"),
-                                                onClick: () => handleOpenRestoreDialog(fileTitle)
+                                                onClick: () => handleOpenRestoreDialog(info)
                                             },
                                             {
                                                 label: t("common.rename"),
                                                 onClick: () => {
-                                                    setRenameTargetFile(fileTitle);
-                                                    setEditFileName(fileTitle);
+                                                    setRenameTargetFile(info);
+                                                    setEditFileName(info.name);
                                                     setIsFileRenameDialogOpen(true);
                                                 }
                                             },
@@ -313,7 +311,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                                                 label: t("common.delete"),
                                                 isDanger: true,
                                                 onClick: () => {
-                                                    setDeleteTarget(fileTitle);
+                                                    setDeleteTarget(info);
                                                     setIsDeleteDialogOpen(true);
                                                 }
                                             }
@@ -347,7 +345,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                 title={t("common.deleteConfirmation")}
             >
                 <p style={{ marginTop: 0, color: 'var(--tn-text)' }}>
-                    {t("story.files.deleteMessage", { name: deleteTarget })}
+                    {t("story.files.deleteMessage", { name: deleteTarget?.name })}
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px', gap: '12px' }}>
                     <TN_Button
@@ -360,7 +358,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         {t("common.cancel")}
                     </TN_Button>
                     <TN_Button
-                        variant="proceed"
+                        variant="danger"
                         onClick={handleDelete}
                     >
                         {t("common.delete")}
@@ -377,19 +375,22 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                 title={t("story.files.createTitle")}
             >
                 <form onSubmit={handleCreateTxt} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <ContentTypeSelector value={newContentType} onChange={setNewContentType} />
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <label style={{
+                        <label htmlFor="new-content-name" style={{
                             fontSize: '14px',
                             fontWeight: 'var(--font-weight-ui)',
                             color: 'var(--tn-text)',
                             opacity: 0.8
                         }}>
-                            {t("story.files.nameLabel")}
+                            {t('story.contentTypes.nameLabel', { type: newContentTypeLabel })}
                         </label>
                         <TN_TextField
+                            id="new-content-name"
                             value={newFileName}
                             onChange={(e) => setNewFileName(e.target.value)}
-                            placeholder={t("story.files.namePlaceholder")}
+                            placeholder={t('story.contentTypes.namePlaceholder', { type: newContentTypeLabel })}
                             autoFocus
                         />
                         {newFileNameExists && (
@@ -413,7 +414,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         <TN_Button
                             onClick={handleCreateTxt}
                             variant="proceed"
-                            disabled={newFileName.trim() === "" || newFileNameExists}
+                            disabled={!['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists}
                         >
                             {t("common.create")}
                         </TN_Button>
@@ -486,11 +487,20 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                     setBackupHistory([]);
                     setRestoreGenerationIndex(0);
                 }}
-                title={t("story.restore.title", { name: restoreTargetFile })}
+                title={t("story.restore.title", { name: restoreTargetFile.name })}
                 maxWidth="600px"
+                bodyStyle={{
+                    height: 'min(680px, calc(100dvh - 180px))',
+                    maxHeight: 'none',
+                    boxSizing: 'border-box',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                }}
             >
                 {backupHistory.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className={styles.restoreLayout}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
                             <span style={{ fontSize: '14px', opacity: 0.8, color: 'var(--tn-text)' }}>
                                 {t("story.restore.generationLabel")}
@@ -533,16 +543,20 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                             background: 'var(--tn-hover-bg)',
                             borderRadius: '8px',
                             border: '1px solid var(--tn-border-light)',
-                            minHeight: '200px',
-                            maxHeight: '300px',
+                            flex: '1 1 0',
+                            minHeight: 0,
                             overflowY: 'auto',
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-all',
+                            whiteSpace: restoreTargetFile.content_type === 'txt' ? 'pre-wrap' : 'normal',
+                            overflowWrap: 'anywhere',
                             fontSize: '14px',
                             lineHeight: 1.6,
                             color: 'var(--tn-text)'
                         }}>
-                            {selectedHistory?.content || <span style={{ opacity: 0.5 }}>{t("story.restore.noContent")}</span>}
+                            {selectedHistory?.content
+                                ? restoreTargetFile.content_type === 'txt'
+                                    ? selectedHistory.content
+                                    : <BackupPreview content={selectedHistory.content} title={restoreTargetFile.name} />
+                                : <span style={{ opacity: 0.5 }}>{t("story.restore.noContent")}</span>}
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>

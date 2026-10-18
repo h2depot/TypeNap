@@ -1,3 +1,4 @@
+import { contentsInfo, sameContent } from '../contentsInfo.js';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -8,7 +9,7 @@ const source = (await readFile(new URL("./stats.js", import.meta.url), "utf8"))
     .replace(/^import .*;\r?\n/gm, "")
     .replace("export const useStatsStore", "const useStatsStore");
 
-function fixture(initial) {
+function fixture(initial, stories = {}) {
     let today = "2026-10-03";
     const records = structuredClone(initial);
     const snapshots = [];
@@ -26,11 +27,11 @@ function fixture(initial) {
         async save() { snapshots.push(structuredClone(records)); }
     }
     const build = new Function("create", "invoke", "LazyStore", "useToastStore", "i18next",
-        "initialBookmarksJa", "initialBookmarksEn", "bookmarkUrl", "useAppSettings", "migrateDailyChars", "getWritingStreak",
+        "initialBookmarksJa", "initialBookmarksEn", "bookmarkUrl", "useAppSettings", "migrateDailyChars", "getWritingStreak", "contentsInfo", "sameContent",
         `${source}\nreturn useStatsStore;`);
-    const store = build(create, async () => today, LazyStore,
+    const store = build(create, async (command, args) => command === 'get_story_info' ? stories[args.storyName] ?? { contents: [] } : today, LazyStore,
         { getState: () => ({ addToast: () => {} }) }, { t: (key) => key }, [], [],
-        (url) => url, { getState: () => ({ settings: { language: "ja" } }) }, migrateDailyChars, getWritingStreak);
+        (url) => url, { getState: () => ({ settings: { language: "ja" } }) }, migrateDailyChars, getWritingStreak, contentsInfo, sameContent);
     return { store, records, snapshots, setDate: (date) => { today = date; } };
 }
 
@@ -101,4 +102,39 @@ test("streak persists on startup, after writing, and after a day without writing
     assert.equal(records.writing_streak.current_days, 0);
     assert.equal(records.writing_streak.longest_days, 3);
     assert.deepEqual(store.getState().stats.writing_streak, records.writing_streak);
+});
+
+
+test('recent files use ContentsInfo UUIDs across same names, renames and deletion', async () => {
+    const { store, records } = fixture({});
+    await store.getState().initStats();
+    const text = { story_name: 'Story', name: 'Same', content_type: 'txt', access_id: 'text-uuid' };
+    const world = { ...text, content_type: 'world', access_id: 'world-uuid' };
+    await store.getState().addRecentFile(text);
+    await store.getState().addRecentFile(world);
+    assert.equal(store.getState().stats.recent_file.length, 2);
+    await store.getState().addRecentFile({ ...text, name: 'New text' });
+    assert.equal(store.getState().stats.recent_file.length, 2);
+    await store.getState().updateRecentContent({ ...world, name: 'New world' });
+    assert.deepEqual(store.getState().stats.recent_file.map(file => file.name), ['New text', 'New world']);
+    await store.getState().renameRecentStory('Story', 'Renamed story');
+    assert.ok(store.getState().stats.recent_file.every(file => file.story_name === 'Renamed story'));
+    await store.getState().removeRecentFile({ ...text, name: 'stale name' });
+    assert.deepEqual(records.recent_file.map(file => file.access_id), ['world-uuid']);
+    await store.getState().removeRecentFilesByStory('Renamed story');
+    assert.deepEqual(records.recent_file, []);
+});
+
+test('legacy recent files migrate once to the text UUID without selecting same-name JSON', async () => {
+    const text = { story_name: 'Story', name: 'Same', content_type: 'txt', access_id: 'text-uuid' };
+    const world = { ...text, content_type: 'world', access_id: 'world-uuid' };
+    const { store, records } = fixture({ recent_file: [
+        { storyName: 'Story', txtName: 'Same', timestamp: 123 },
+        { storyName: 'Story', txtName: 'Missing', timestamp: 122 },
+        { ...world, timestamp: 121 },
+    ] }, { Story: { contents: [world, text] } });
+    await store.getState().initStats();
+    assert.deepEqual(records.recent_file, [{ ...text, timestamp: 123 }, { ...world, timestamp: 121 }]);
+    await store.getState().initStats();
+    assert.deepEqual(records.recent_file, [{ ...text, timestamp: 123 }, { ...world, timestamp: 121 }]);
 });

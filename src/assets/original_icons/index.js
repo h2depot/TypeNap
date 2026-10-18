@@ -27,6 +27,7 @@ export { default as WallPaper, default as WallPaperIcon } from './icons/WallPape
 export { default as Bot, default as BotIcon } from './icons/Bot.js';
 export { default as Library, default as LibraryIcon } from './icons/Library.js';
 export { default as Workspace, default as WorkspaceIcon } from './icons/Workspace.js';
+export { default as GoBack, default as GoBackIcon } from './icons/GoBack.js';
 export { default as TriangleAlert, default as TriangleAlertIcon } from './icons/TriangleAlert.js';
 export { default as Bell, default as BellIcon } from './icons/Bell.js';
 export { default as Info, default as InfoIcon } from './icons/Info.js';
@@ -49,3 +50,10 @@ export { default as UpArrow, default as UpArrowIcon } from './icons/UpArrow.js';
 export { default as DownArrow, default as DownArrowIcon } from './icons/DownArrow.js';
 export { default as Reload, default as ReloadIcon } from './icons/Reload.js';
 export { default as Globe, default as GlobeIcon } from './icons/Globe.js';
+export { default as NodeGraph, default as NodeGraphIcon } from './icons/NodeGraph.js';
+export { default as RoadMap, default as RoadMapIcon } from './icons/RoadMap.js';
+export { default as Tabular, default as TabularIcon } from './icons/Tabular.js';
+export { default as ContentsView, default as ContentsViewIcon } from './icons/ContentsView.js';
+export { default as PanelClose, default as PanelCloseIcon } from './icons/PanelClose.js';
+export { default as PanelOpen, default as PanelOpenIcon } from './icons/PanelOpen.js';
+export { default as BluePrint, default as BluePrintIcon } from './icons/BluePrint.js';

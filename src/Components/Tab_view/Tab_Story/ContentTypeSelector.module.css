@@ -1,0 +1,65 @@
+﻿.section { display: flex; flex-direction: column; gap: 12px; }
+.label { font-size: 13px; font-weight: var(--font-weight-ui); color: var(--tn-subtext); }
+.selector { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.option {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--tn-border-light, rgba(128, 128, 128, 0.2));
+    border-radius: 14px;
+    background: var(--tn-hover-bg, rgba(128, 128, 128, 0.04));
+    color: var(--tn-text);
+    font-family: var(--font-family-ui);
+    text-align: left;
+    cursor: pointer;
+    transition: transform 240ms ease, background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+}
+.option:hover { transform: translateY(-2px); border-color: var(--tn-subtext); }
+.option:active { transform: translateY(0) scale(0.98); }
+.option:focus-visible { outline: 2px solid var(--tn-focus, #E8890D); outline-offset: 3px; }
+.selected {
+    border-color: #E8890D;
+    background: rgba(232, 137, 13, 0.09);
+    box-shadow: 0 4px 14px rgba(232, 137, 13, 0.08), inset 0 0 0 1px rgba(232, 137, 13, 0.2);
+    transform: translateY(-2px);
+}
+.selected:hover { border-color: #E8890D; }
+.heading { display: flex; align-items: center; gap: 10px; width: 100%; }
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--tn-hover-bg, rgba(128, 128, 128, 0.08));
+    transition: color 240ms ease, background-color 240ms ease, transform 240ms ease;
+}
+.selected .icon { color: #E8890D; background: rgba(232, 137, 13, 0.13); transform: rotate(-4deg); }
+.title { font-size: 14px; font-weight: var(--font-weight-ui); }
+.indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-left: auto;
+    border-radius: 50%;
+    color: #1a1a1a;
+    background: #E8890D;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 200ms ease, transform 240ms ease;
+}
+.selected .indicator { opacity: 1; transform: scale(1); }
+.description { color: var(--tn-subtext); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+    .option { padding: 12px; }
+    .heading { gap: 7px; flex-wrap: wrap; }
+    .icon { flex-basis: 28px; height: 28px; }
+    .title { font-size: 13px; }
+    .indicator { width: 14px; height: 14px; flex-basis: 14px; }
+}

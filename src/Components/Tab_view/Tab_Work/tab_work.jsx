@@ -1,5 +1,7 @@
+import { contentId, contentsInfo } from '../../../store/contentsInfo.js';
 import React, { useState, useEffect, useCallback } from "react";
 import { listen } from "@tauri-apps/api/event";
+import JSONBox from "../../JSONBox/jsonbox";
 import TextBox from "../../TextBox/textbox";
 import { useTxtStore } from "../../../store/txtStore";
 import { useFileStore } from "../../../store/fileStore";
@@ -11,7 +13,7 @@ import { useTranslation } from "react-i18next";
 const BATTERY_LOW_EVENT = "battery-low";
 const AUTO_SAVE_INTERVAL = 5 * 1000 * 60;
 
-export default function TabWork({ story_name, title }) {
+export default function TabWork({ story_name, title, access_id, content_type = "txt", name }) {
     const { t } = useTranslation();
     const { workspaces, initWorkspace, updateContent, loadContent, saveTitle, saveContent } = useTxtStore();
     const { settings } = useAppSettings();
@@ -19,7 +21,7 @@ export default function TabWork({ story_name, title }) {
     const { fetchWholeTxtList, getStoryInfo } = useFileStore();
     const { updateStoryInfo } = useStoryStore();
 
-    const workspaceId = `${story_name}/${title}`;
+    const workspaceId = contentId({ access_id });
     const workspace = workspaces[workspaceId];
 
     const [isTitleEdible, setIsTitleEdible] = useState(false);
@@ -36,11 +38,11 @@ export default function TabWork({ story_name, title }) {
 
     useEffect(() => {
         if (!workspaces[workspaceId]) {
-            initWorkspace(workspaceId, story_name, title);
-
-            loadContent(workspaceId, story_name, title);
+            const info = contentsInfo({ story_name, name: name ?? title, access_id, content_type });
+            initWorkspace(info);
+            void loadContent(info);
         }
-    }, [workspaceId, story_name, title, workspaces, initWorkspace, loadContent]);
+    }, [workspaceId, story_name, title, access_id, content_type, name, workspaces, initWorkspace, loadContent]);
 
     useEffect(() => {
         const intervalId = setInterval(async () => {
@@ -83,7 +85,8 @@ export default function TabWork({ story_name, title }) {
         };
     }, [saveWorkspaceContent]);
 
-    if (!workspace) return <div>{t("common.loading")}</div>;
+    if (!workspace || workspace.isLoading) return <div>{t("common.loading")}</div>;
+    if (workspace.loadError) return <div role="alert">{workspace.loadError}</div>;
 
     const handleChangeContent = (newText) => {
         updateContent(workspaceId, newText);
@@ -91,8 +94,8 @@ export default function TabWork({ story_name, title }) {
 
     const handleRename = async (newTitle) => {
         try {
-            await saveTitle(workspaceId, newTitle);
-            renameWorkTabs(story_name, title, newTitle);
+            const renamed = await saveTitle(workspaceId, newTitle);
+            if (renamed) renameWorkTabs(renamed);
 
             await fetchWholeTxtList();
             const storyInfo = await getStoryInfo(story_name);
@@ -101,6 +104,7 @@ export default function TabWork({ story_name, title }) {
             console.log("Renamed to:", newTitle);
         } catch (err) {
             alert(t("work.renameFailed"));
+            throw err;
         }
     };
 
@@ -108,11 +112,13 @@ export default function TabWork({ story_name, title }) {
         await saveWorkspaceContent();
     };
 
+    const Editor = ["character", "world", "entity"].includes(content_type) ? JSONBox : TextBox;
     return (
-        <TextBox
+        <Editor
             workspaceId={workspaceId}
             title={workspace.title}
             content={workspace.content}
+            contentType={content_type}
             onChangeContent={handleChangeContent}
             isTitleEdible={isTitleEdible}
             setIsTitleEdible={setIsTitleEdible}

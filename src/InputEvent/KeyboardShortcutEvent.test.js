@@ -1,3 +1,4 @@
+import * as contentModel from '../store/contentsInfo.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -11,7 +12,7 @@ async function setup(appMode = 'workspace', type = 'work') {
     let overlayOpen = false;
     const state = {
         appMode, selectedIndex: 0, tabLauncherOpen: false,
-        tabsList: [0, 1, 2].map(() => ({ type, props: { story_name: 'A', title: 'B' } })),
+        tabsList: [0, 1, 2].map(() => ({ type, props: { story_name: 'A', title: 'B', access_id: 'uuid-b' } })),
         setAppMode: (mode) => { state.appMode = mode; },
         setSelectedIndex: (index) => { state.selectedIndex = index; },
         addTab: (...args) => calls.push(['addTab', ...args]),
@@ -23,10 +24,11 @@ async function setup(appMode = 'workspace', type = 'work') {
         document: { querySelector: () => overlayOpen ? {} : null },
     });
     const dependencies = {
+        '../store/contentsInfo.js': contentModel,
         'react-hotkeys-hook': { useHotkeys: (keys, handler, opts) => { registeredKeys = keys; callback = handler; options = opts; } },
         '../store/tabStore': { useTabStore: { getState: () => state } },
         '../store/txtStore': { useTxtStore: { getState: () => ({
-            workspaces: { 'A/B': { isEdited: true, story_name: 'A' } },
+            workspaces: { 'uuid-b': { isEdited: true, story_name: 'A' } },
             saveContent: async (id) => calls.push(['save', id]),
         }) } },
         '../store/fileStore': { useFileStore: { getState: () => ({ getStoryInfo: async (name) => ({ name }) }) } },
@@ -85,9 +87,9 @@ test('tab cycling wraps; closing goes through the unsaved confirmation event', a
 test('saving, searching and creation target the current supported view', async () => {
     const app = await setup();
     await app.press('ctrl+s');
-    assert.equal(app.calls[0][1], 'A/B');
+    assert.equal(app.calls[0][1], 'uuid-b');
     await app.press('ctrl+f');
-    assert.equal(app.events.at(-1).detail.workspaceID, 'A/B');
+    assert.equal(app.events.at(-1).detail.workspaceID, 'uuid-b');
     assert.equal(await app.press('ctrl+n'), false);
     app.state.tabsList[0].type = 'story';
     await app.press('ctrl+s');

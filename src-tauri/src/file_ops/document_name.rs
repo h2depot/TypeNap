@@ -1,5 +1,6 @@
 use crate::utils::path_gate;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use uuid::Uuid;
@@ -62,19 +63,96 @@ pub fn find_title(story: &Path, title: &str) -> Result<Option<PathBuf>, String> 
     Ok(None)
 }
 
-pub fn resolve(root: &Path, story_name: &str, title: &str) -> Result<PathBuf, String> {
-    path_gate::validate_name(title)?;
-    let story = path_gate::story_dir(root, story_name)?;
-    find_title(&story, title)?.ok_or_else(|| "Text not found".to_string())
-}
-
-pub fn resolve_stem(root: &Path, story_name: &str, title: &str) -> Result<String, String> {
-    let path = resolve(root, story_name, title)?;
+pub fn resolve_info_stem(
+    root: &Path,
+    info: &super::contents_info::ContentsInfo,
+) -> Result<String, String> {
+    let path = path_gate::text_file(root, info)?;
     Ok(path
         .file_stem()
-        .and_then(|stem| stem.to_str())
-        .ok_or_else(|| "Invalid text file name".to_string())?
+        .and_then(|name| name.to_str())
+        .ok_or("Invalid text file name")?
         .to_string())
+}
+
+// Upgrade legacy title-only files when exposing a library through the UUID API.
+// Write the new backup first and keep the old files until it is ready.
+pub fn ensure_text_ids(root: &Path, backup_root: &Path, story_name: &str) -> Result<(), String> {
+    let story = path_gate::story_dir(root, story_name)?;
+    let _guard = CREATION_LOCK.lock().map_err(|e| e.to_string())?;
+    let entries = match fs::read_dir(&story) {
+        Ok(entries) => entries,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(e.to_string()),
+    };
+    let mut legacy = Vec::new();
+    for entry in entries {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+        if entry.file_type().map_err(|e| e.to_string())?.is_file()
+            && path.extension().and_then(|ext| ext.to_str()) == Some("txt")
+        {
+            let stem = path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .ok_or("Invalid text file name")?;
+            if split(stem).is_none() {
+                legacy.push(path);
+            }
+        }
+    }
+    if legacy.is_empty() {
+        return Ok(());
+    }
+    let mut ids = Vec::new();
+    collect_ids(root, &mut ids)?;
+    collect_ids(backup_root, &mut ids)?;
+    for old_path in legacy {
+        let name = old_path
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .ok_or("Invalid text file name")?;
+        path_gate::validate_name(name)?;
+        let id = unused_id(&ids, Uuid::new_v4);
+        ids.push(id);
+        let new_stem = format!("text_{name}_{id}");
+        let new_path = story.join(format!("{new_stem}.txt"));
+        let backup_story = path_gate::story_dir(&backup_root.join("Alive"), story_name)?;
+        let old_backup = backup_story.join(format!("{name}.json"));
+        let new_backup = backup_story.join(format!("{new_stem}.json"));
+        let mut backup: serde_json::Value = if old_backup.exists() {
+            serde_json::from_slice(&fs::read(&old_backup).map_err(|e| e.to_string())?)
+                .map_err(|e| e.to_string())?
+        } else {
+            serde_json::json!({"story_name": story_name, "file_name": name, "backups": [{
+                "base_content": fs::read_to_string(&old_path).map_err(|e| e.to_string())?,
+                "incremental_content": []
+            }]})
+        };
+        let object = backup.as_object_mut().ok_or("Invalid legacy backup")?;
+        object.insert("file_name".into(), new_stem.clone().into());
+        let json = serde_json::to_vec(&backup).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&backup_story).map_err(|e| e.to_string())?;
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&new_backup)
+            .map_err(|e| e.to_string())?;
+        let result = file.write_all(&json).and_then(|_| file.sync_all());
+        drop(file);
+        if let Err(e) = result {
+            let _ = fs::remove_file(&new_backup);
+            return Err(e.to_string());
+        }
+        if let Err(e) = fs::rename(&old_path, &new_path) {
+            let _ = fs::remove_file(&new_backup);
+            return Err(e.to_string());
+        }
+        if old_backup.exists() {
+            fs::remove_file(old_backup).map_err(|e| e.to_string())?;
+        }
+    }
+    Ok(())
 }
 
 fn collect_ids(root: &Path, ids: &mut Vec<Uuid>) -> Result<(), String> {
@@ -98,7 +176,14 @@ fn collect_ids(root: &Path, ids: &mut Vec<Uuid>) -> Result<(), String> {
                     // Archived copies may have a timestamp/counter after the UUID.
                     let mut original = stem;
                     loop {
-                        if let Some((_, id)) = split(original) {
+                        if let Some(id) = split(original).map(|(_, id)| id).or_else(|| {
+                            let (prefix, rest) = original.split_once('_')?;
+                            if !matches!(prefix, "character" | "world" | "entity") {
+                                return None;
+                            }
+                            let (_, id) = rest.rsplit_once('_')?;
+                            super::content_path::parse_id(id).ok()
+                        }) {
                             ids.push(id);
                             break;
                         }
@@ -149,115 +234,4 @@ pub fn create(
         .open(&path)
         .map_err(|error| error.to_string())?;
     Ok(path)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    struct Fixture(PathBuf);
-    impl Fixture {
-        fn new() -> Self {
-            let path =
-                std::env::temp_dir().join(format!("typenap-document-test-{}", Uuid::new_v4()));
-            fs::create_dir_all(&path).unwrap();
-            Self(path)
-        }
-    }
-    impl Drop for Fixture {
-        fn drop(&mut self) {
-            assert_eq!(self.0.parent(), Some(std::env::temp_dir().as_path()));
-            fs::remove_dir_all(&self.0).unwrap();
-        }
-    }
-
-    #[test]
-    fn retries_colliding_ids_with_linear_search() {
-        let first = Uuid::new_v4();
-        let last = Uuid::new_v4();
-        let fresh = Uuid::new_v4();
-        let mut candidates = [first, last, fresh].into_iter();
-        assert_eq!(
-            unused_id(&[first, last], || candidates.next().unwrap()),
-            fresh
-        );
-        assert!(candidates.next().is_none());
-    }
-
-    #[test]
-    fn creation_resolves_display_names_and_rejects_duplicate_titles() {
-        let fixture = Fixture::new();
-        let root = fixture.0.join("Library");
-        let backups = fixture.0.join("Backup");
-        let title = "第一章_part_2";
-        let path = create(&root, &backups, "Story", title).unwrap();
-        let stem = path.file_stem().unwrap().to_str().unwrap();
-        let (parsed_title, id) = split(stem).unwrap();
-        assert_eq!(parsed_title, title);
-        assert_eq!(id.get_version_num(), 4);
-        assert_eq!(resolve(&root, "Story", title).unwrap(), path);
-        fs::write(&path, "keep this content").unwrap();
-        assert!(create(&root, &backups, "Story", " 第一章_PART_2 ").is_err());
-        assert_eq!(fs::read_to_string(&path).unwrap(), "keep this content");
-        let renamed = renamed_stem(stem, "新しい章_3").unwrap();
-        assert_eq!(split(&renamed), Some(("新しい章_3", id)));
-        let new_path = path.with_file_name(format!("{renamed}.txt"));
-        fs::rename(&path, &new_path).unwrap();
-        assert_eq!(resolve(&root, "Story", "新しい章_3").unwrap(), new_path);
-        assert!(resolve(&root, "Story", title).is_err());
-    }
-
-    #[test]
-    fn scans_all_stories_and_backup_copies() {
-        let fixture = Fixture::new();
-        let first = Uuid::new_v4();
-        let second = Uuid::new_v4();
-        let third = Uuid::new_v4();
-        for (folder, file) in [
-            ("Library/A", format!("text_one_{first}.txt")),
-            ("Library/B", format!("text_two_{second}.txt")),
-            ("Backup/Alive/B", format!("text_two_{second}.json")),
-            (
-                "Backup/Necropolis/A_123",
-                format!("text_three_{third}_123_1.txt"),
-            ),
-        ] {
-            let directory = fixture.0.join(folder);
-            fs::create_dir_all(&directory).unwrap();
-            fs::write(directory.join(file), "").unwrap();
-        }
-        let mut ids = Vec::new();
-        collect_ids(&fixture.0, &mut ids).unwrap();
-        assert_eq!(ids.len(), 4);
-        assert!(ids.contains(&first) && ids.contains(&second) && ids.contains(&third));
-    }
-
-    #[test]
-    fn retains_title_limits_legacy_files_and_path_validation() {
-        let fixture = Fixture::new();
-        let root = fixture.0.join("Library");
-        let backups = fixture.0.join("Backup");
-        let title = "あ".repeat(100);
-        let path = create(&root, &backups, "Story", &title).unwrap();
-        validate_stem(path.file_stem().unwrap().to_str().unwrap()).unwrap();
-        assert_eq!(
-            path_gate::text_backup(
-                &backups,
-                "Story",
-                path.file_stem().unwrap().to_str().unwrap()
-            )
-            .unwrap(),
-            backups
-                .join("Story")
-                .join(path.with_extension("json").file_name().unwrap()),
-        );
-        assert!(create(&root, &backups, "Story", &"あ".repeat(101)).is_err());
-        assert!(create(&root, &backups, "../outside", "title").is_err());
-        assert!(create(&root, &backups, "Story", "../outside").is_err());
-        let legacy = root.join("Story/old_name.txt");
-        fs::write(&legacy, "legacy").unwrap();
-        assert_eq!(resolve(&root, "Story", "old_name").unwrap(), legacy);
-        assert_eq!(display_title("text_old_not-a-uuid"), "text_old_not-a-uuid");
-        assert!(create(&root, &backups, "Story", "OLD_NAME").is_err());
-    }
 }

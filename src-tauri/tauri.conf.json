@@ -34,7 +34,7 @@
       "assetProtocol": {
         "enable": true,
         "scope": [
-          "$APPDATA/BgImage/**/*"
+          "$APPDATA/Image/**/*"
         ]
       }
     }

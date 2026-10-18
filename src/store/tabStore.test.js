@@ -1,3 +1,4 @@
+import * as contentModel from './contentsInfo.js';
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -10,6 +11,8 @@ import { arrayMove } from "@dnd-kit/sortable";
 async function setup(saved = [], selected = {}, saving = "On") {
     const persisted = {};
     const dependencies = {
+        './contentsInfo.js': contentModel,
+        './fileStore': { useFileStore: { getState: () => ({ resolveContentsInfo: async value => value.access_id ? contentModel.contentsInfo(value) : work(value.story_name, value.title) }) } },
         zustand: { create },
         "@dnd-kit/sortable": { arrayMove },
         "./toastStore": { useToastStore: { getState: () => ({ addToast: () => {} }) } },
@@ -31,12 +34,13 @@ async function setup(saved = [], selected = {}, saving = "On") {
     });
     await module.evaluate();
     const store = module.namespace.useTabStore;
-    store.getState().initialize();
+    await store.getState().initialize();
     return { state: store.getState, persisted };
 }
 
 const story = (name) => ({ story_name: name });
-const work = (name, title) => ({ story_name: name, title });
+const work = (name, title) => ({ story_name: name, title, name: title, content_type: 'txt',
+    access_id: name === 'B' ? 'f441bc2b-9bc7-46a0-b27a-9b01d6ad5272' : 'de7187b7-27bd-4c69-85f0-29ad5dc23761' });
 
 test("fixed modes retain tabs; opening the same Story creates an independent tab", async () => {
     const { state } = await setup();
@@ -45,8 +49,9 @@ test("fixed modes retain tabs; opening the same Story creates an independent tab
     state().addTab("story", "A", story("A"));
     state().addTab("work", "Chapter", work("A", "Chapter"));
     const tabs = state().tabsList;
-    for (const mode of ["library", "settings", "workspace"]) {
+    for (const mode of ["library", "template", "images", "settings", "workspace"]) {
         state().setAppMode(mode);
+        assert.equal(state().appMode, mode);
         assert.equal(state().tabsList, tabs);
         assert.equal(state().selectedIndex, 1);
     }
@@ -125,7 +130,7 @@ test("renaming keeps resource identity and deletion removes related tabs only", 
     state().addTab("story", "A", story("A"));
     state().renameStoryTabs("A", "Renamed");
     assert.equal(state().tabsList.filter((tab) => tab.type === "story" && tab.title === "Renamed").length, 2);
-    state().renameWorkTabs("Renamed", "Chapter", "New chapter");
+    state().renameWorkTabs(work("Renamed", "New chapter"));
     state().addTab("story", "Renamed", story("Renamed"));
     state().addTab("work", "New chapter", work("Renamed", "New chapter"));
     assert.equal(state().tabsList.length, 5);
@@ -151,4 +156,41 @@ test("Story duplicates respect the tab limit; existing Work tabs still focus at 
     assert.equal(state().appMode, "workspace");
     state().addTab("search", "Search");
     assert.equal(state().tabsList.length, 20);
+});
+
+
+test('UUID tabs distinguish all same-name resources and rename/remove only their target', async () => {
+    const { state } = await setup();
+    const descriptors = contentModel.CONTENT_TYPES.map((content_type, i) => ({ ...work('A', 'Same'), content_type,
+        access_id: `de7187b7-27bd-4c69-85f0-29ad5dc2376${i}` }));
+    for (const info of descriptors) state().addTab('work', info.name, info);
+    assert.equal(state().tabsList.length, 4);
+    const selected = state().tabsList[state().selectedIndex].id;
+    const target = descriptors[1];
+    const renamed = { ...target, name: 'New title' };
+    state().renameWorkTabs(renamed);
+    assert.deepEqual(state().tabsList.map(tab => tab.title), ['Same', 'New title', 'Same', 'Same']);
+    assert.equal(state().tabsList[1].props.workspaceID, target.access_id);
+    state().addTab('work', 'stale title', { ...target, name: 'stale title' });
+    assert.equal(state().tabsList.length, 4);
+    assert.equal(state().selectedIndex, 1);
+    state().setSelectedIndex(3);
+    state().removeWorkTabs({ ...target, name: 'stale name' });
+    assert.equal(state().tabsList.length, 3);
+    assert.equal(state().tabsList[state().selectedIndex].id, selected);
+    assert.ok(state().tabsList.every(tab => tab.props.access_id !== target.access_id));
+});
+
+test('restoration upgrades legacy tabs before UUID deduplication and retains active resource', async () => {
+    const info = work('A', 'Chapter');
+    const { state, persisted } = await setup([
+        { id: 'legacy', type: 'work', props: { story_name: 'A', title: 'Chapter' } },
+        { id: 'modern', type: 'work', props: { ...info, name: 'stale name' } },
+        { id: 'world', type: 'work', props: { ...info, content_type: 'world', access_id: 'f441bc2b-9bc7-46a0-b27a-9b01d6ad5272' } },
+    ], { id: 'modern', index: 1 });
+    assert.equal(state().tabsList.length, 2);
+    assert.equal(state().selectedIndex, 0);
+    assert.equal(state().isReady, true);
+    assert.equal(persisted.tabs[0].props.access_id, info.access_id);
+    assert.equal(persisted.tabs[0].props.workspaceID, info.access_id);
 });

@@ -51,6 +51,7 @@ export default function Tab_Story({ story_name }) {
     if (!workspace) return <div>{t('common.loading')}</div>;
     return <div className={styles.container}>
         <TabStoryNav story_name={story_name} workspace={workspace} view={view}
+            onAddContent={() => { setView('contents'); setIsAddDialogOpen(true); }}
             onOverview={() => setView('overview')} onContents={() => setView('contents')} />
         <div className={styles.contentPane} hidden={view !== 'overview'}>
             <TabStoryOverview story_name={story_name} workspace={workspace}

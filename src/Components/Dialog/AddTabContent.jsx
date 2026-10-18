@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useTabStore } from "../../store/tabStore";
 import { useFileStore } from "../../store/fileStore";
 import { useAppSettings } from "../../store/saving/appSettings";
-import { useBgImageStore } from "../../store/bgImageStore";
+import { useImageStore } from "../../store/imageStore";
 import { TN_TextField, TN_Button, TN_IconButton, TN_ImageOption, TN_Tooltip } from "../TNDesignSystem";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from '../../assets/IconList';
@@ -16,9 +16,9 @@ export default function AddTabContent({ onComplete }) {
     const createStory = useFileStore((state) => state.createStory);
     const storyList = useFileStore((state) => state.storyList);
     const themeSetting = useAppSettings((state) => state.settings.theme);
-    const fetchImageList = useBgImageStore((state) => state.fetchImageList);
-    const addUserImage = useBgImageStore((state) => state.addUserImage);
-    const wholeImageList = useBgImageStore((state) => state.wholeImageList);
+    const fetchImageList = useImageStore((state) => state.fetchImageList);
+    const addUserImage = useImageStore((state) => state.addUserImage);
+    const wholeImageList = useImageStore((state) => state.wholeImageList);
 
     const [tabName, setTabName] = useState("");
     const [coverColor, setCoverColor] = useState(SOLID_PALETTE_COLORS[0]);
