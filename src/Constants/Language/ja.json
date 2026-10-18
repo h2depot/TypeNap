@@ -11,7 +11,7 @@
     "loading": "Storyを読み込み中…",
     "failed": "Storyを読み込めませんでした。パネルを開き直して再試行してください。"
   },
-  "navigation": {"label": "メインナビゲーション", "workspace": "ワークスペース", "resume": "ワークスペースに戻る", "openTabs": "{{count}} タブ", "addSearch": "調べものタブを開く", "chooseStory": "ライブラリから作品を開く"},
+  "navigation": {"label": "メインナビゲーション", "workspace": "ワークスペース", "resume": "ワークスペースに戻る", "openTabs": "{{count}} タブ", "addSearch": "調べものタブを開く", "chooseStory": "ライブラリから作品を開く", "images": "画像"},
   "windowControls": {
     "minimize": "最小化",
     "maximize": "最大化",
@@ -116,6 +116,7 @@
     }
   },
   "editor": {
+    "save": "保存",
     "saved": "保存済み",
     "unsaved": "未保存",
     "titlePlaceholder": "タイトル",
@@ -137,7 +138,17 @@
     "noRecentFiles": "最近開いたファイルはありません。"
   },
   "story": {
-    "overview": {"title": "作品概要", "navigation": "作品ナビゲーション", "contents": "本文一覧", "textColor": "表紙の文字色", "hideCoverText": "表紙の文字を非表示"},
+    "contentTypes": {
+      "nameLabel": "{{type}}名",
+      "namePlaceholder": "{{type}}名を入力...",
+      "label": "コンテンツの種類",
+      "txt": "物語の本文やエピソードを書きます。",
+      "character": "登場人物のプロフィールや背景をまとめます。",
+      "world": "舞台や世界のルールをまとめます。",
+      "entity": "アイテムや組織など、物語の要素をまとめます。",
+      "comingSoon": "{{type}} の作成機能は準備中です。"
+    },
+    "overview": {"title": "作品概要", "navigation": "作品ナビゲーション", "collapseNavigation": "ナビゲーションを収納", "expandNavigation": "ナビゲーションを展開", "contents": "コンテンツビュー", "textColor": "表紙の文字色", "hideCoverText": "表紙の文字を非表示"},
     "create": {
       "nameLabel": "ストーリーの名前",
       "namePlaceholder": "新しいストーリーの名前を入力...",
@@ -155,7 +166,7 @@
     },
     "actions": { "restoreBackup": "バックアップを復元" },
     "files": {
-      "searchPlaceholder": "本文の名前で検索...",
+      "searchPlaceholder": "コンテンツを検索...",
       "resultCount": "{{total}}件中 {{count}}件を表示",
       "noResults": "一致する本文がありません。",
       "sort": { "title": "名前順", "order": "作品内の順番" },
@@ -163,7 +174,7 @@
       "fetchFailed": "ファイルリストの取得に失敗しました: ",
       "empty": "ファイルがありません。",
       "deleteMessage": "本当に「{{name}}」を削除しますか？",
-      "createTitle": "新規テキストファイルを追加",
+      "createTitle": "新規コンテンツを追加",
       "nameLabel": "ファイル名",
       "namePlaceholder": "新しいファイルの名前を入力...",
       "duplicateName": "同じ名前のファイルが既に存在します。",
@@ -183,7 +194,11 @@
       "generationPlaceholder": "世代を選択",
       "generation": "世代: {{current}} / {{total}}",
       "unknownDate": "日時不明 (初期状態)",
-      "noContent": "(内容なし)"
+      "noContent": "(内容なし)",
+      "previewSummary": "概要",
+      "previewProperties": "オリジナル属性",
+      "previewImages": "画像ファイル",
+      "previewUnavailable": "このバックアップの構造を読み取れませんでした。"
     }
   },
   "image": {
@@ -247,6 +262,7 @@
       "raindrop": "Raindrop",
       "typeWriter": "TypeWriter"
     },
+    "writingFont": { "title": "執筆フォント", "description": "本文やあらすじのフォントを変更します。", "mincho": "明朝", "gothic": "ゴシック" },
     "fontSize": { "title": "執筆文字の大きさ変更(px)", "description": "エディタの文字の大きさを変更します。" },
     "tabs": {
       "title": "タブを保存する",
@@ -256,7 +272,6 @@
     },
     "environment": { "title": "環境設定" },
     "scan": { "title": "ディレクトリをスキャン", "description": "アプリディレクトリ内の不要なファイルをスキャンします。", "noneFound": "不要なファイルは見つかりませんでした。" },
-    "images": { "title": "画像を管理", "count": "ユーザー画像: {{count}}件" },
     "restore": { "title": "削除したファイルの復元", "description": "バックアップから削除済みファイルを復元します。" },
     "deleteLock": { "title": "データ完全削除のロック", "description": "誤操作を防ぐため、データ完全削除をロックします。" },
     "delete": { "title": "データを完全に削除", "description": "すべてのデータを復元不可能な状態で完全に削除します。" },
@@ -317,13 +332,6 @@
       "addImage": "画像を追加",
       "solidName": "単色背景",
       "imageName": "背景"
-    },
-    "imageManager": {
-      "title": "画像を管理",
-      "userImages": "ユーザー画像",
-      "count": "{{count}}件",
-      "empty": "削除できる画像はありません。",
-      "deleted": "背景画像を削除しました。"
     },
     "deletedFiles": {
       "restoreTitle": "削除したファイルを復元",
@@ -397,6 +405,7 @@
     "libraryDirectory": "ライブラリ用フォルダを準備できませんでした。",
     "backgroundDirectory": "背景画像用フォルダを準備できませんでした。",
     "backgroundAssets": "初期背景画像を準備できませんでした。",
+    "imageAssets": "画像フォルダの準備・移行ができませんでした。",
     "storyAssets": "初期作品を準備できませんでした。",
     "jsonFile": "初期化情報を読み書きできませんでした。",
     "default": "アプリを初期化できませんでした。"
@@ -435,5 +444,54 @@
       "label": "新しいStory名",
       "placeholder": "Story名を入力..."
     }
-  }
+  },
+  "imageLibrary": {
+    "searchPlaceholder": "画像名を検索",
+    "resultCount": "{{total}} 枚中 {{count}} 枚を表示",
+    "sortName": "画像名順",
+    "renameTitle": "画像名を変更",
+    "renameName": "新しい画像名",
+    "renameExtension": "拡張子 {{extension}} はそのままです。",
+    "renaming": "名前を変更中…",
+    "kind": { "label": "画像の種類", "all": "すべての画像", "user": "ユーザー画像", "preset": "プリセット画像" },
+    "import": "画像を追加",
+    "importing": "画像を追加中…",
+    "empty": "画像がありません。画像を追加してみましょう。",
+    "noResults": "条件に一致する画像はありません。",
+    "resetFilters": "絞り込みを解除",
+    "retry": "再読み込み",
+    "imageFailed": "画像を読み込めませんでした",
+    "preview": "画像プレビュー",
+    "openPreview": "「{{name}}」をプレビュー",
+    "dimensions": "画像サイズ",
+    "selectImage": "「{{name}}」を選択",
+    "deselectImage": "「{{name}}」の選択を解除",
+    "selectedCount": "{{count}} 枚を選択中",
+    "selectionActions": "選択した画像の操作",
+    "clearSelection": "選択を解除",
+    "deleteSelected": "選択した画像を削除",
+    "presetProtected": "プリセット画像は削除できません",
+    "deleteSingle": "「{{name}}」を削除しますか？",
+    "deleteMultiple": "選択した {{count}} 枚の画像を削除しますか？",
+    "deleteHint": "画像ファイルを削除します。この画像を使用している作品や資料でも表示できなくなります。この操作は取り消せません。"
+  },
+  "objectImages": {
+    "back": "??",
+    "done": "?????",
+    "title": "{{name}}の画像",
+    "open": "{{name}}の画像を編集",
+    "limit": "1つの資料に登録できる画像は{{max}}枚までです。",
+    "photo": "画像{{index}}",
+    "remove": "画像{{index}}を削除",
+    "emptySlot": "画像{{index}}・未登録",
+    "import": "画像を追加",
+    "collection": "追加済みの画像から選ぶ",
+    "removeHint": "削除するとこの資料から画像を外します。画像ファイルは画像一覧に残ります。",
+    "previous": "前の写真",
+    "next": "次の写真"
+  },
+  "jsonBox": {
+    "saving": "保存中…",
+    "unavailable": "このファイルを属性エディターで開けませんでした。"
+}
 }

@@ -48,8 +48,12 @@ pub fn story_metadata(root: &Path, story_name: &str) -> Result<PathBuf, String> 
     Ok(story_dir(root, story_name)?.join("story_metadata.json"))
 }
 
-pub fn text_file(root: &Path, story_name: &str, title: &str) -> Result<PathBuf, String> {
-    crate::file_ops::document_name::resolve(root, story_name, title)
+pub fn text_file(
+    root: &Path,
+    info: &crate::file_ops::contents_info::ContentsInfo,
+) -> Result<PathBuf, String> {
+    info.require_type(crate::file_ops::contents_info::ContentType::Txt)?;
+    crate::file_ops::content_path::resolve(root, info)
 }
 
 pub fn text_backup(root: &Path, story_name: &str, file_stem: &str) -> Result<PathBuf, String> {

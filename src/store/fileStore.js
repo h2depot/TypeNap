@@ -1,9 +1,12 @@
+import { contentsInfo, sameContent } from './contentsInfo.js';
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import { useToastStore } from "../store/toastStore";
 import { useStatsStore } from "./saving/stats";
 import i18next from "./languageController";
 import { initializationErrorMessage, normalizeInitializationError } from "./initializerInterface";
+import { withImageReferenceWrite } from './imageReferenceWrites.js';
+import { normalizeImagePath } from '../utils/imagePaths.js';
 
 const showErrorToast = (message, error) => {
     useToastStore.getState().addToast(i18next.t("common.errorWithDetail", { message, error: String(error) }), "error");
@@ -33,6 +36,7 @@ const normalizeStoryInfo = (storyInfo) => {
 
     return {
         ...storyInfo,
+        cover: normalizeImagePath(storyInfo.cover),
         created_at: createdAt,
         last_update: lastUpdate,
     };
@@ -78,9 +82,23 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    getTxtContent: async (txtInfo) => {
+    // Old saved tabs contain only display names. Resolve them once at the UI
+    // boundary; every backend read/write receives the UUID-bearing descriptor.
+    resolveContentsInfo: async (value) => {
+        if (value.access_id) return contentsInfo(value);
+        // Only legacy persisted entries may be resolved by name, once at startup.
+        const story = await get().getStoryInfo(value.story_name ?? value.storyName);
+        const matches = (story.contents ?? []).filter(item =>
+            item.content_type === (value.content_type ?? 'txt') && item.name === (value.name ?? value.title ?? value.txtName));
+        if (matches.length !== 1) throw new Error('Content not found or ambiguous');
+        return contentsInfo(matches[0]);
+    },
+
+    getTxtContent: async (value) => {
         try {
-            const txtContent = await invoke("get_txt_content", { txtInfo });
+            const info = contentsInfo(value);
+            if (info.content_type !== 'txt') throw new Error('Expected txt content');
+            const txtContent = await invoke("get_txt_content", { contentsInfo: info });
             return txtContent;
         } catch (error) {
             showErrorToast(operationFailed("loadText"), error);
@@ -124,7 +142,7 @@ export const useFileStore = create((set, get) => ({
 
     updateStoryCover: async (storyName, cover, touchLastUpdate = true, coverTextColor) => {
         try {
-            const storyInfo = await invoke("update_story_cover", { storyName, cover, touchLastUpdate, coverTextColor });
+            const storyInfo = await withImageReferenceWrite(() => invoke("update_story_cover", { storyName, cover: normalizeImagePath(cover), touchLastUpdate, coverTextColor }));
             const normalized = normalizeStoryInfo(storyInfo);
             set((state) => {
                 const index = state.storyList.findIndex((story) => story.story_name === storyName);
@@ -170,6 +188,8 @@ export const useFileStore = create((set, get) => ({
     renameStory: async (oldStoryName, newStoryName) => {
         try {
             await invoke("rename_story", { oldStoryName, newStoryName });
+            try { await useStatsStore.getState().renameRecentStory(oldStoryName, newStoryName); }
+            catch (error) { showErrorToast(i18next.t('notice.recentFilesSaveFailed'), error); }
             await get().fetchStoryList();
             await get().fetchWholeTxtList();
         } catch (error) {
@@ -179,11 +199,12 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    createTxt: async (txtInfo) => {
+    createTxt: async (input) => {
         try {
-            await invoke("create_document_txt", { txtInfo });
+            const created = await invoke("create_document_txt", { input });
             await get().fetchStoryList();
             await get().fetchWholeTxtList();
+            return created;
         } catch (error) {
             showErrorToast(operationFailed("createText"), error);
             console.error("Failed to create txt:", error);
@@ -191,10 +212,11 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    deleteTxt: async (txtInfo) => {
+    deleteTxt: async (value) => {
         try {
-            await invoke("delete_txt", { txtInfo });
-            await useStatsStore.getState().removeRecentFile(txtInfo.story_name, txtInfo.title);
+            const info = contentsInfo(value);
+            await invoke("delete_txt", { contentsInfo: info });
+            await useStatsStore.getState().removeRecentFile(info);
             await get().fetchStoryList();
             await get().fetchWholeTxtList();
         } catch (error) {
@@ -204,17 +226,20 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
-    updateTxtName: async (txtInfo, newTitle) => {
+    updateTxtName: (value, newTitle) => withImageReferenceWrite(async () => {
         try {
-            await invoke("save_document_title", { txtInfo, newTitle });
-            await get().fetchStoryList();
-            await get().fetchWholeTxtList();
+            const info = contentsInfo(value);
+            await invoke(info.content_type === 'txt' ? 'save_document_title' : 'save_json_title', { contentsInfo: info, newTitle });
+            const renamed = { ...info, name: newTitle };
+            set(state => ({ wholeTxtList: state.wholeTxtList.map(item => sameContent(item, info) ? renamed : item) }));
+            try { await useStatsStore.getState().updateRecentContent(renamed); }
+            catch (error) { showErrorToast(i18next.t('notice.recentFilesSaveFailed'), error); }
+            return renamed;
         } catch (error) {
-            showErrorToast(operationFailed("renameText"), error);
-            console.error("Failed to update txt name:", error);
+            showErrorToast(operationFailed('renameText'), error);
             throw error;
         }
-    },
+    }),
 
     scan: async () => {
         try {

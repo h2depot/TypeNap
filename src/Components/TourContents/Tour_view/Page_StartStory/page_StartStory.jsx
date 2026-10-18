@@ -2,14 +2,14 @@ import { useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { TN_ImageOption } from "../../../TNDesignSystem";
-import { useBgImageStore } from "../../../../store/bgImageStore";
+import { useImageStore } from "../../../../store/imageStore";
 import { useAppSettings } from "../../../../store/saving/appSettings";
 import styles from "./page_StartStory.module.css";
 
 export default function PageStartStory() {
     const { t } = useTranslation();
-    const wholeImageList = useBgImageStore((state) => state.wholeImageList);
-    const fetchImageList = useBgImageStore((state) => state.fetchImageList);
+    const wholeImageList = useImageStore((state) => state.wholeImageList);
+    const fetchImageList = useImageStore((state) => state.fetchImageList);
     const background = useAppSettings((state) => state.settings.bgimage);
     const isSettingsReady = useAppSettings((state) => state.isReady);
     const updateSetting = useAppSettings((state) => state.updateSetting);

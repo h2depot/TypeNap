@@ -1,3 +1,4 @@
+import { contentsInfo, sameContent } from '../contentsInfo.js';
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import { LazyStore } from "@tauri-apps/plugin-store";
@@ -53,6 +54,26 @@ export const useStatsStore = create((set, get) => ({
                 }
 
                 loadedStats[key] = savedValue;
+            }
+
+            const recentFiles = [];
+            for (const value of Array.isArray(loadedStats.recent_file) ? loadedStats.recent_file : []) {
+                try {
+                    let info;
+                    if (value.access_id) info = contentsInfo(value);
+                    else {
+                        const story = await invoke('get_story_info', { storyName: value.storyName });
+                        const matches = (story.contents ?? []).filter(item => item.content_type === 'txt' && item.name === value.txtName);
+                        if (matches.length !== 1) continue;
+                        info = contentsInfo(matches[0]);
+                    }
+                    if (!recentFiles.some(file => sameContent(file, info))) recentFiles.push({ ...info, timestamp: value.timestamp });
+                } catch (error) { console.error('Could not restore recent content', error); }
+            }
+            if (JSON.stringify(recentFiles) !== JSON.stringify(loadedStats.recent_file)) {
+                loadedStats.recent_file = recentFiles;
+                await store.set('recent_file', recentFiles);
+                needSave = true;
             }
 
             const totalChars = Number.isFinite(loadedStats.total_chars) ? Math.max(0, loadedStats.total_chars) : 0;
@@ -185,11 +206,10 @@ export const useStatsStore = create((set, get) => ({
         return save;
     },
 
-    addRecentFile: async (storyName, txtName) => {
+    addRecentFile: async (value) => {
         try {
             const newRecentFile = {
-                storyName,
-                txtName,
+                ...contentsInfo(value),
                 timestamp: await invoke("get_current_timestamp"),
             };
 
@@ -199,7 +219,7 @@ export const useStatsStore = create((set, get) => ({
                     recent_file: [
                         newRecentFile,
                         ...state.stats.recent_file.filter((file) => (
-                            file.storyName !== storyName || file.txtName !== txtName
+                            !sameContent(file, value)
                         )),
                     ].slice(0, 3),
                 },
@@ -213,13 +233,13 @@ export const useStatsStore = create((set, get) => ({
         }
     },
 
-    removeRecentFile: async (storyName, txtName) => {
+    removeRecentFile: async (value) => {
         try {
             set((state) => ({
                 stats: {
                     ...state.stats,
                     recent_file: state.stats.recent_file.filter((file) => (
-                        file.storyName !== storyName || file.txtName !== txtName
+                        !sameContent(file, value)
                     )),
                 },
             }));
@@ -232,13 +252,28 @@ export const useStatsStore = create((set, get) => ({
         }
     },
 
+    updateRecentContent: async (value) => {
+        const info = contentsInfo(value);
+        set(state => ({ stats: { ...state.stats, recent_file: state.stats.recent_file.map(file =>
+            sameContent(file, info) ? { ...file, ...info } : file) } }));
+        await store.set('recent_file', get().stats.recent_file);
+        await store.save();
+    },
+
+    renameRecentStory: async (oldName, newName) => {
+        set(state => ({ stats: { ...state.stats, recent_file: state.stats.recent_file.map(file =>
+            file.story_name === oldName ? { ...file, story_name: newName } : file) } }));
+        await store.set('recent_file', get().stats.recent_file);
+        await store.save();
+    },
+
     removeRecentFilesByStory: async (storyName) => {
         try {
             set((state) => ({
                 stats: {
                     ...state.stats,
                     recent_file: state.stats.recent_file.filter((file) => (
-                        file.storyName !== storyName
+                        file.story_name !== storyName
                     )),
                 },
             }));

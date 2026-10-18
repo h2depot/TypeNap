@@ -3,7 +3,8 @@ import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
-import { BookSearch_TN, ArrowUpWideNarrow, ArrowDownWideNarrow, Plus } from "../../../assets/IconList";
+import { BookSearch_TN, ArrowUpWideNarrow, ArrowDownWideNarrow } from "../../../assets/IconList";
+import ContentAddButton from '../../ContentAddButton';
 import styles from "./LibraryView.module.css";
 import AddTabContent from "../../Dialog/AddTabContent";
 import {
@@ -120,15 +121,6 @@ export default function LibraryView() {
 
     return (
         <div className={styles.container}>
-            <header className={styles.pageHeader}>
-                <div>
-                    <h1 className={styles.sectionTitle}>{t("library.title")}</h1>
-                    <p className={styles.description}>{t("library.description")}</p>
-                </div>
-                <TN_Button variant="proceed" onClick={() => setIsAddDialogOpen(true)} borderRadius="10px">
-                    <Plus size={18} />{t("library.addStory")}
-                </TN_Button>
-            </header>
             <div className={styles.controlsContainer}>
                 <div className={styles.searchTextField}>
                     <TN_TextField
@@ -152,11 +144,15 @@ export default function LibraryView() {
                         variant="secondary"
                         title={t(isAscending ? "library.sort.ascending" : "library.sort.descending")}
                     />
-
                 </div>
             </div>
-            <div className={styles.resultCount} role="status">
-                {t("library.resultCount", { count: visibleStories.length, total: storyList.length })}
+            <div className={styles.resultRow}>
+                <div className={styles.resultCount} role="status">
+                    {searchQuery.trim() && t("library.resultCount", { count: visibleStories.length, total: storyList.length })}
+                </div>
+                <ContentAddButton onClick={() => setIsAddDialogOpen(true)}>
+                    {t("library.addStory")}
+                </ContentAddButton>
             </div>
             <div className={styles.storyGallery}>
                 {visibleStories.map((story) => {
@@ -225,7 +221,7 @@ export default function LibraryView() {
                         {t("common.cancel")}
                     </TN_Button>
                     <TN_Button
-                        variant="proceed"
+                        variant="danger"
                         onClick={handleDeleteStory}
                     >
                         {t("common.delete")}
@@ -251,7 +247,7 @@ export default function LibraryView() {
             >
                 {detailsTargetStory && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--tn-text)', maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
-                        {Object.entries(detailsTargetStory).map(([key, value]) => {
+                        {Object.entries(detailsTargetStory).filter(([key]) => key !== 'contents').map(([key, value]) => {
                             let displayValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
 
                             if (typeof value === 'number' && (key === 'created_at' || key === 'last_update' || key.includes('time') || key.includes('date'))) {

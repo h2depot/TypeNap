@@ -1,8 +1,12 @@
 @import "./assets/fonts/fonts.css";
 
+:root[data-writing-font="mincho"] {
+  --font-family-content: "Yu Mincho", "Hiragino Mincho ProN", "HGS明朝E", "MS PMincho", serif;
+}
+
 :root {
   --font-family-ui: "Nunito Sans", "M PLUS 1p", sans-serif;
-  --font-family-content: Inter, Avenir, Helvetica, Arial, sans-serif;
+  --font-family-content: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   --dark-base: #1A1A1A;
   --dark-surface: #363636;
   --light-base: #E5E5E5;

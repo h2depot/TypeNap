@@ -72,7 +72,7 @@ export default function ScanDialog({
                             {t("common.cancel")}
                         </TN_Button>
                         <TN_Button
-                            variant="proceed"
+                            variant="danger"
                             borderRadius="6px"
                             disabled={deleteList.length === 0}
                             onClick={async () => {

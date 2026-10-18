@@ -1,0 +1,100 @@
+.container {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100%;
+    padding: 32px clamp(20px, 3vw, 48px) 48px;
+    color: var(--tn-text);
+}
+
+.controls { display: grid; grid-template-columns: minmax(0, 360px) minmax(128px, 1fr) auto; align-items: center; gap: 12px; }
+.search { width: 100%; min-width: 0; }
+.rightControls { display: flex; align-items: center; gap: 8px; }
+.selectionSpace { display: flex; align-items: center; justify-content: center; min-width: 0; }
+.selectionToolbar { display: flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; margin: 0; padding: 0; }
+.selectionToolbar button { flex-shrink: 0; }
+.selectionSummary { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 12px; }
+.selectionSummary > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.selectionCancel { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin: 0; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--tn-subtext); cursor: pointer; }
+.selectionCancel:hover:not(:disabled) { background: var(--tn-hover-bg); color: var(--tn-text); }
+.selectionCancel:focus-visible { outline: 2px solid var(--tn-focus); outline-offset: 1px; }
+.selectionCancel:disabled { opacity: 0.45; cursor: default; }
+.resultRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 20px 0 24px; }
+.resultCount { font-size: 12px; color: var(--tn-subtext); }
+.addLabel { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
+.gallery { position: relative; width: 100%; margin-bottom: var(--image-gap); }
+.item { position: absolute; }
+.card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--tn-card-bg);
+    color: var(--tn-text);
+    box-shadow: var(--tn-shadow);
+    font-family: var(--font-family-ui);
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow 0.16s ease;
+}
+.card:hover { box-shadow: 0 0 0 2px var(--tn-accent), var(--tn-shadow); }
+.card:focus-visible { outline: 2px solid var(--tn-focus); outline-offset: 3px; }
+.card:disabled { cursor: wait; }
+.selected .card { box-shadow: 0 0 0 3px var(--tn-accent), var(--tn-shadow); }
+.selected .thumbnail { position: relative; }
+.selected .thumbnail::after { content: ''; position: absolute; inset: 0; background: rgba(232, 137, 13, 0.12); pointer-events: none; }
+.checkControl { position: absolute; top: 8px; left: 8px; z-index: 1; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; opacity: 0; pointer-events: none; cursor: pointer; transition: opacity 0.16s ease; }
+.item:hover .checkControl, .item:focus-within .checkControl, .selectionMode .checkControl { opacity: 0.75; pointer-events: auto; }
+.item .checkControl:hover, .item .checkControl:focus-within, .item.selected .checkControl { opacity: 1; }
+.checkControl input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: inherit; }
+.checkMark { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 28px; height: 28px; border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 50%; background: rgba(20, 20, 20, 0.55); color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); pointer-events: none; }
+.checkMark svg { opacity: 0; }
+.checkControl input:checked + .checkMark { background: var(--tn-accent); border-color: var(--tn-accent); color: #1a1a1a; }
+.checkControl input:checked + .checkMark svg { opacity: 1; }
+.checkControl input:focus-visible + .checkMark { outline: 2px solid var(--tn-focus); outline-offset: 3px; }
+.checkControl:has(input:disabled) { cursor: default; }
+.checkControl input:disabled + .checkMark { opacity: 0.45; }
+.thumbnail { flex: none; width: 100%; background: var(--tn-option-bg); }
+.thumbnail img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.caption { box-sizing: border-box; flex: none; width: 100%; height: var(--image-meta-height); padding: 10px 12px; }
+.name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: var(--font-weight-ui); line-height: 20px; }
+.meta { display: flex; justify-content: space-between; gap: 8px; overflow: hidden; color: var(--tn-subtext); font-size: 11px; line-height: 18px; white-space: nowrap; }
+.meta span { overflow: hidden; text-overflow: ellipsis; }
+.imageFallback { box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; padding: 12px; color: var(--tn-subtext); font-size: 12px; text-align: center; }
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; padding: 24px; border: 1px dashed var(--tn-border-light); border-radius: 10px; color: var(--tn-subtext); text-align: center; }
+.error { margin-bottom: 20px; padding: 16px; border: 1px solid var(--tn-border-light); border-radius: 10px; }
+.error p { margin: 0 0 8px; }
+.errorDetail { overflow-wrap: anywhere; color: var(--tn-subtext); font-size: 12px; }
+.previewContent { display: flex; flex-direction: column; gap: 8px; height: min(70vh, calc(100dvh - 160px)); min-height: 0; }
+.preview { display: flex; flex: 1 1 0; align-items: center; justify-content: center; min-height: 0; background: var(--tn-option-bg); border-radius: 10px; overflow: hidden; }
+.preview img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.preview p { margin: 0; padding: 12px; }
+.previewName { margin: 0; min-width: 0; max-height: 40px; overflow: hidden; overflow-wrap: anywhere; font-weight: var(--font-weight-ui); line-height: 20px; }
+.previewHeading { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
+.previewHeading > button { flex-shrink: 0; }
+.previewActions { display: flex; flex: none; align-items: center; gap: 8px; }
+.renameLabel { display: block; margin-bottom: 8px; font-size: 13px; }
+.presetHint, .deleteHint { color: var(--tn-subtext); font-size: 12px; }
+.presetHint { flex: none; margin: 0; }
+.deleteMessage { margin-top: 0; overflow-wrap: anywhere; }
+.deleteList { max-height: 180px; overflow-y: auto; padding-left: 24px; font-size: 13px; overflow-wrap: anywhere; }
+.deleteHint, .errorDetail { white-space: pre-wrap; }
+.dialogActions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.details { display: grid; flex: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; margin: 0; font-size: 13px; }
+.details dt { color: var(--tn-subtext); font-size: 12px; }
+.details dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+
+@media (max-width: 700px) {
+    .container { padding: 24px 16px; }
+    .controls { grid-template-columns: minmax(0, 1fr) minmax(128px, 1fr) auto; gap: 8px; }
+    .selectionToolbar, .selectionSummary { gap: 4px; }
+    .caption { padding-inline: 8px; }
+    .details { grid-template-columns: minmax(0, 1fr); }
+}
+@media (hover: none) { .checkControl { opacity: 0.75; pointer-events: auto; } }
+@media (prefers-reduced-motion: reduce) { .checkControl { transition: none; } }

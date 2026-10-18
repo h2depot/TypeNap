@@ -1,3 +1,5 @@
+import { contentId, sameContent, contentTabProps } from './contentsInfo.js';
+import { useFileStore } from './fileStore';
 import { create } from "zustand";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useToastStore } from "./toastStore";
@@ -15,14 +17,16 @@ const updateSelectedTab = (tabsList, selectedIndex) => {
     useStatsStore.getState().updateSelectedTab(tabsList[selectedIndex], selectedIndex);
 };
 
-// Story names and file names are the existing backend identifiers.
-// Story/Search instances have independent IDs; only Work tabs deduplicate by resource.
+// Tab instance IDs belong to the UI; Work resources are identified only by UUID.
 const sameResource = (a, b) => a.type === b.type && (
-    a.id === b.id ||
-    (a.type === "work" && a.props.story_name === b.props.story_name && a.props.title === b.props.title)
+    a.type === 'work' ? sameContent(a.props, b.props) : a.id === b.id
 );
 const fixedTypes = ["home", "library", "settings"];
-const normalizeTab = (tab) => ({ ...tab, id: tab.id || crypto.randomUUID(), props: tab.props || {} });
+const normalizeTab = tab => {
+    const props = tab.type === 'work' ? contentTabProps(tab.props) : tab.props || {};
+    return { ...tab, id: tab.id || crypto.randomUUID(), props,
+        ...(tab.type === 'work' ? { title: props.name } : {}) };
+};
 
 export const useTabStore = create((set, get) => ({
 
@@ -30,24 +34,35 @@ export const useTabStore = create((set, get) => ({
     tabLauncherOpen: false,
     setTabLauncherOpen: (tabLauncherOpen) => set({ tabLauncherOpen }),
     setAppMode: (appMode) => {
-        if (["workspace", "library", "settings"].includes(appMode)) set({ appMode });
+        if (["workspace", "library", "template", "images", "settings"].includes(appMode)) set({ appMode });
     },
     // Dynamic tabs only. Retain these names for editor/search consumers.
     tabsList: [],
     selectedIndex: -1,
 
-    initialize: () => {
+    isReady: false,
+    initialize: async () => {
         const { settings } = useAppSettings.getState();
         const { stats } = useStatsStore.getState();
         const savedTabsList = Array.isArray(stats.recent_tabs) ? stats.recent_tabs : [];
         const selectedTab = stats.selected_tab || {};
 
         if (settings.SavingTab !== "On" || savedTabsList.length === 0) {
-            set({ tabsList: [], selectedIndex: -1 });
+            set({ tabsList: [], selectedIndex: -1, isReady: true });
             return;
         }
 
-        const normalizedTabs = savedTabsList.map((tab) => tab ? normalizeTab(tab) : null);
+        const normalizedTabs = await Promise.all(savedTabsList.map(async tab => {
+            if (!tab) return null;
+            if (tab.type !== 'work') return normalizeTab(tab);
+            try {
+                const info = await useFileStore.getState().resolveContentsInfo(tab.props || {});
+                return normalizeTab({ ...tab, props: info });
+            } catch (error) {
+                console.error('Could not restore content tab', error);
+                return null;
+            }
+        }));
         const tabsList = normalizedTabs
             .filter((tab) => tab && !fixedTypes.includes(tab.type))
             .filter((tab, index, tabs) => tabs.findIndex((other) => sameResource(tab, other)) === index);
@@ -60,7 +75,10 @@ export const useTabStore = create((set, get) => ({
         set({
             tabsList,
             selectedIndex,
+            isReady: true,
         });
+        updateRecentTabs(tabsList);
+        updateSelectedTab(tabsList, selectedIndex);
     },
 
     setSelectedIndex: (index) => {
@@ -95,7 +113,7 @@ export const useTabStore = create((set, get) => ({
         updateSelectedTab(get().tabsList, get().selectedIndex);
 
         if (type === "work" && props?.story_name && props?.title) {
-            useStatsStore.getState().addRecentFile(props.story_name, props.title);
+            useStatsStore.getState().addRecentFile(candidate.props);
         }
     },
 
@@ -185,39 +203,21 @@ export const useTabStore = create((set, get) => ({
         updateSelectedTab(get().tabsList, get().selectedIndex);
     },
 
-    renameWorkTabs: (storyName, oldTitle, newTitle) => {
-        set((state) => ({
-            tabsList: state.tabsList.map((tab) => {
-                const isSameWorkTab =
-                    tab.type === "work" &&
-                    tab.props?.story_name === storyName &&
-                    tab.props?.title === oldTitle;
-
-                if (!isSameWorkTab) return tab;
-
-                return {
-                    ...tab,
-                    title: newTitle,
-                    props: {
-                        ...tab.props,
-                        title: newTitle,
-                        workspaceID: `${storyName}/${newTitle}`,
-                    },
-                };
-            }),
-        }));
+    renameWorkTabs: (info) => {
+        set(state => ({ tabsList: state.tabsList.map(tab =>
+            tab.type === 'work' && sameContent(tab.props, info)
+                ? { ...tab, title: info.name, props: contentTabProps(info) } : tab) }));
         updateRecentTabs(get().tabsList);
         updateSelectedTab(get().tabsList, get().selectedIndex);
     },
 
-    removeWorkTabs: (storyName, title) => {
+    removeWorkTabs: (info) => {
         set((state) => {
             const selectedTab = state.tabsList[state.selectedIndex];
             const tabsList = state.tabsList.filter((tab) => {
                 const isTargetWorkTab =
                     tab.type === "work" &&
-                    tab.props?.story_name === storyName &&
-                    tab.props?.title === title;
+                    sameContent(tab.props, info);
 
                 return !isTargetWorkTab;
             });
@@ -258,7 +258,7 @@ export const useTabStore = create((set, get) => ({
                         props: {
                             ...tab.props,
                             story_name: newName,
-                            workspaceID: `${newName}/${tab.props.title}`,
+                            workspaceID: contentId(tab.props),
                         },
                     };
                 }

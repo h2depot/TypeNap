@@ -1,0 +1,10 @@
+.content { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.search { flex: 1 1 220px; min-width: 0; }
+.importRow { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.importRow > span, .empty { font-size: 13px; color: var(--tn-text); opacity: .7; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, 120px); gap: 16px; max-height: 36vh; overflow-y: auto; padding: 4px; }
+.error { color: var(--tn-text); overflow-wrap: anywhere; }
+
+.expanded { flex: 1; min-height: 0; }
+.expanded .gallery { flex: 1; min-height: 0; max-height: none; align-content: start; }

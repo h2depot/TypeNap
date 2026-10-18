@@ -1,4 +1,5 @@
-﻿import { useHotkeys } from "react-hotkeys-hook";
+import { contentId } from '../store/contentsInfo.js';
+import { useHotkeys } from "react-hotkeys-hook";
 import { useTxtStore } from "../store/txtStore";
 import { useTabStore } from "../store/tabStore";
 import { useFileStore } from "../store/fileStore";
@@ -19,7 +20,7 @@ export default function KeyboardShortcutEvent() {
         event.preventDefault();
         if (event.repeat) return;
         const tab = state.appMode === 'workspace' ? state.tabsList[state.selectedIndex] : null;
-        const workspaceID = tab && (tab.props.workspaceID || `${tab.props.story_name}/${tab.props.title}`);
+        const workspaceID = tab && contentId(tab.props);
         switch (shortcut.id) {
             case 'openWorkspace': state.setAppMode('workspace'); break;
             case 'openLibrary': state.setAppMode('library'); break;

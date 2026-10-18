@@ -1,12 +1,13 @@
+import { contentId } from '../../store/contentsInfo.js';
 import { workspaceTabTypes } from "./workspaceTabTypes";
 import React, { useEffect, useState } from "react";
 import styles from "./workspace.module.css";
 import WindowControls from "../WindowControls/WindowControls";
 
-import { X, Plus, LeftArrow } from '../../assets/IconList';
+import { X, Plus, User, Map, Entity } from '../../assets/IconList';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, horizontalListSortingStrategy } from '@dnd-kit/sortable';
-import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
+import { restrictToHorizontalAxis, restrictToFirstScrollableAncestor } from '@dnd-kit/modifiers';
 import { CSS } from '@dnd-kit/utilities';
 import { useTabStore } from "../../store/tabStore";
 import { useTxtStore } from "../../store/txtStore";
@@ -17,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import TabLauncher from "./TabLauncher";
 
 function SortableTab({ id, isActive, children }) {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
     const style = {
         transform: CSS.Translate.toString(transform),
         transition,
@@ -28,7 +29,7 @@ function SortableTab({ id, isActive, children }) {
             style={style}
             {...attributes}
             {...listeners}
-            className={`${styles.tab_wrapper} ${isActive ? styles.wrapper_active : ""}`}
+            className={`${styles.tab_wrapper} ${isActive ? styles.wrapper_active : ""} ${isDragging ? styles.tab_dragging : ""}`}
         >
             {children}
         </div>
@@ -37,7 +38,7 @@ function SortableTab({ id, isActive, children }) {
 
 export default function WorkspaceTabs() {
     const { t } = useTranslation();
-    const { appMode, setAppMode, tabsList, selectedIndex, setSelectedIndex, addTab, closeTab, reorderTabs } = useTabStore();
+    const { appMode, setAppMode, tabsList, selectedIndex, setSelectedIndex, closeTab, reorderTabs } = useTabStore();
     const [closeConfirmId, setCloseConfirmId] = useState(null);
     const [targetTabInfo, setTargetTabInfo] = useState({ story_name: '', file_name: '' });
 
@@ -54,8 +55,9 @@ export default function WorkspaceTabs() {
         if (!over) return;
 
         if (active.id !== over.id) {
-            const oldIndex = tabsList.findIndex(item => item.id === active.id);
-            const newIndex = tabsList.findIndex(item => item.id === over.id);
+            const currentTabs = useTabStore.getState().tabsList;
+            const oldIndex = currentTabs.findIndex(item => item.id === active.id);
+            const newIndex = currentTabs.findIndex(item => item.id === over.id);
 
             reorderTabs(oldIndex, newIndex);
         }
@@ -65,7 +67,7 @@ export default function WorkspaceTabs() {
         if (!Number.isInteger(index) || index < 0 || index >= tabsList.length) return;
         const tab = tabsList[index];
         if (tab && tab.type === 'work') {
-            const workspaceId = `${tab.props.story_name}/${tab.props.title}`;
+            const workspaceId = contentId(tab.props);
             const workspace = useTxtStore.getState().workspaces[workspaceId];
             if (workspace?.isEdited) {
                 setTargetTabInfo({ story_name: tab.props.story_name, file_name: tab.props.title });
@@ -105,11 +107,12 @@ export default function WorkspaceTabs() {
         <>
             <div className={styles.window_header} data-tauri-drag-region>
                 <span className={styles.modeLabel} data-tauri-drag-region>
-                    {t(appMode === "workspace" ? "navigation.workspace" : appMode === "library" ? "library.title" : "settings.title")}
+                    {appMode === "template" ? "Template" : t(appMode === "workspace" ? "navigation.workspace" : appMode === "library" ? "library.title" : appMode === "images" ? "navigation.images" : "settings.title")}
                 </span>
                 {appMode === "workspace" ? <>
                 <div className={styles.tabswitch_row} data-tauri-drag-region>
-                    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToHorizontalAxis]}>
+                    <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}
+                        modifiers={[restrictToFirstScrollableAncestor, restrictToHorizontalAxis]}>
                         <SortableContext items={tabsList.map(tab => tab.id)} strategy={horizontalListSortingStrategy}>
                             {tabsList.map((tab, index) => {
                                 const isActive = index === selectedIndex;
@@ -126,9 +129,10 @@ export default function WorkspaceTabs() {
                                             <div className={styles.tab_header}>
                                                 <span className={styles.tab_icon}>{tab.type === "search"
                                                     ? <SiteIcon size={16} icon={tab.props?.url && tab.props.siteInfoUrl === tab.props.url ? tab.props.siteIcon : "Search"} />
-                                                    : React.createElement(workspaceTabTypes[tab.type]?.icon || Plus, { size: 16 })}</span>
+                                                    : React.createElement((tab.type === "work" && { character: User, world: Map, entity: Entity }[tab.props?.content_type]) || workspaceTabTypes[tab.type]?.icon || Plus, { size: 16 })}</span>
                                                 <span className={styles.tab_text}>{tab.type === "search" && (!tab.props?.url || (tab.props.siteInfoUrl !== tab.props.url && tab.props.liveTitleUrl !== tab.props.url)) ? "Search" : tab.title}</span>
                                                 <button
+                                                    onPointerDown={(event) => event.stopPropagation()}
                                                     className={styles.close_btn}
                                                     onClick={(e) => onClose(e, index)}
                                                     title={t("common.close")}
@@ -144,12 +148,11 @@ export default function WorkspaceTabs() {
                         </SortableContext>
                     </DndContext>
                 </div>
-                </> : <button type="button" className={styles.resumeWorkspace}
-                    onClick={() => setAppMode("workspace")}>
-                    <LeftArrow size={16} aria-hidden="true" style={{ flexShrink: 0 }} />
-                    <span>{t("navigation.resume")}</span>
+                </> : <div className={styles.workspaceContext} data-tauri-drag-region>
+                    <span className={styles.workspaceContextLabel} data-tauri-drag-region>{t("navigation.workspace")}</span>
+                    {tabsList[selectedIndex] && <span className={styles.workspaceContextTitle} title={tabsList[selectedIndex].title} data-tauri-drag-region>{tabsList[selectedIndex].title}</span>}
                     {tabsList.length > 0 && <span className={styles.tabCount}>{t("navigation.openTabs", { count: tabsList.length })}</span>}
-                </button>}
+                </div>}
                 <TabLauncher />
                 <div className={styles.window_drag_region} data-tauri-drag-region />
                 <WindowControls />

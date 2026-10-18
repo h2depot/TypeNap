@@ -1,4 +1,4 @@
-use super::{bgimage_manager, file_manager};
+use super::{file_manager, image_manager};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::Manager;
@@ -20,8 +20,7 @@ pub enum InitializationError {
     AliveBackupDirectory { message: String },
     NecropolisDirectory { message: String },
     LibraryDirectory { message: String },
-    BackgroundDirectory { message: String },
-    BackgroundAssets { message: String },
+    ImageAssets { message: String },
     StoryAssets { message: String },
     JSONFile { message: String },
 }
@@ -129,11 +128,10 @@ pub fn create_dir_all(app: tauri::AppHandle) -> Result<bool, InitializationError
 pub async fn initialize(app: tauri::AppHandle) -> Result<bool, InitializationError> {
     let mut state = load_state(&app)?;
 
-    if state.image_assets_version != "0.1.0" {
-        bgimage_manager::init_bgimage(&app)
-            .map_err(|message| InitializationError::BackgroundAssets { message })?;
-        state.image_assets_version = String::from("0.1.0");
-    }
+    // Migrate existing installations even when their assets are already initialized.
+    image_manager::init_images(&app)
+        .map_err(|message| InitializationError::ImageAssets { message })?;
+    state.image_assets_version = String::from("0.2.0");
 
     if state.story_assets_version != "0.1.0" {
         let library_path = file_manager::get_library_path(&app)

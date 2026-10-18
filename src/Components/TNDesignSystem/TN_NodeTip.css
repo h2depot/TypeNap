@@ -1,0 +1,25 @@
+.TN-node-tip-anchor { display: inline-flex; max-width: 100%; flex-shrink: 0; vertical-align: top; }
+.TN-node-tip-anchor:focus-visible { outline: 2px solid #e8890d; outline-offset: 5px; border-radius: 6px; }
+.TN-node-tip {
+  position: fixed;
+  z-index: 10000;
+  box-sizing: border-box;
+  width: 280px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: 18px 20px;
+  border: 1px solid rgba(212, 207, 191, .2);
+  border-radius: 6px;
+  background: rgba(30, 30, 32, .8);
+  color: #d4cfbf;
+  box-shadow: 0 8px 28px #0003;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: none;
+  font-family: 'M PLUS 1p', sans-serif;
+  overflow-wrap: anywhere;
+}
+.TN-node-tip[data-theme='light'] { background: rgba(250, 249, 245, .82); color: #232b69; border-color: rgba(35, 43, 105, .14); box-shadow: 0 8px 28px #232b691a; }
+.TN-node-tip__name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 15px; line-height: 1.5; }
+.TN-node-tip__summary { margin: 8px 0 0; font-size: 12px; line-height: 1.8; opacity: .8; white-space: pre-wrap; }

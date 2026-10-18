@@ -1,0 +1,36 @@
+.entity-node__stroke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  stroke: #e8890d;
+  stroke-width: 4px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.entity-node:hover > .entity-node__stroke {
+  opacity: 1;
+}
+
+.entity-photo__incoming,
+.entity-photo__outgoing {
+  transform-box: fill-box;
+  animation: entity-photo-drop 520ms ease both;
+}
+
+.entity-photo__outgoing {
+  animation-name: entity-photo-fall;
+}
+
+@keyframes entity-photo-drop {
+  from { transform: translateY(calc(-1 * var(--photo-slide-distance))); }
+  to { transform: translateY(0); }
+}
+
+@keyframes entity-photo-fall {
+  from { transform: translateY(0); }
+  to { transform: translateY(var(--photo-slide-distance)); }
+}

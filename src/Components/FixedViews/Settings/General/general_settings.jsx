@@ -58,7 +58,7 @@ export default function GeneralSettings() {
 
     return (
         <div className={styles.groups}>
-            <SettingsListView title={t("settings.design.appearance")} description={t("settings.design.appearanceDescription")}>
+            <SettingsListView title={t("settings.design.appearance")}>
                 <fieldset className={styles.themePicker}>
                     <legend>{t("settings.design.theme")}</legend>
                     <div className={styles.themeOptions}>
@@ -76,7 +76,12 @@ export default function GeneralSettings() {
                     onClick={() => { setSelectedBgImage(normalizeBackgroundPath(settings.bgimage?.path)); setIsBackgroundDialogOpen(true); }} />
             </SettingsListView>
 
-            <SettingsListView title={t("settings.design.writing")} description={t("settings.design.writingDescription")}>
+            <SettingsListView title={t("settings.design.writing")}>
+                <SettingsRow icon={<Type size={20} />} title={t("settings.writingFont.title")} description={t("settings.writingFont.description")}
+                    control={<SettingsSelect label={t("settings.writingFont.title")} options={[
+                        { value: "mincho", label: t("settings.writingFont.mincho") },
+                        { value: "gothic", label: t("settings.writingFont.gothic") },
+                    ]} value={settings.writingFont || "gothic"} onChange={(value) => updateSetting("writingFont", value)} />} />
                 <SettingsRow icon={<Type size={20} />} title={t("settings.design.fontSize")} description={t("settings.fontSize.description")}
                     control={<div className={styles.rangeControl}>
                         <div className={styles.sliderWrap}><TN_Slider min={12} max={24} value={settings.fontSize} defaultValue={settings.fontSize} scale={0.7} aria-label={t("settings.design.fontSize")} onChange={(value) => updateSetting("fontSize", value)} /></div>

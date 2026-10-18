@@ -10,6 +10,7 @@ import FixedView from "./Components/FixedView";
 import WindowControls from "./Components/WindowControls/WindowControls";
 import { useAppSettings } from "./store/saving/appSettings";
 import { useFileStore } from "./store/fileStore";
+import { useImageStore } from './store/imageStore';
 import { useStatsStore } from "./store/saving/stats";
 import { useTabStore } from "./store/tabStore";
 import { useToastStore } from "./store/toastStore";
@@ -48,8 +49,10 @@ function App() {
   const isStatsReady = useStatsStore((state) => state.isReady);
   const appMode = useTabStore((state) => state.appMode);
   const initTabStore = useTabStore((state) => state.initialize);
+  const isTabStoreReady = useTabStore(state => state.isReady);
   const themeSetting = useAppSettings((state) => state.settings.theme);
   const languageSetting = useAppSettings((state) => state.settings.language);
+  const writingFont = useAppSettings((state) => state.settings.writingFont);
   const bgImagePath = normalizeBackgroundPath(useAppSettings((state) => state.settings.bgimage?.path));
   const [systemTheme, setSystemTheme] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
@@ -89,6 +92,7 @@ function App() {
       try {
         const created = await createDirAll();
         await initializeBackend();
+        await useImageStore.getState().loadImageRenames();
         const [version, hasCompletedTour] = await Promise.all([
           getSettingsState(),
           getTouredState(),
@@ -129,12 +133,17 @@ function App() {
   useEffect(() => {
     if (!isSettingsReady || !isStatsReady) return;
 
-    initTabStore();
-  }, [isSettingsReady, isStatsReady, initTabStore]);
+    if (!isFileStoreReady) return;
+    void initTabStore();
+  }, [isSettingsReady, isStatsReady, isFileStoreReady, initTabStore]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", currentTheme);
   }, [currentTheme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-writing-font", writingFont === "mincho" ? "mincho" : "gothic");
+  }, [writingFont]);
 
   useEffect(() => {
     if (!isSettingsReady) return;
@@ -192,7 +201,7 @@ function App() {
           />
         </motion.div>
       ) : (
-        (!isSettingsReady || !isFileStoreReady || !isStatsReady) ? null : (
+        (!isSettingsReady || !isFileStoreReady || !isStatsReady || !isTabStoreReady) ? null : (
           <motion.div
             key="main"
             initial={{ opacity: 0 }}

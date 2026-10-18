@@ -1,9 +1,14 @@
 pub mod atomic_file;
 pub mod backup_manager;
-pub mod bgimage_manager;
+pub mod image_manager;
+pub mod image_rename;
+pub mod content_path;
+pub mod contents_info;
 pub mod document_manager;
 pub mod document_name;
 pub mod file_manager;
 pub mod initializer;
+pub mod json_backup_manager;
+pub mod json_editor;
+pub mod txt_backup_manager;
 pub mod txt_editor;
-pub mod txt_info;

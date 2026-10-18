@@ -1,0 +1,29 @@
+.document {
+    color: var(--tn-text);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    padding: 8px;
+}
+.title { margin: 0 0 20px; font-size: 22px; }
+.section + .section { margin-top: 24px; }
+.section h3 {
+    margin: 0 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--tn-border-light);
+    font-size: 13px;
+    color: var(--tn-subtext);
+}
+.fields { margin: 0; }
+.field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--tn-border-light);
+}
+.field dt { font-size: 13px; color: var(--tn-subtext); white-space: pre-wrap; }
+.field dd { margin: 0; min-width: 0; }
+.document span { white-space: pre-wrap; }
+.list { margin: 0; padding-left: 20px; }
+.list li + li { margin-top: 6px; }
+.empty { color: var(--tn-subtext); }

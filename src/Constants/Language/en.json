@@ -11,7 +11,7 @@
     "loading": "Loading stories…",
     "failed": "Could not load stories. Reopen this panel to try again."
   },
-  "navigation": {"label": "Main navigation", "workspace": "Workspace", "resume": "Back to workspace", "openTabs": "{{count}} tabs", "addSearch": "Open a research tab", "chooseStory": "Open a story from Library"},
+  "navigation": {"label": "Main navigation", "workspace": "Workspace", "resume": "Back to workspace", "openTabs": "{{count}} tabs", "addSearch": "Open a research tab", "chooseStory": "Open a story from Library", "images": "Images"},
   "windowControls": {
     "minimize": "Minimize",
     "maximize": "Maximize",
@@ -116,6 +116,7 @@
     }
   },
   "editor": {
+    "save": "Save",
     "saved": "Saved",
     "unsaved": "Unsaved",
     "titlePlaceholder": "Title",
@@ -137,7 +138,17 @@
     "noRecentFiles": "No recent files."
   },
   "story": {
-    "overview": {"title": "Overview", "navigation": "Story navigation", "contents": "Chapters", "textColor": "Cover text color", "hideCoverText": "Hide cover text"},
+    "contentTypes": {
+      "nameLabel": "{{type}} name",
+      "namePlaceholder": "Enter a {{type}} name...",
+      "label": "Content type",
+      "txt": "Write your story and its episodes.",
+      "character": "Shape the people behind your story.",
+      "world": "Define the setting and rules of your world.",
+      "entity": "Collect the items, organizations, and elements of your story.",
+      "comingSoon": "{{type}} creation is coming soon."
+    },
+    "overview": {"title": "Overview", "navigation": "Story navigation", "collapseNavigation": "Collapse navigation", "expandNavigation": "Expand navigation", "contents": "Chapters", "textColor": "Cover text color", "hideCoverText": "Hide cover text"},
     "create": {
       "nameLabel": "Story name",
       "namePlaceholder": "Enter a story name...",
@@ -183,7 +194,11 @@
       "generationPlaceholder": "Choose a version",
       "generation": "Version: {{current}} / {{total}}",
       "unknownDate": "Unknown date (initial version)",
-      "noContent": "(No content)"
+      "noContent": "(No content)",
+      "previewSummary": "Summary",
+      "previewProperties": "Custom properties",
+      "previewImages": "Image files",
+      "previewUnavailable": "Could not read the structure of this backup."
     }
   },
   "image": {
@@ -247,6 +262,7 @@
       "raindrop": "Raindrop",
       "typeWriter": "TypeWriter"
     },
+    "writingFont": { "title": "Writing font", "description": "Change the font for body text and synopses.", "mincho": "Mincho (serif)", "gothic": "Gothic (sans-serif)" },
     "fontSize": { "title": "Writing size (px)", "description": "Change the editor text size." },
     "tabs": {
       "title": "Save tabs",
@@ -256,7 +272,6 @@
     },
     "environment": { "title": "Storage" },
     "scan": { "title": "Scan folder", "description": "Find unwanted files in the app folder.", "noneFound": "No unwanted files found." },
-    "images": { "title": "Manage images", "count": "User images: {{count}}" },
     "restore": { "title": "Restore deleted files", "description": "Restore deleted files from a backup." },
     "deleteLock": { "title": "Lock data deletion", "description": "Prevent accidental data deletion." },
     "delete": { "title": "Delete all data", "description": "Delete all data permanently." },
@@ -317,13 +332,6 @@
       "addImage": "Add image",
       "solidName": "Solid background",
       "imageName": "Background"
-    },
-    "imageManager": {
-      "title": "Manage images",
-      "userImages": "User images",
-      "count": "{{count}} images",
-      "empty": "No images can be deleted.",
-      "deleted": "Background image deleted."
     },
     "deletedFiles": {
       "restoreTitle": "Restore deleted files",
@@ -397,6 +405,7 @@
     "libraryDirectory": "Could not prepare the library folder.",
     "backgroundDirectory": "Could not prepare the background image folder.",
     "backgroundAssets": "Could not prepare the default backgrounds.",
+    "imageAssets": "Could not prepare or migrate the image collection.",
     "storyAssets": "Could not prepare the default story.",
     "jsonFile": "Could not read or write the initialisation data.",
     "default": "Could not start the app."
@@ -435,5 +444,54 @@
       "label": "New story name",
       "placeholder": "Enter a story name..."
     }
-  }
+  },
+  "imageLibrary": {
+    "searchPlaceholder": "Search image names",
+    "resultCount": "Showing {{count}} of {{total}} images",
+    "sortName": "Image name",
+    "renameTitle": "Rename image",
+    "renameName": "New image name",
+    "renameExtension": "The {{extension}} extension will be kept.",
+    "renaming": "Renaming...",
+    "kind": { "label": "Image type", "all": "All images", "user": "User images", "preset": "Preset images" },
+    "import": "Add images",
+    "importing": "Adding images...",
+    "empty": "No images yet. Add images to get started.",
+    "noResults": "No images match your filters.",
+    "resetFilters": "Clear filters",
+    "retry": "Reload",
+    "imageFailed": "Could not load image",
+    "preview": "Image preview",
+    "openPreview": "Preview {{name}}",
+    "dimensions": "Dimensions",
+    "selectImage": "Select {{name}}",
+    "deselectImage": "Deselect {{name}}",
+    "selectedCount": "{{count}} selected",
+    "selectionActions": "Selected image actions",
+    "clearSelection": "Clear selection",
+    "deleteSelected": "Delete selected images",
+    "presetProtected": "Preset images cannot be deleted",
+    "deleteSingle": "Delete “{{name}}”?",
+    "deleteMultiple": "Delete the {{count}} selected images?",
+    "deleteHint": "This deletes the image files. Stories and reference materials using these images will no longer display them. This cannot be undone."
+  },
+  "objectImages": {
+    "back": "Back",
+    "done": "Done selecting",
+    "title": "Images for {{name}}",
+    "open": "Edit images for {{name}}",
+    "limit": "Each object can have up to {{max}} images.",
+    "photo": "Image {{index}}",
+    "remove": "Remove image {{index}}",
+    "emptySlot": "Image {{index}} · Empty",
+    "import": "Add image",
+    "collection": "Choose from imported images",
+    "removeHint": "Removing an image detaches it from this object. The file stays in your image collection.",
+    "previous": "Previous photo",
+    "next": "Next photo"
+  },
+  "jsonBox": {
+    "saving": "Saving...",
+    "unavailable": "This file could not be opened in the property editor."
+}
 }

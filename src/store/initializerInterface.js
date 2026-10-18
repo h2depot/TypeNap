@@ -44,7 +44,8 @@ export const initializationErrorMessage = (kind) => {
         case "backgroundDirectory":
             return i18next.t("initialization.backgroundDirectory");
         case "backgroundAssets":
-            return i18next.t("initialization.backgroundAssets");
+        case "imageAssets":
+            return i18next.t("initialization.imageAssets");
         case "storyAssets":
             return i18next.t("initialization.storyAssets");
         case "jSONFile":

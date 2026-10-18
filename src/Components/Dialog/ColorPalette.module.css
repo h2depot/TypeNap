@@ -1,0 +1,4 @@
+.palette { display: flex; flex-wrap: wrap; gap: 12px; }
+.swatch { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--tn-stroke); cursor: pointer; }
+.swatch[aria-pressed="true"] { outline: 3px solid var(--tn-focus, #E8890D); outline-offset: 3px; }
+.swatch:focus-visible { outline: 3px solid var(--tn-text); outline-offset: 3px; }
