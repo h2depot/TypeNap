@@ -7,6 +7,7 @@ import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
 import { useToastStore } from "../../../store/toastStore";
+import { useStatsStore } from "../../../store/saving/stats";
 import { invoke } from "@tauri-apps/api/core";
 import {
     TN_Dialog,
@@ -22,17 +23,27 @@ import {
 import { useTranslation } from "react-i18next";
 import ContentTypeSelector from './ContentTypeSelector';
 import BackupPreview from '../../JSONBox/BackupPreview';
+import TemplateStackPicker from '../../Templates/TemplateStackPicker';
 
 export default function Tab_StoryContents({ story_name, workspace, isAddDialogOpen, setIsAddDialogOpen }) {
     const { t } = useTranslation();
     const { addTab, renameWorkTabs, removeWorkTabs } = useTabStore();
     const { getStoryInfo, deleteTxt, createTxt } = useFileStore();
     const { updateStoryInfo } = useStoryStore();
+    const { stats, isReady: statsReady, updateInitialTemplateStack } = useStatsStore();
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [newFileName, setNewFileName] = useState("");
     const [newContentType, setNewContentType] = useState('txt');
+    const templateIds = stats.initial_template_stacks?.[newContentType] ?? [];
+    const setTemplateIds = ids => {
+        void updateInitialTemplateStack(newContentType, ids).catch(error => {
+            console.error('Failed to save initial template stack', error);
+            useToastStore.getState().addToast(t('notice.statsSaveFailed'), 'error');
+        });
+    };
+    const [creatingContent, setCreatingContent] = useState(false);
     const newContentTypeLabel = { txt: 'Text', character: 'Character', world: 'World', entity: 'Entity' }[newContentType];
 
     const [isFileRenameDialogOpen, setIsFileRenameDialogOpen] = useState(false);
@@ -88,10 +99,11 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
 
     const handleCreateTxt = async (e) => {
         if (e) e.preventDefault();
-        if (!['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists) return;
+        if (creatingContent || !['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists) return;
+        setCreatingContent(true);
         try {
             const created = newContentType !== 'txt'
-                ? await invoke("create_document_json", { input: { story_name, name: newFileName.trim(), content_type: newContentType } })
+                ? await invoke("create_document_json", { input: { story_name, name: newFileName.trim(), content_type: newContentType }, templateIds })
                 : await createTxt({ story_name, name: newFileName, content_type: "txt" });
             setIsAddDialogOpen(false);
             setNewFileName("");
@@ -103,6 +115,8 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
         } catch (error) {
             console.error("Content creation failed", error);
             useToastStore.getState().addToast(String(error), "error");
+        } finally {
+            setCreatingContent(false);
         }
     };
 
@@ -249,7 +263,6 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                             icon={isAscending ? <ArrowUpWideNarrow size={20} /> : <ArrowDownWideNarrow size={20} />}
                             onClick={() => setIsAscending((ascending) => !ascending)}
                             variant="secondary"
-                            title={t(isAscending ? "library.sort.ascending" : "library.sort.descending")}
                             aria-label={t(isAscending ? "library.sort.ascending" : "library.sort.descending")}
                         />
                     </div>
@@ -369,13 +382,26 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
             <TN_Dialog
                 isOpen={isAddDialogOpen}
                 onClose={() => {
+                    if (creatingContent) return;
                     setIsAddDialogOpen(false);
                     setNewFileName("");
                 }}
                 title={t("story.files.createTitle")}
+                maxWidth="680px"
+                bodyStyle={{ padding: '24px clamp(20px, 4vw, 32px) 32px' }}
+                footer={<div className={styles.createDialogActions}>
+                    <TN_Button variant="secondary" disabled={creatingContent} onClick={() => {
+                        setIsAddDialogOpen(false);
+                        setNewFileName("");
+                    }}>{t("common.cancel")}</TN_Button>
+                    <TN_Button type="submit" form="new-content-form" variant="proceed"
+                        disabled={creatingContent || !['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists}>
+                        {t(creatingContent ? "common.loading" : "common.create")}
+                    </TN_Button>
+                </div>}
             >
-                <form onSubmit={handleCreateTxt} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <ContentTypeSelector value={newContentType} onChange={setNewContentType} />
+                <form id="new-content-form" onSubmit={handleCreateTxt} className={styles.createDialogForm}>
+                    <ContentTypeSelector value={newContentType} onChange={value => { if (!creatingContent) setNewContentType(value); }} />
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <label htmlFor="new-content-name" style={{
@@ -400,25 +426,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         )}
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
-                        <TN_Button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setIsAddDialogOpen(false);
-                                setNewFileName("");
-                            }}
-                            variant="secondary"
-                        >
-                            {t("common.cancel")}
-                        </TN_Button>
-                        <TN_Button
-                            onClick={handleCreateTxt}
-                            variant="proceed"
-                            disabled={!['txt', 'character', 'world', 'entity'].includes(newContentType) || newFileName.trim() === "" || newFileNameExists}
-                        >
-                            {t("common.create")}
-                        </TN_Button>
-                    </div>
+                    {isAddDialogOpen && newContentType !== 'txt' && <TemplateStackPicker contentType={newContentType} selected={templateIds} onChange={setTemplateIds} disabled={creatingContent || !statsReady} />}
                 </form>
             </TN_Dialog>
 

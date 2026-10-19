@@ -1,9 +1,8 @@
 import { useId, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookClose_TN, ContentsView, PanelClose, PanelOpen } from '../../../assets/IconList';
+import { BookClose_TN, ContentsView, PanelClose, PanelOpen, Plus } from '../../../assets/IconList';
 import { useTranslation } from 'react-i18next';
-import { TN_BookCard_Preview } from '../../TNDesignSystem';
-import ContentAddButton from '../../ContentAddButton';
+import { TN_BookCard_Preview, TN_Button } from '../../TNDesignSystem';
 import styles from './tab_story.module.css';
 
 export default function TabStoryNav({ story_name, workspace, view, onOverview, onContents, onAddContent }) {
@@ -19,7 +18,7 @@ export default function TabStoryNav({ story_name, workspace, view, onOverview, o
         <div className={styles.sidebarHeader}>
             <button type="button" className={styles.sidebarToggle}
                 onClick={() => setIsCollapsed(collapsed => !collapsed)}
-                aria-label={toggleLabel} title={toggleLabel}
+                aria-label={toggleLabel}
                 aria-expanded={!isCollapsed} aria-controls={contentId}>
                 {isCollapsed ? <PanelOpen size={18} aria-hidden="true" /> : <PanelClose size={18} aria-hidden="true" />}
             </button>
@@ -27,17 +26,17 @@ export default function TabStoryNav({ story_name, workspace, view, onOverview, o
         {isCollapsed && <div className={styles.sidebarCollapsedActions}>
             <button type="button" className={`${styles.sidebarToggle} ${styles.overviewIconButton}`}
                 onClick={onOverview} aria-label={t('story.overview.title')}
-                title={t('story.overview.title')} aria-pressed={view === 'overview'}>
+                 aria-pressed={view === 'overview'}>
                 <BookClose_TN size={18} aria-hidden="true" />
             </button>
             <button type="button" className={`${styles.sidebarToggle} ${styles.overviewIconButton}`}
                 onClick={onContents} aria-label={t('story.overview.contents')}
-                title={t('story.overview.contents')} aria-pressed={view === 'contents'}>
+                 aria-pressed={view === 'contents'}>
                 <ContentsView size={18} aria-hidden="true" />
             </button>
-            <ContentAddButton iconOnly onClick={onAddContent}>
-                {t('story.files.createTitle')}
-            </ContentAddButton>
+            <TN_Button variant="proceed" className={styles.sidebarAddIconButton} borderRadius="8px" aria-label={t('story.files.createTitle')} onClick={onAddContent}>
+                <Plus size={18} aria-hidden="true" />
+            </TN_Button>
         </div>}
         <motion.div id={contentId} className={styles.sidebarBody}
             aria-hidden={isCollapsed} inert={isCollapsed}
@@ -55,9 +54,10 @@ export default function TabStoryNav({ story_name, workspace, view, onOverview, o
                 <span className={styles.metaText}>{t('story.summary.totalCharacters', { count: workspace.charCnt })}</span>
                 <span className={styles.metaText}>{t('story.summary.lastUpdated', { date: workspace.lastUpdate ? new Date(workspace.lastUpdate * 1000).toLocaleString() : '---' })}</span>
             </div>
-            <ContentAddButton className={styles.sidebarAddButton} onClick={onAddContent}>
+            <TN_Button variant="proceed" borderRadius="10px" className={styles.sidebarAddButton} onClick={onAddContent}>
+                <Plus size={18} aria-hidden="true" />
                 {t('story.files.createTitle')}
-            </ContentAddButton>
+            </TN_Button>
             <button type="button" className={styles.contentsNavButton} onClick={onContents} aria-pressed={view === 'contents'}>
                 <ContentsView size={20} aria-hidden="true" />
                 {t('story.overview.contents')}

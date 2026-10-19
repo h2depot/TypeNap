@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -30,7 +31,7 @@ export default function TN_FloatingLayer({ anchorRef, children, interactive = fa
   }, [anchorRef, placement]);
 
   return createPortal(
-    <div ref={layerRef} data-tn-floating-layer
+    <div data-tn-ui ref={layerRef} data-tn-floating-layer
       onClick={interactive ? (event) => event.stopPropagation() : undefined}
       style={{ position: 'fixed', zIndex: 11000, pointerEvents: 'none' }}>
       {children}

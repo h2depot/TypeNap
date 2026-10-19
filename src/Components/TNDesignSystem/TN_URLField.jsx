@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
@@ -71,7 +72,7 @@ const TN_URLField = ({
   };
 
   return (
-    <div style={{ width: width, position: 'relative', boxSizing: 'border-box' }}>
+    <div data-tn-ui style={{ width: width, position: 'relative', boxSizing: 'border-box' }}>
       <motion.div
         animate={{
           y: 0,
@@ -205,7 +206,6 @@ const TN_URLField = ({
                   filter: isBookmarked ? 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.45))' : 'none',
                 }}
                 aria-label={isBookmarked ? t("common.removeBookmark", "ブックマークを解除") : t("common.addBookmark", "ブックマークに追加")}
-                title={isBookmarked ? t("common.removeBookmark", "ブックマークを解除") : t("common.addBookmark", "ブックマークに追加")}
               >
                 <Star
                   size={14}

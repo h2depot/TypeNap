@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import { motion } from 'framer-motion';
 
@@ -6,7 +7,7 @@ const TN_Card = ({ children, title, theme: themeOverride, style = {} }) => {
   const accentColor = '#E8890D';
 
   return (
-    <motion.div
+    <motion.div data-tn-ui
       initial="initial"
       animate="animate"
       whileHover="hover"

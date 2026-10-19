@@ -27,11 +27,11 @@
 }
 
 @keyframes character-photo-drop {
-  from { transform: translateY(calc(-1 * var(--photo-slide-distance))); }
+  from { transform: translateY(calc(-1 * var(--photo-slide-direction, 1) * var(--photo-slide-distance))); }
   to { transform: translateY(0); }
 }
 
 @keyframes character-photo-fall {
   from { transform: translateY(0); }
-  to { transform: translateY(var(--photo-slide-distance)); }
+  to { transform: translateY(calc(var(--photo-slide-direction, 1) * var(--photo-slide-distance))); }
 }

@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import React from 'react';
 import styles from './TN_NavButton.module.css';
 
@@ -14,7 +15,7 @@ export default function TN_NavButton({
     : icon;
 
   return (
-    <button
+    <button data-tn-ui
       type={type}
       disabled={disabled}
       className={`${styles.button} ${className}`}

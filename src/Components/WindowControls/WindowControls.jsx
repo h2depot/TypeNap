@@ -49,7 +49,7 @@ export default function WindowControls({ standalone = false }) {
                 ["toggleMaximize", t(maximized ? "windowControls.restore" : "windowControls.maximize"), maximized ? Copy : Square],
                 ["close", t("windowControls.close"), X],
             ].map(([action, label, Icon]) => (
-                <button key={action} type="button" title={label} aria-label={label}
+                <button key={action} type="button"  aria-label={label}
                     className={`${styles.button} ${action === "close" ? styles.close : ""}`}
                     onClick={() => run(action)}>
                     <Icon size={16} aria-hidden="true" />

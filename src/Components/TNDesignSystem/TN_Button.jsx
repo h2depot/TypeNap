@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import { motion } from 'framer-motion';
 
@@ -28,7 +29,7 @@ const TN_Button = ({ children, onClick, variant = 'primary', size = 'medium', th
     : '0 8px 20px rgba(0,0,0,0.4), 0 0 18px rgba(232,137,13,0.25)';
 
   return (
-    <motion.button
+    <motion.button data-tn-ui
       {...props}
       type={type}
       disabled={disabled}

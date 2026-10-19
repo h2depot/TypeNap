@@ -119,7 +119,7 @@ export default function TabLauncher({ contextAnchor = null, onDismiss }) {
     return <>
         {!contextAnchor && <button ref={triggerRef} type="button" className={workspaceStyles.add_btn}
             style={{ display: appMode === 'workspace' ? undefined : 'none' }}
-            title={t('tabLauncher.title')} aria-label={t('tabLauncher.title')}
+             aria-label={t('tabLauncher.title')}
             aria-expanded={view === 'picker'} aria-haspopup="dialog"
             aria-controls={view === 'picker' ? 'tab-launcher' : undefined}
             onClick={() => { setQuery(''); setView(view === 'picker' ? null : 'picker'); }}>
@@ -153,7 +153,7 @@ export default function TabLauncher({ contextAnchor = null, onDismiss }) {
                 <div className={styles.stories} aria-busy={loading}>
                     {visibleStories.map((story) => {
                         const isOpen = tabsList.some((tab) => tab.type === 'story' && tab.props.story_name === story.story_name);
-                        return <button type="button" key={story.story_name} className={styles.action} title={story.story_name}
+                        return <button type="button" key={story.story_name} className={styles.action}
                             onClick={() => openStory(story.story_name)}>
                             <span className={styles.cover} style={getBookCoverStyle(story.cover)} aria-hidden="true" />
                             <span className={styles.storyName}>{story.story_name}</span>

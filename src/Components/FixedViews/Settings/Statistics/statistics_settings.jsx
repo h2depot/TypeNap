@@ -38,7 +38,7 @@ export default function StatisticsSettings() {
                 {values.map(({ label, value, unit, compact }) => (
                     <div key={label} className={styles.card}>
                         <dt className={styles.label}>{t(`settings.statistics.${label}`)}</dt>
-                        <dd className={styles.value} title={isReady ? `${formatter.format(Number.isFinite(value) ? value : 0)} ${t(`settings.statistics.${unit}`)}` : undefined}>
+                        <dd className={styles.value} >
                             {isReady ? (compact ? formatCharacterCount(value, locale) : formatter.format(value)) : "—"}
                             <span className={styles.unit}>{t(`settings.statistics.${unit}`)}</span>
                         </dd>

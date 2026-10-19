@@ -125,6 +125,16 @@
     box-sizing: border-box;
 }
 
+.sidebarAddIconButton {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.sidebarAddIconButton > div {
+    padding: 7px !important;
+}
+
 .contentsNavButton {
     position: relative;
     display: flex;
@@ -361,3 +371,6 @@
 }
 
 .restoreLayout > * { flex-shrink: 0; }
+
+.createDialogForm { display: flex; flex-direction: column; gap: 28px; }
+.createDialogActions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }

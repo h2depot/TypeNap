@@ -49,7 +49,7 @@ export default function ImageCollectionPicker({ images, selectedPath, onSelect, 
                 icon={ascending ? <ArrowUpWideNarrow size={20} /> : <ArrowDownWideNarrow size={20} />}
                 onClick={() => setAscending(value => !value)}
                 aria-label={t(ascending ? 'library.sort.ascending' : 'library.sort.descending')}
-                title={t(ascending ? 'library.sort.ascending' : 'library.sort.descending')} />
+                 />
         </div>
         <div className={styles.importRow}>
             <span role="status">{t('imageLibrary.resultCount', { count: visible.length, total: images.length })}</span>

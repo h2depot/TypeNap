@@ -16,13 +16,13 @@ export default function EntityPhoto({ name = '', imagePaths = [], width = 240, o
   const move = step => setPhoto(current => {
     const index = current?.pathsKey === pathsKey ? current.index : 0
     return { pathsKey, index: count ? (index + step + count) % count : 0,
-      previous: paths[index] || '', revision: (current?.revision || 0) + 1 }
+      previous: paths[index] || '', direction: step, revision: (current?.revision || 0) + 1 }
   })
 
   return (
     <div className="entity-photo" style={{ width }} role="group" aria-label={t('objectImages.open', { name: name || 'Entity' })}>
       <button type="button" className="entity-photo__open" onClick={onClick} aria-label={ariaLabel || t('objectImages.open', { name: name || 'Entity' })}>
-        <EntityNode {...props} tooltip={false} name={name} width={width} imagePath={paths[currentIndex] || ''} previousImagePath={active?.previous || ''} imageTransitionKey={active?.revision || 0} interactive hoverLift={false} hoverStroke />
+        <EntityNode {...props} tooltip={false} name={name} width={width} imagePath={paths[currentIndex] || ''} previousImagePath={active?.previous || ''} imageTransitionKey={active?.revision || 0} imageTransitionDirection={active?.direction || 1} interactive hoverLift={false} hoverStroke />
       </button>
       <div className="entity-photo__controls">
         <button type="button" onClick={() => move(-1)} disabled={count < 2} aria-label={t('objectImages.previous')}><LeftGraterThan size={16} aria-hidden="true" /></button>

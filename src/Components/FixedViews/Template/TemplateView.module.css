@@ -1,0 +1,53 @@
+.container {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1440px;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 32px clamp(20px, 3vw, 48px) 48px;
+    color: var(--tn-text);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.search {
+    width: 360px;
+    max-width: 100%;
+    min-width: 0;
+    flex: 0 1 360px;
+}
+
+.rightControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.actionRow {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 0 4px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rowMenuButton { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--tn-subtext); cursor: pointer; }
+.rowMenuButton:hover:not(:disabled) { background: var(--tn-hover-bg); color: var(--tn-text); }
+.rowMenuButton:focus-visible { outline: 2px solid var(--tn-focus); outline-offset: 2px; }
+.rowMenuButton:disabled { opacity: .4; cursor: default; }
+
+@media (max-width: 900px) {
+    .search { flex: 1 1 100%; width: 100%; }
+    .rightControls { width: 100%; }
+}
+
+@media (max-width: 700px) {
+    .container { padding: 24px 16px; }
+}

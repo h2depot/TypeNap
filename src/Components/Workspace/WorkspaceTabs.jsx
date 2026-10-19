@@ -135,7 +135,6 @@ export default function WorkspaceTabs() {
                                                     onPointerDown={(event) => event.stopPropagation()}
                                                     className={styles.close_btn}
                                                     onClick={(e) => onClose(e, index)}
-                                                    title={t("common.close")}
                                                 >
                                                     <X size={14} />
                                                 </button>
@@ -150,7 +149,7 @@ export default function WorkspaceTabs() {
                 </div>
                 </> : <div className={styles.workspaceContext} data-tauri-drag-region>
                     <span className={styles.workspaceContextLabel} data-tauri-drag-region>{t("navigation.workspace")}</span>
-                    {tabsList[selectedIndex] && <span className={styles.workspaceContextTitle} title={tabsList[selectedIndex].title} data-tauri-drag-region>{tabsList[selectedIndex].title}</span>}
+                    {tabsList[selectedIndex] && <span className={styles.workspaceContextTitle}  data-tauri-drag-region>{tabsList[selectedIndex].title}</span>}
                     {tabsList.length > 0 && <span className={styles.tabCount}>{t("navigation.openTabs", { count: tabsList.length })}</span>}
                 </div>}
                 <TabLauncher />

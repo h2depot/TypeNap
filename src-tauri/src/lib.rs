@@ -5,7 +5,7 @@ pub mod webbrowser;
 
 use file_ops::{
     backup_manager, image_manager, document_manager, file_manager, initializer, json_editor,
-    txt_editor,
+    txt_editor, template_manager,
 };
 use tauri::Manager;
 use utils::{battery_manager, time_manager};
@@ -76,14 +76,16 @@ pub fn run() {
             document_manager::save_document_title,
             time_manager::get_current_timestamp,
             time_manager::get_current_date,
-            time_manager::get_day_of_week,
             txt_editor::load_txt,
-            txt_editor::save_txt_content,
-            txt_editor::save_txt_title,
             json_editor::create_document_json,
             json_editor::load_json,
             json_editor::save_json_content,
             json_editor::save_json_title,
+            template_manager::list_templates,
+            template_manager::save_template,
+            template_manager::delete_template,
+            template_manager::list_template_backups,
+            template_manager::restore_template_backup,
             backup_manager::increment_backup,
             backup_manager::get_backup_history,
             backup_manager::get_deleted_files,

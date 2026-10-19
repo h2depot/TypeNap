@@ -2,10 +2,11 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { motion as Motion, MotionConfig } from 'framer-motion'
 import { photoPaths } from '../utils/imagePaths.js'
 import { photoSource } from './photoImages.js'
+import { photoNameFont } from './photoNameFont.js'
 import './EntityNode.css'
 import TN_NodeTip from '../Components/TNDesignSystem/TN_NodeTip.jsx'
 
-export default function EntityNode({ name = '', summary = '', theme, tooltipMaxLength = 120, tooltip = true, imagePath: singleImagePath = '', imagePaths = [], previousImagePath: suppliedPreviousImagePath = '', imageTransitionKey: suppliedTransitionKey = 0, width = 240, height = Number(width) * 472 / 411, interactive = true, hoverLift = false, hoverStroke = true, style, ...props }) {
+export default function EntityNode({ name = '', summary = '', theme, tooltipMaxLength = 120, tooltip = true, imagePath: singleImagePath = '', imagePaths = [], previousImagePath: suppliedPreviousImagePath = '', imageTransitionKey: suppliedTransitionKey = 0, imageTransitionDirection = 1, width = 240, height = Number(width) * 472 / 411, interactive = true, hoverLift = false, hoverStroke = true, style, ...props }) {
   const paths = photoPaths(imagePaths)
   const pathsKey = JSON.stringify(paths)
   const [photo, setPhoto] = useState(null)
@@ -39,10 +40,8 @@ export default function EntityNode({ name = '', summary = '', theme, tooltipMaxL
   const nameClipId = `${id}-name-clip`
   const imageClipId = `${id}-image-clip`
   const shadowId = `${id}-shadow`
-  const fontFamily = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(name)
-    ? "'M PLUS 1p', sans-serif"
-    : /^[\x20-\x7E\s]*$/.test(name) ? "'Caveat', sans-serif" : 'sans-serif'
-  const fontSize = fontFamily.includes('Caveat') ? 36 : 24
+  const fontFamily = photoNameFont(name)
+  const fontSize = fontFamily.includes('Caveat') ? 42 : 24
 
   useLayoutEffect(() => {
     const text = textRef.current
@@ -104,7 +103,7 @@ export default function EntityNode({ name = '', summary = '', theme, tooltipMaxL
 <path d="M190 181C190 177.686 192.686 175 196 175H204C207.314 175 210 177.686 210 181V219C210 222.314 207.314 225 204 225H196C192.686 225 190 222.314 190 219V181Z" fill="#D4CFBF"/>
 </g>
 {imagePath && (
-  <g clipPath={`url(#${imageClipId})`} style={{ pointerEvents: 'none', '--photo-slide-distance': '320px' }}>
+  <g clipPath={`url(#${imageClipId})`} style={{ pointerEvents: 'none', '--photo-slide-direction': paths.length ? 1 : imageTransitionDirection, '--photo-slide-distance': '320px' }}>
     {previousImagePath && <image key={`outgoing-${imageTransitionKey}`} className="entity-photo__outgoing" href={photoSource(previousImagePath)} x="40" y="40" width="320" height="320" preserveAspectRatio="xMidYMid slice" />}
     <image key={`${imagePath}-${imageTransitionKey}`} className={imageTransitionKey ? 'entity-photo__incoming' : undefined} href={photoSource(imagePath)} x="40" y="40" width="320" height="320" preserveAspectRatio="xMidYMid slice" />
   </g>

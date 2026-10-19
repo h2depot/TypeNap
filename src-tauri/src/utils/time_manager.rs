@@ -22,10 +22,3 @@ pub async fn get_current_date() -> Result<String, String> {
     let result = Utc::now().format("%Y-%m-%d").to_string();
     Ok(result)
 }
-
-#[tauri::command]
-// return example: "sun"
-pub async fn get_day_of_week() -> Result<String, String> {
-    let result = Utc::now().format("%a").to_string().to_lowercase();
-    Ok(result)
-}

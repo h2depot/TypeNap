@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import React, { memo, useMemo } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,7 +18,7 @@ const TN_ImageOption = memo(function TN_ImageOption({
   const imageSrc = useMemo(() => image.path ? convertFileSrc(image.path) : "", [image.path]);
 
   return (
-    <button
+    <button data-tn-ui
       type="button"
       disabled={disabled}
       onClick={() => onSelect(image.path)}

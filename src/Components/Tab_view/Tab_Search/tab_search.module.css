@@ -361,34 +361,19 @@
     align-items: center;
     gap: 10px;
     padding: 10px 8px;
-    border: 1px solid var(--tn-stroke);
-    border-radius: 12px;
-    background: var(--tn-dialog-bg);
+    cursor: grab;
 }
 
 .bookmarkRow>svg {
     flex-shrink: 0;
 }
 
-.bookmarkDrag {
-    display: flex;
-    align-items: center;
-    padding: 6px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--tn-subtext);
-    cursor: grab;
-    touch-action: none;
-}
-
-.bookmarkDrag:active {
+.bookmarkRow[data-dragging] {
+    opacity: .5;
     cursor: grabbing;
 }
-
-.bookmarkDrag:disabled {
+.bookmarkRow[aria-disabled="true"] {
     cursor: default;
-    opacity: 0.45;
 }
 
 .bookmarkDetails {
@@ -422,6 +407,7 @@
 }
 
 .bookmarkManager button:focus-visible,
+.bookmarkRow:focus-visible,
 .browserMenuItem:focus-visible {
     outline: 2px solid var(--tn-focus);
     outline-offset: 2px;

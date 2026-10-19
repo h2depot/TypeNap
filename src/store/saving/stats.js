@@ -17,6 +17,12 @@ const showErrorToast = (message, error) => {
 const store = new LazyStore("stats.json");
 let bookmarkSaveQueue = Promise.resolve();
 let characterSaveQueue = Promise.resolve();
+let templateSaveQueue = Promise.resolve();
+
+const templateTypes = ['character', 'entity', 'world'];
+const normalizeTemplateStacks = value => Object.fromEntries(templateTypes.map(type => [type,
+    [...new Set((Array.isArray(value?.[type]) ? value[type] : []).filter(id => typeof id === 'string' && id.length > 0))].slice(0, 100),
+]));
 
 const defaultStats = {
     total_chars: 0,
@@ -25,7 +31,8 @@ const defaultStats = {
     recent_file: [],
     recent_tabs: [],
     selected_tab: {},
-    bookmarks: []
+    bookmarks: [],
+    initial_template_stacks: normalizeTemplateStacks(null),
 };
 
 export const useStatsStore = create((set, get) => ({
@@ -54,6 +61,13 @@ export const useStatsStore = create((set, get) => ({
                 }
 
                 loadedStats[key] = savedValue;
+            }
+
+            const templateStacks = normalizeTemplateStacks(loadedStats.initial_template_stacks);
+            if (JSON.stringify(templateStacks) !== JSON.stringify(loadedStats.initial_template_stacks)) {
+                loadedStats.initial_template_stacks = templateStacks;
+                await store.set('initial_template_stacks', templateStacks);
+                needSave = true;
             }
 
             const recentFiles = [];
@@ -117,6 +131,24 @@ export const useStatsStore = create((set, get) => ({
             console.error("Failed to load stats:", error);
             set({ isReady: true });
         }
+    },
+
+    updateInitialTemplateStack: (contentType, ids) => {
+        if (!templateTypes.includes(contentType)) return Promise.resolve();
+        if (!get().isReady) return Promise.reject(new Error('Stats are not ready'));
+        // The store is the dialog's only source of truth. Publish edits immediately,
+        // then serialize immutable snapshots so older writes cannot undo newer edits.
+        const stacks = {
+            ...normalizeTemplateStacks(get().stats.initial_template_stacks),
+            [contentType]: normalizeTemplateStacks({ [contentType]: ids })[contentType],
+        };
+        set(state => ({ stats: { ...state.stats, initial_template_stacks: stacks } }));
+        const save = templateSaveQueue.then(async () => {
+            await store.set('initial_template_stacks', stacks);
+            await store.save();
+        });
+        templateSaveQueue = save.catch(() => {});
+        return save;
     },
 
     addBookmark: (bookmark) => {

@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import React, { useMemo, useRef, useState } from "react";
 import { useTNTheme } from "./theme";
 import TN_Tooltip from "./TN_Tooltip";
@@ -40,7 +41,7 @@ export default function TN_ActivityHeatmap({
         if (cell) buttons.current[cell.date]?.focus();
     };
     return (
-        <section className={`${styles.root} ${className}`} style={{ "--heatmap-columns": columns }} data-theme={theme} aria-label={title} aria-busy={loading}>
+        <section data-tn-ui className={`${styles.root} ${className}`} style={{ "--heatmap-columns": columns }} data-theme={theme} aria-label={title} aria-busy={loading}>
             <div className={styles.header}>
                 <h3 className={styles.title}>{title}</h3>
                 <span className={styles.range}>{calendar.startDate && `${shortFormat.format(asDate(calendar.startDate))} – ${shortFormat.format(asDate(calendar.endDate))}`}</span>
