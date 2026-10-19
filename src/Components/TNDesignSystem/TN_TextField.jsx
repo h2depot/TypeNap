@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTranslation } from 'react-i18next';
 import { useTNTheme } from './theme';
 import { useState, useRef } from 'react';
@@ -43,7 +44,7 @@ const TN_TextField = ({
   };
 
   return (
-    <div style={{ width: width, position: 'relative' }}>
+    <div data-tn-ui style={{ width: width, position: 'relative' }}>
       <motion.div
         animate={{
           y: isFocused ? -2 : 0,
@@ -160,7 +161,6 @@ const TN_TextField = ({
                   color: textColor,
                   outline: 'none',
                 }}
-                title={t("common.clearInput")}
                 aria-label={t("common.clearInput")}
               >
                 <X size={16} />

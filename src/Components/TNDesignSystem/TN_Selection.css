@@ -1,0 +1,13 @@
+/* UI copy should not be selected while operating a control. */
+[data-tn-ui] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Keep text selection and editing available inside input fields and editors. */
+[data-tn-ui] input,
+[data-tn-ui] textarea,
+[data-tn-ui] [contenteditable]:not([contenteditable="false"]) {
+  -webkit-user-select: text;
+  user-select: text;
+}

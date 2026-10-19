@@ -89,7 +89,7 @@ export default function ObjectImagesDialog({ name, imagePaths, onApply, onClose 
         event.stopPropagation();
         if (event.key === 'Escape') { event.preventDefault(); if (choosing) back(); else close(); }
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-            event.preventDefault(); if (choosing) back(); else void apply();
+            event.preventDefault(); void apply();
         }
         if (event.key === 'Tab') {
             const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex="0"]')];
@@ -104,7 +104,7 @@ export default function ObjectImagesDialog({ name, imagePaths, onApply, onClose 
             {choosing ? <div className={styles.selectionScreen} aria-busy={busy}>
                 <div className={styles.collectionHeading}>
                     <span ref={firstAction} tabIndex={-1}><TN_IconButton icon={<GoBack size={20} />} variant="secondary"
-                        onClick={back} aria-label={t('objectImages.back')} title={t('objectImages.back')} /></span>
+                        onClick={back} aria-label={t('objectImages.back')}  /></span>
                     <span role="status" aria-live="polite">{paths.length} / {MAX_OBJECT_IMAGES}</span>
                 </div>
                 {loading ? <p>{t('common.loading')}</p> : <ImageCollectionPicker dimSelected showImport={false}
@@ -113,22 +113,26 @@ export default function ObjectImagesDialog({ name, imagePaths, onApply, onClose 
                     isSelected={image => paths.includes(image.path)}
                     isImageDisabled={image => full && !paths.includes(image.path)}
                     disabled={busy} onSelect={addPath} />}
+                {error && <p className={styles.error} role="alert">{error}</p>}
                 <div className={styles.actions}>
-                    <TN_Button variant="proceed" onClick={back}>{t('objectImages.done')}</TN_Button>
+                    <TN_Button variant="proceed" disabled={busy} onClick={apply}>{t(busy ? 'jsonBox.saving' : 'editor.save')}</TN_Button>
                 </div>
             </div> :
             <div className={styles.content} aria-busy={busy}>
-                <p className={styles.description}>{t('objectImages.limit', { max: MAX_OBJECT_IMAGES })}</p>
+                <div className={styles.photoHeading}>
+                    <p className={styles.description}>{t('objectImages.limit', { max: MAX_OBJECT_IMAGES })}</p>
+                    <span className={styles.count} role="status" aria-live="polite">{paths.length} / {MAX_OBJECT_IMAGES}</span>
+                </div>
                 <div className={styles.registered}>
                     {Array.from({ length: MAX_OBJECT_IMAGES }, (_, index) => {
                         const path = paths[index];
-                        return <div key={index} className={styles.slot}>
+                        return <div key={index} className={styles.slot} data-filled={Boolean(path) || undefined}>
                             {path ? <>
                                 <img src={photoSource(path)} alt={t('objectImages.photo', { index: index + 1 })} />
                                 <TN_IconButton icon={<Trash2 size={18} />} size="small" variant="secondary"
                                     aria-label={t('objectImages.remove', { index: index + 1 })} disabled={busy}
                                     onClick={() => setPaths(current => current.filter((_, i) => i !== index))} />
-                            </> : <span className={styles.empty}>{t('objectImages.emptySlot', { index: index + 1 })}</span>}
+                            </> : <span className={styles.empty}><Plus size={24} aria-hidden="true" />{t('objectImages.emptySlot', { index: index + 1 })}</span>}
                         </div>;
                     })}
                 </div>
@@ -139,9 +143,7 @@ export default function ObjectImagesDialog({ name, imagePaths, onApply, onClose 
                     <TN_Button variant="secondary" disabled={busy || full} onClick={() => setChoosing(true)}>
                         {t('objectImages.collection')}
                     </TN_Button>
-                    <span role="status" aria-live="polite">{paths.length} / {MAX_OBJECT_IMAGES}</span>
                 </div>
-                <p className={styles.description}>{t('objectImages.removeHint')}</p>
                 {error && <p className={styles.error} role="alert">{error}</p>}
                 <div className={styles.actions}>
                     <TN_Button variant="secondary" disabled={busy} onClick={close}>{t('common.cancel')}</TN_Button>

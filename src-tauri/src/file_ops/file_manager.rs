@@ -1,6 +1,6 @@
 use super::{
     image_manager,
-    contents_info::{ContentType, ContentsInfo, CreateContentsInput},
+    contents_info::{ContentType, ContentsInfo},
     document_name, backup_manager,
 };
 use crate::utils::{path_gate, time_manager};
@@ -368,14 +368,6 @@ pub async fn rename_story(
     Ok(())
 }
 
-// Creates a new text file and its backup.
-#[tauri::command]
-pub async fn create_txt(
-    app: tauri::AppHandle,
-    input: CreateContentsInput,
-) -> Result<ContentsInfo, String> {
-    super::document_manager::create_document_txt(app, input).await
-}
 
 // Deletes the specified text file.
 #[tauri::command]

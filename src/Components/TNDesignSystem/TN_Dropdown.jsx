@@ -1,15 +1,24 @@
+import './TN_Selection.css';
 import TN_FloatingLayer from './TN_FloatingLayer';
 import { useTNTheme } from './theme';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const TN_Dropdown = ({ options, value, onChange, placeholder = "Select option", theme: themeOverride, scale = 1, width = '200px', 'aria-label': ariaLabel }) => {
   const theme = useTNTheme(themeOverride);
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const popupRef = useRef(null);
 
   const selectedOption = options.find(opt => opt.value === value);
+  const isEmpty = options.length === 0;
+  const expanded = isOpen && !isEmpty;
+
+  useEffect(() => {
+    if (isEmpty) setIsOpen(false);
+  }, [isEmpty]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -35,23 +44,24 @@ const TN_Dropdown = ({ options, value, onChange, placeholder = "Select option", 
   const accentColor = '#E8890D';
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', width, maxWidth: '100%' }}>
+    <div data-tn-ui ref={dropdownRef} style={{ position: 'relative', width, maxWidth: '100%' }}>
       {/* Main Button */}
       <motion.div
         role="button"
         tabIndex={0}
         aria-label={ariaLabel}
         aria-haspopup="true"
-        aria-expanded={isOpen}
+        aria-expanded={expanded}
+        aria-disabled={isEmpty}
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            setIsOpen((open) => !open);
+            if (!isEmpty) setIsOpen((open) => !open);
           }
         }}
         initial="initial"
-        whileHover="hover"
-        whileTap="tap"
+        whileHover={isEmpty ? undefined : 'hover'}
+        whileTap={isEmpty ? undefined : 'tap'}
         variants={{
           initial: { scale: 1 },
           hover: { scale: 1.02 },
@@ -63,11 +73,12 @@ const TN_Dropdown = ({ options, value, onChange, placeholder = "Select option", 
           userSelect: 'none',
           borderRadius: `${16 * scale}px`,
           padding: `${4 * scale}px`, // This acts as the border width
-          cursor: 'pointer',
+          cursor: isEmpty ? 'default' : 'pointer',
+          opacity: isEmpty ? 0.55 : 1,
           boxShadow: theme === 'light' ? '0 4px 12px rgba(0,0,0,0.1)' : '0 4px 12px rgba(0,0,0,0.3)',
           overflow: 'hidden'
         }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { if (!isEmpty) setIsOpen(open => !open); }}
       >
         {/* Solid Border Background */}
         <div style={{ position: 'absolute', inset: 0, background: borderColor, zIndex: 0 }} />
@@ -99,19 +110,19 @@ const TN_Dropdown = ({ options, value, onChange, placeholder = "Select option", 
             lineHeight: `${24 * scale}px`,
           }}
         >
-          <span>{selectedOption ? selectedOption.label : placeholder}</span>
-          <motion.span
-            animate={{ rotate: isOpen ? 180 : 0 }}
+          <span>{isEmpty ? t('common.noOptions') : selectedOption ? selectedOption.label : placeholder}</span>
+          {!isEmpty && <motion.span
+            animate={{ rotate: expanded ? 180 : 0 }}
             style={{ fontSize: `${12 * scale}px` }}
           >
             ▼
-          </motion.span>
+          </motion.span>}
         </div>
       </motion.div>
 
       {/* Dropdown Menu */}
       <AnimatePresence>
-        {isOpen && (
+        {expanded && (
           <TN_FloatingLayer anchorRef={dropdownRef} interactive>
           <motion.div
             ref={popupRef}

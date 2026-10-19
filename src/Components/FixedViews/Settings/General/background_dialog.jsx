@@ -40,7 +40,6 @@ function BackgroundDialog({
                                 <button
                                     type="button"
                                     className={paletteStyles.swatch}
-                                    title={color || t("settings.backgroundDialog.noColor")}
                                     aria-label={color || t("settings.backgroundDialog.noColor")}
                                     aria-pressed={isSelected}
                                     key={color}

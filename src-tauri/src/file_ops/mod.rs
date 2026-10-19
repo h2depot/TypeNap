@@ -12,3 +12,4 @@ pub mod json_backup_manager;
 pub mod json_editor;
 pub mod txt_backup_manager;
 pub mod txt_editor;
+pub mod template_manager;

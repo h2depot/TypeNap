@@ -2,10 +2,11 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { motion as Motion, MotionConfig } from 'framer-motion'
 import { photoPaths } from '../utils/imagePaths.js'
 import { photoSource } from './photoImages.js'
+import { photoNameFont } from './photoNameFont.js'
 import './CharacterNode.css'
 import TN_NodeTip from '../Components/TNDesignSystem/TN_NodeTip.jsx'
 
-export default function CharacterNode({ name = '', summary = '', theme, tooltipMaxLength = 120, tooltip = true, imagePath: singleImagePath = '', imagePaths = [], previousImagePath: suppliedPreviousImagePath = '', imageTransitionKey: suppliedTransitionKey = 0, width = 200, height = Number(width) * 489 / 311, interactive = true, hoverLift = false, hoverStroke = true, style, ...props }) {
+export default function CharacterNode({ name = '', summary = '', theme, tooltipMaxLength = 120, tooltip = true, imagePath: singleImagePath = '', imagePaths = [], previousImagePath: suppliedPreviousImagePath = '', imageTransitionKey: suppliedTransitionKey = 0, imageTransitionDirection = 1, width = 200, height = Number(width) * 489 / 311, interactive = true, hoverLift = false, hoverStroke = true, style, ...props }) {
   const paths = photoPaths(imagePaths)
   const pathsKey = JSON.stringify(paths)
   const [photo, setPhoto] = useState(null)
@@ -40,10 +41,8 @@ export default function CharacterNode({ name = '', summary = '', theme, tooltipM
   const imageClipId = `${id}-image-clip`
   const shadowId = `${id}-shadow`
   const innerShadowId = `${id}-inner-shadow`
-  const fontFamily = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(name)
-    ? "'M PLUS 1p', sans-serif"
-    : /^[\x20-\x7E\s]*$/.test(name) ? "'Caveat', sans-serif" : 'sans-serif'
-  const fontSize = fontFamily.includes('Caveat') ? 36 : 24
+  const fontFamily = photoNameFont(name)
+  const fontSize = fontFamily.includes('Caveat') ? 42 : 24
 
   useLayoutEffect(() => {
     const text = textRef.current
@@ -106,7 +105,7 @@ export default function CharacterNode({ name = '', summary = '', theme, tooltipM
 </g>
 </g>
 {imagePath && (
-  <g clipPath={`url(#${imageClipId})`} style={{ pointerEvents: 'none', '--photo-slide-distance': '344.4445px' }}>
+  <g clipPath={`url(#${imageClipId})`} style={{ pointerEvents: 'none', '--photo-slide-direction': paths.length ? 1 : imageTransitionDirection, '--photo-slide-distance': '344.4445px' }}>
     {previousImagePath && <image key={`outgoing-${imageTransitionKey}`} className="character-photo__outgoing" href={photoSource(previousImagePath)} x="22.2223" y="33.3335" width="255.5557" height="344.4445" preserveAspectRatio="xMidYMid slice" />}
     <image key={`${imagePath}-${imageTransitionKey}`} className={imageTransitionKey ? 'character-photo__incoming' : undefined} href={photoSource(imagePath)} x="22.2223" y="33.3335" width="255.5557" height="344.4445" preserveAspectRatio="xMidYMid slice" />
   </g>

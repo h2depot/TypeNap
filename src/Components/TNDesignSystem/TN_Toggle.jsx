@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import { motion } from 'framer-motion';
 
@@ -6,7 +7,7 @@ const TN_Toggle = ({ isOn, onToggle, label, 'aria-label': ariaLabel, theme: them
   const borderColor = theme === 'light' ? '#232b69' : '#D4CFBF';
 
   return (
-    <button type="button" role="switch" aria-checked={Boolean(isOn)} aria-label={ariaLabel ?? label} disabled={disabled} style={{ display: 'flex', alignItems: 'center', gap: `${12 * scale}px`, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1, background: 'transparent', border: 0, padding: 0, color: 'var(--tn-text)' }} onClick={onToggle}>
+    <button data-tn-ui type="button" role="switch" aria-checked={Boolean(isOn)} aria-label={ariaLabel ?? label} disabled={disabled} style={{ display: 'flex', alignItems: 'center', gap: `${12 * scale}px`, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1, background: 'transparent', border: 0, padding: 0, color: 'var(--tn-text)' }} onClick={onToggle}>
       {label && <span style={{ fontSize: `${14 * scale}px`, opacity: 0.8 }}>{label}</span>}
       <div
         style={{

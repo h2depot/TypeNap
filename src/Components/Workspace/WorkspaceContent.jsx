@@ -27,7 +27,7 @@ export default function WorkspaceContent({ isActive }) {
                     <TypeNapLogo className={styles.workspaceLogo} />
                     <h1>{t("navigation.workspace")}</h1>
                     <div className={styles.introActions}>
-                        <TN_Button onClick={() => setAppMode("library")}>{t("navigation.chooseStory")}</TN_Button>
+                        <TN_Button variant="secondary" onClick={() => setAppMode("library")}>{t("navigation.chooseStory")}</TN_Button>
                         <TN_Button variant="secondary" onClick={() => addTab("search", "Search")}>{t("navigation.addSearch")}</TN_Button>
                     </div>
                 </div>

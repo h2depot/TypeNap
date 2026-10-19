@@ -29,7 +29,8 @@
         "default-src": "'self'",
         "connect-src": "ipc: http://ipc.localhost",
         "img-src": "'self' asset: http://asset.localhost blob: data: https:",
-        "style-src": "'self' 'unsafe-inline'"
+        "style-src": "'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src": "'self' https://fonts.gstatic.com"
       },
       "assetProtocol": {
         "enable": true,

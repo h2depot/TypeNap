@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTranslation } from 'react-i18next';
 import { useTNTheme } from './theme';
 import { useEffect, useRef } from 'react';
@@ -6,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 let openDialogCount = 0;
 let previousBodyOverflow = '';
 
-const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, maxWidth = '500px', bodyStyle }) => {
+const TN_Dialog = ({ isOpen, onClose, title, children, footer, theme: themeOverride, maxWidth = '500px', bodyStyle }) => {
   const theme = useTNTheme(themeOverride);
   const { t } = useTranslation();
   const onCloseRef = useRef(onClose);
@@ -31,7 +32,7 @@ const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, max
   return (
     <AnimatePresence>
       {isOpen && (
-        <div role="dialog" aria-modal="true" aria-label={title} style={{
+        <div data-tn-ui role="dialog" aria-modal="true" aria-label={title} style={{
           position: 'fixed',
           inset: 0,
           zIndex: 1000,
@@ -86,6 +87,9 @@ const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, max
             }}>
               {/* Header */}
               <div style={{
+                position: 'relative',
+                zIndex: 1,
+                flexShrink: 0,
                 padding: '20px 24px',
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -121,6 +125,15 @@ const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, max
                 >
                   &times;
                 </motion.button>
+                <div aria-hidden="true" style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  height: '24px',
+                  pointerEvents: 'none',
+                  background: `linear-gradient(to bottom, ${bgColor}, transparent)`,
+                }} />
               </div>
 
               {/* Body */}
@@ -135,6 +148,11 @@ const TN_Dialog = ({ isOpen, onClose, title, children, theme: themeOverride, max
               }}>
                 {children}
               </div>
+              {footer && <div style={{
+                flexShrink: 0,
+                padding: '20px clamp(20px, 4vw, 32px)',
+                borderTop: '1px solid var(--tn-border-light, rgba(128, 128, 128, 0.15))',
+              }}>{footer}</div>}
             </div>
           </motion.div>
         </div>

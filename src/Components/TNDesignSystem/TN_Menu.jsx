@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import TN_FloatingLayer from './TN_FloatingLayer';
 import { useTNTheme } from './theme';
 import { useState, useRef, useEffect } from 'react';
@@ -31,7 +32,7 @@ const TN_Menu = ({ trigger, items = [], theme: themeOverride, placement = 'auto'
   const textColor = theme === 'light' ? '#232b69' : '#D4CFBF';
 
   return (
-    <div 
+    <div data-tn-ui 
       ref={menuRef} 
       style={{ 
         position: 'relative', 
@@ -89,7 +90,7 @@ const TN_Menu = ({ trigger, items = [], theme: themeOverride, placement = 'auto'
               const itemTextColor = isDanger ? 'var(--theme-red)' : textColor;
               
               return (
-                <motion.div
+                <motion.div data-tn-ui
                   key={index}
                   whileHover={{
                     x: 4,

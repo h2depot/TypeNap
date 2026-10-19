@@ -1,0 +1,59 @@
+.picker { color: var(--tn-text); font-size: 14px; }
+.actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.muted { margin: 4px 0 12px; color: var(--tn-subtext); font-size: 12px; line-height: 1.7; }
+.picker { margin: 0; padding-top: 24px; border-top: 1px solid var(--tn-border-light); }
+.stackList { display: flex; flex-direction: column; gap: 8px; }
+.stackRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--tn-border-light);
+    border-radius: 12px;
+    background: var(--tn-bg, var(--light-base));
+}
+.stackRow[data-dragging] { z-index: 2; border-color: var(--tn-accent, #E8890D); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+.pickerAddButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--tn-subtext);
+    cursor: pointer;
+}
+.pickerAddButton:hover:not(:disabled) { background: var(--tn-hover-bg); color: var(--tn-text); }
+.pickerAddButton:focus-visible, .stackRow:focus-visible { outline: 2px solid var(--tn-accent, #E8890D); outline-offset: 2px; }
+.pickerAddButton:disabled { opacity: 0.4; cursor: default; }
+.stackRow { cursor: grab; user-select: none; }
+.stackRow[data-dragging] { cursor: grabbing; }
+.stackRow[aria-disabled='true'] { cursor: default; }
+.stackNumber { color: var(--tn-subtext); font-size: 11px; font-variant-numeric: tabular-nums; }
+.stackName { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: var(--font-weight-ui); }
+.stackRemoveButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--tn-subtext);
+    cursor: pointer;
+}
+.stackRemoveButton:hover:not(:disabled) { color: var(--tn-text); }
+.stackRemoveButton:focus-visible { outline: 2px solid var(--tn-accent, #E8890D); outline-offset: 2px; }
+.stackRemoveButton:disabled { opacity: 0.4; cursor: default; }
+.pickerAdd { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.pickerSelect { flex: 1; min-width: 0; }
+@media (max-width: 480px) {
+    .stackRow { flex-wrap: wrap; }
+}

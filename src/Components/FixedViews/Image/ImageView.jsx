@@ -234,14 +234,14 @@ export default function ImageView() {
                 {selectionMode && <div className={styles.selectionToolbar} role="toolbar" aria-label={t('imageLibrary.selectionActions')}>
                     <div className={styles.selectionSummary}>
                         <button type="button" className={styles.selectionCancel} onClick={() => setSelectedPaths(new Set())} disabled={busy}
-                            aria-label={t('imageLibrary.clearSelection')} title={t('imageLibrary.clearSelection')}>
+                            aria-label={t('imageLibrary.clearSelection')} >
                             <X size={16} aria-hidden="true" />
                         </button>
                         <span role="status">{t('imageLibrary.selectedCount', { count: selectedImages.length })}</span>
                     </div>
                     <TN_IconButton icon={<Trash2 size={18} />} size="small" onClick={() => requestDelete(selectedImages)} disabled={busy}
                         style={{ width: 32, height: 32, padding: 2 }}
-                        aria-label={t('imageLibrary.deleteSelected')} title={t('imageLibrary.deleteSelected')} />
+                        aria-label={t('imageLibrary.deleteSelected')}  />
                 </div>}
             </div>
             <div className={styles.rightControls}>
@@ -253,7 +253,6 @@ export default function ImageView() {
                     ]} />
                 <TN_IconButton icon={ascending ? <ArrowUpWideNarrow size={20} /> : <ArrowDownWideNarrow size={20} />}
                     onClick={() => setAscending(value => !value)} variant="secondary"
-                    title={t(ascending ? 'library.sort.ascending' : 'library.sort.descending')}
                     aria-label={t(ascending ? 'library.sort.ascending' : 'library.sort.descending')} />
             </div>
         </div>
@@ -288,14 +287,14 @@ export default function ImageView() {
                                 onError={() => recordSize(image.path, { width: 1, height: 1, failed: true })} />}
                         </div>
                         <div className={styles.caption}>
-                            <span className={styles.name} title={image.name}>{image.name}</span>
+                            <span className={styles.name} >{image.name}</span>
                             <span className={styles.meta}>
                                 <span>{t(`imageLibrary.kind.${image.kind}`)}</span>
                                 {size && !size.failed && <span>{size.width} × {size.height}</span>}
                             </span>
                         </div>
                     </button>
-                    {selectable && <label className={styles.checkControl} title={t(selected ? 'imageLibrary.deselectImage' : 'imageLibrary.selectImage', { name: image.name })}>
+                    {selectable && <label className={styles.checkControl} >
                         <input type="checkbox" checked={selected} disabled={busy} onChange={() => toggleImage(image)}
                             aria-label={t(selected ? 'imageLibrary.deselectImage' : 'imageLibrary.selectImage', { name: image.name })} />
                         <span className={styles.checkMark} aria-hidden="true"><Check size={18} /></span>

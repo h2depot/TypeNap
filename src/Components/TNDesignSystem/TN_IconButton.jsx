@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -74,7 +75,7 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
   };
 
   return (
-    <motion.button
+    <motion.button data-tn-ui
       type={type}
       onClick={disabled ? undefined : onClick}
       initial="initial"

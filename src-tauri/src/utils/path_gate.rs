@@ -55,8 +55,3 @@ pub fn text_file(
     info.require_type(crate::file_ops::contents_info::ContentType::Txt)?;
     crate::file_ops::content_path::resolve(root, info)
 }
-
-pub fn text_backup(root: &Path, story_name: &str, file_stem: &str) -> Result<PathBuf, String> {
-    crate::file_ops::document_name::validate_stem(file_stem)?;
-    Ok(story_dir(root, story_name)?.join(format!("{file_stem}.json")))
-}

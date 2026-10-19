@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import React from 'react';
 import './TN_ListView.css';
@@ -17,7 +18,7 @@ export const TN_ListView = ({ children, theme: themeOverride, width = '100%', ma
   });
 
   return (
-    <div
+    <div data-tn-ui
       data-tn-list-view
       style={{
         width: width,
@@ -46,7 +47,7 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
   const subTextColor = theme === 'light' ? 'rgba(35, 43, 105, 0.65)' : 'rgba(212, 207, 191, 0.65)';
 
   return (
-    <div
+    <div data-tn-ui
       data-tn-list-item
       data-clickable={isClickable ? 'true' : undefined}
       data-theme={theme}
@@ -56,13 +57,10 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '20px 24px',
-        borderRadius: 0,
         cursor: isClickable ? 'pointer' : 'default',
         opacity: disabled ? 0.45 : 1,
         pointerEvents: disabled ? 'none' : 'auto',
         userSelect: 'none',
-        gap: '20px',
         ...props.style,
       }}
       {...Object.keys(props).reduce((acc, key) => {
@@ -86,12 +84,13 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
         {/* アイコンスロット */}
         {icon && (
           <div
+            data-tn-list-icon
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '36px',
-              height: '36px',
+              width: '40px',
+              height: '40px',
               color: textColor,
               flexShrink: 0,
             }}
@@ -104,7 +103,7 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
           {title && (
             <span style={{
-              fontSize: '16px',
+              fontSize: '15px',
               fontWeight: 'var(--font-weight-ui, 800)',
               color: textColor,
               whiteSpace: 'nowrap',
@@ -128,6 +127,7 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
 
       {/* 右側: コントロールまたはアクション矢印 */}
       <div
+        data-tn-list-actions
         style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, position: 'relative', zIndex: 11 }}
         onClick={(e) => {
           // コントロール内の操作がアイテム全体のクリックイベントを発火させないように防ぐ

@@ -3,8 +3,7 @@ import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
-import { BookSearch_TN, ArrowUpWideNarrow, ArrowDownWideNarrow } from "../../../assets/IconList";
-import ContentAddButton from '../../ContentAddButton';
+import { BookSearch_TN, ArrowUpWideNarrow, ArrowDownWideNarrow, Plus } from "../../../assets/IconList";
 import styles from "./LibraryView.module.css";
 import AddTabContent from "../../Dialog/AddTabContent";
 import {
@@ -142,7 +141,6 @@ export default function LibraryView() {
                         icon={isAscending ? <ArrowUpWideNarrow size={20} /> : <ArrowDownWideNarrow size={20} />}
                         onClick={() => setIsAscending(!isAscending)}
                         variant="secondary"
-                        title={t(isAscending ? "library.sort.ascending" : "library.sort.descending")}
                     />
                 </div>
             </div>
@@ -150,9 +148,10 @@ export default function LibraryView() {
                 <div className={styles.resultCount} role="status">
                     {searchQuery.trim() && t("library.resultCount", { count: visibleStories.length, total: storyList.length })}
                 </div>
-                <ContentAddButton onClick={() => setIsAddDialogOpen(true)}>
+                <TN_Button variant="proceed" borderRadius="10px" onClick={() => setIsAddDialogOpen(true)}>
+                    <Plus size={18} aria-hidden="true" />
                     {t("library.addStory")}
-                </ContentAddButton>
+                </TN_Button>
             </div>
             <div className={styles.storyGallery}>
                 {visibleStories.map((story) => {

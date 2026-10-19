@@ -48,11 +48,10 @@ export function ImagePreview({ image, size, inactive, busy, onClose, onDelete, o
                     : <img src={photoSource(image.path)} alt={image.name} onError={() => setFailed(true)} />}
             </div>
             <div className={styles.previewHeading}>
-                <p className={styles.previewName} title={image.name}>{image.name}</p>
+                <p className={styles.previewName} >{image.name}</p>
                 <div className={styles.previewActions}>
                     {image.kind === 'user' && <TN_Button variant="secondary" size="small" disabled={busy} onClick={onRename}>{t('common.rename')}</TN_Button>}
                     <TN_IconButton icon={<Trash2 size={18} />} size="small" onClick={onDelete} disabled={busy || image.kind !== 'user'}
-                        title={t(image.kind === 'user' ? 'common.delete' : 'imageLibrary.presetProtected')}
                         aria-label={t('common.delete')} />
                 </div>
             </div>

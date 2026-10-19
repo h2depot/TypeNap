@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import TN_FloatingLayer from './TN_FloatingLayer';
 import { useTNTheme } from './theme';
 import React, { useState, useRef, useEffect } from 'react';
@@ -112,7 +113,7 @@ const TN_Tooltip = ({
   const config = posConfig[position] || posConfig.top;
 
   return (
-    <div
+    <div data-tn-ui
       ref={anchorRef}
       style={{
         position: 'relative',

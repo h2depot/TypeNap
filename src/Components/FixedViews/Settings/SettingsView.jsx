@@ -49,7 +49,6 @@ export default function SettingsView() {
                             type="button"
                             role="tab"
                             aria-label={t(label)}
-                            title={t(label)}
                             id={`${instanceId}-tab-${id}`}
                             aria-controls={`${instanceId}-panel-${id}`}
                             aria-selected={selectedTab === id}

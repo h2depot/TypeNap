@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,7 +40,7 @@ const TN_RadioButton = ({ checked = false, onChange, label, theme: themeOverride
   const activeIconColor = borderColor;
 
   return (
-    <div
+    <div data-tn-ui
       role="radio"
       aria-checked={checked}
       aria-disabled={disabled}

@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTranslation } from 'react-i18next';
 import { useTNTheme } from './theme';
 import { useState, useRef, useEffect } from 'react';
@@ -62,7 +63,7 @@ const TN_Slider = ({ min = 0, max = 100, value: propValue, defaultValue = 50, on
   };
 
   return (
-    <div
+    <div data-tn-ui
       role="slider"
       tabIndex={0}
       aria-valuemin={min}

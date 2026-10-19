@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import { getBookCoverStyle } from './bookCoverStyle';
 import TN_Tooltip from './TN_Tooltip';
@@ -8,7 +9,7 @@ function TN_BookCardPreview({ title, coverColor, textColor, tooltip, OnClick, on
     const coverStyle = getBookCoverStyle(coverColor);
 
     return (
-        <div className={`TN_book-item${compact ? ' TN_book-preview-compact' : ''}${showTitle ? ' TN_book-preview-with-title' : ''}`} data-tn-theme={theme}>
+        <div data-tn-ui className={`TN_book-item${compact ? ' TN_book-preview-compact' : ''}${showTitle ? ' TN_book-preview-with-title' : ''}`} data-tn-theme={theme}>
             <TN_Tooltip content={tooltip} position="bottom" delay={3.5} subtle theme={theme}>
             <button type="button" className="TN_book-cover-button" onClick={onClick} aria-label={tooltip ? `${title}: ${tooltip}` : title}>
                 <div className="TN_book-cover" style={coverStyle}>

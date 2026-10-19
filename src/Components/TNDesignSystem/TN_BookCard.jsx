@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTranslation } from 'react-i18next';
 import { useTNTheme } from './theme';
 import { getBookCoverStyle } from './bookCoverStyle';
@@ -21,7 +22,7 @@ function TN_BookCard({ title, updated = '2026-05-26', OnClick, OnMoreClick, onCl
     const coverStyle = getBookCoverStyle(coverColor);
 
     return (
-        <div className="TN_book-item" data-tn-theme={theme}>
+        <div data-tn-ui className="TN_book-item" data-tn-theme={theme}>
             <Motion.button
                 type="button"
                 onClick={onClick}

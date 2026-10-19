@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useId, useRef } from 'react';
-import { Save, User, Map, Entity, PanelOpen, PanelClose } from '../../assets/IconList';
+import { Save, User, Map as MapIcon, Entity, PanelOpen, PanelClose } from '../../assets/IconList';
 import TN_Toggle from '../TNDesignSystem/TN_Toggle';
-import PropertyEditor from './PropertyEditor.jsx';
 import { validProperties } from './propertyTypes.js';
+import TemplateStackEditor from '../Templates/TemplateStackEditor';
+import { TemplateSortContext, SortableTemplate } from '../Templates/TemplateSorting';
+import { validStack, newDefinition, newField } from '../Templates/templateModel';
 import base from '../TextBox/textbox.module.css';
 import styles from './jsonbox.module.css';
 import CharacterPhoto from '../../assets/CharacterPhoto.jsx';
@@ -19,12 +21,12 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 export function readPage(value) {
     if (!object(value)) return null;
     const structured = Object.hasOwn(value, 'properties');
-    if ((structured && !validProperties(value.properties)) || (value.summary !== undefined && typeof value.summary !== 'string') || (value.imagePaths !== undefined && !validImagePaths(value.imagePaths))) return null;
-    return { structured, properties: structured ? value.properties : Object.fromEntries(Object.entries(value).filter(([key, item]) => !['name', 'notes', 'summary', 'imagePaths'].includes(key) && validProperties({ value: item }))), summary: value.summary || '', imagePaths: photoPaths(value.imagePaths) };
+    if ((structured && !validProperties(value.properties)) || (value.summary !== undefined && typeof value.summary !== 'string') || (value.imagePaths !== undefined && !validImagePaths(value.imagePaths)) || (value.templateStack !== undefined && !validStack(value.templateStack))) return null;
+    return { structured, properties: structured ? value.properties : Object.fromEntries(Object.entries(value).filter(([key, item]) => !['name', 'notes', 'summary', 'imagePaths', 'templateStack', 'originalAttributesIndex'].includes(key) && validProperties({ value: item }))), summary: value.summary || '', imagePaths: photoPaths(value.imagePaths), templateStack: value.templateStack ?? [] };
 }
 export default function JSONBox({ workspaceId, title, content, contentType, onChangeContent, onRename, isSaved, onSaveClick }) {
     const { t } = useTranslation();
-    const ContentIcon = { character: User, world: Map, entity: Entity }[contentType];
+    const ContentIcon = { character: User, world: MapIcon, entity: Entity }[contentType];
     const Photo = { character: CharacterPhoto, world: WorldPhoto, entity: EntityPhoto }[contentType];
     const photoAspectRatio = PHOTO_ASPECT_RATIOS[contentType] ?? 1;
     const photoWidth = Math.sqrt(PHOTO_AREA * photoAspectRatio);
@@ -36,7 +38,8 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
     const [lockState, setLockState] = useState({ workspaceId, locked: true });
     const deletionLocked = lockState.workspaceId !== workspaceId || lockState.locked;
     const menuId = useId();
-    const propertiesRef = useRef(null);
+    const legacyMigration = useRef(null);
+    const templateSections = useRef(new Map());
     const navigate = ref => {
         ref.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
         ref.current?.focus({ preventScroll: true });
@@ -45,24 +48,39 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
     let parsed;
     try { parsed = JSON.parse(content); } catch { /* Unsupported files remain read-only. */ }
     const page = readPage(parsed);
-    const update = patch => {
-        let next = { ...parsed };
-        if (page.structured) next = { ...next, ...patch };
-        else {
-            if (Object.hasOwn(patch, 'summary')) next.summary = patch.summary;
-            if (Object.hasOwn(patch, 'imagePaths')) next.imagePaths = patch.imagePaths;
-            if (patch.properties) {
-                Object.keys(page.properties).forEach(key => { delete next[key]; });
-                next = { ...next, ...patch.properties };
+    if (page && Object.keys(page.properties).length) {
+        const signature = JSON.stringify([workspaceId, page.properties]);
+        if (legacyMigration.current?.signature !== signature) {
+            const entries = [];
+            const properties = Object.entries(page.properties);
+            for (let offset = 0; offset < properties.length; offset += 200) {
+                const definition = newDefinition('private');
+                definition.name = t('templates.legacyMemo') + (offset ? ` ${offset / 200 + 1}` : '');
+                const values = {};
+                definition.fields = properties.slice(offset, offset + 200).map(([label, value]) => {
+                    const field = { ...newField(), label, type: Array.isArray(value) ? 'StringList' : 'String' };
+                    values[field.id] = value;
+                    return field;
+                });
+                entries.push({ definition, values });
             }
-
+            legacyMigration.current = { signature, entries };
         }
+        const index = Number.isInteger(parsed.originalAttributesIndex) ? Math.max(0, Math.min(page.templateStack.length, parsed.originalAttributesIndex)) : page.templateStack.length;
+        page.templateStack = [...page.templateStack.slice(0, index), ...legacyMigration.current.entries, ...page.templateStack.slice(index)];
+    }
+    const needsMigration = page && (Object.hasOwn(parsed, 'properties') || Object.hasOwn(parsed, 'originalAttributesIndex') || Object.keys(page.properties).length > 0);
+    const update = patch => {
+        const next = { ...parsed, templateStack: page.templateStack, ...patch };
+        delete next.properties;
+        delete next.originalAttributesIndex;
+        if (!page.structured) Object.keys(page.properties).forEach(key => { delete next[key]; });
         setError(''); onChangeContent(JSON.stringify(next, null, 2));
     };
     const save = async () => {
         if (!page || busy) return;
         setBusy(true); setError('');
-        try { await onSaveClick(); } catch (e) { setError(String(e)); }
+        try { if (needsMigration) update({}); await onSaveClick(); } catch (e) { setError(String(e)); }
         finally { setBusy(false); }
     };
     return <div className={`${base.container} ${styles.workspace}`} onKeyDown={e => {
@@ -72,7 +90,12 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
     <div className={styles.menuShell} inert={!menuOpen} aria-hidden={!menuOpen}>
     <nav id={menuId} className={styles.sideMenu} aria-label="設定資料メニュー">
         <span className={styles.menuHeading}>この資料</span>
-        <button type="button" className={styles.menuItem} disabled={!page} onClick={() => navigate(propertiesRef)}><span className={styles.menuNumber} aria-hidden="true">01</span>オリジナル属性{page && <span className={styles.menuCount}>{Object.keys(page.properties).length}</span>}</button>
+        {page && (() => {
+            const sections = page.templateStack.map(({ definition }) => ({ id: definition.id, name: definition.name, count: definition.fields.length }));
+            return <TemplateSortContext stack={page.templateStack} onChange={templateStack => update({ templateStack })}>{sections.map((section, index) => <SortableTemplate key={section.id} id={section.id} name={section.name} sidebar onNavigate={() => navigate({ current: templateSections.current.get(section.id) })}>
+                <span className={styles.menuNumber} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{section.name}<span className={styles.menuCount}>{section.count}</span>
+            </SortableTemplate>)}</TemplateSortContext>;
+        })()}
         <div className={styles.menuDivider} />
         <div className={styles.lockControl}><span className={styles.lockLabel}>削除ロック</span><TN_Toggle isOn={deletionLocked} onToggle={() => setLockState({ workspaceId, locked: !deletionLocked })} aria-label="属性とリスト項目の削除をロック" scale={0.55} /><small>{deletionLocked ? '削除を防いでいます' : '削除できます'}</small></div>
         <div className={styles.menuDivider} />
@@ -103,7 +126,7 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
         onClick={() => setImagesDialogWorkspace(workspaceId)} ariaLabel={t('objectImages.open', { name: title })} /></div>}
     </div>
     {page ? <>
-    <div ref={propertiesRef} tabIndex={-1} className={styles.propertiesTarget} aria-label="オリジナル属性"><PropertyEditor key={workspaceId} deletionLocked={deletionLocked} properties={page.properties} reservedNames={page.structured ? [] : Object.keys(parsed).filter(key => !Object.hasOwn(page.properties, key)).concat(['properties', 'name', 'notes', 'summary', 'imagePaths'])} onChange={properties => update({ properties })} /></div></> : <p role="alert">{t('jsonBox.unavailable')}</p>}
+    <TemplateStackEditor key={workspaceId} stack={page.templateStack} contentType={contentType} deletionLocked={deletionLocked} onSectionRef={(id, node) => { if (node) templateSections.current.set(id, node); else templateSections.current.delete(id); }} onChange={templateStack => update({ templateStack })} /></> : <p role="alert">{t('jsonBox.unavailable')}</p>}
     {error && <div role="alert">{error}</div>}
     </article></div></div></div>
     {page && imagesDialogWorkspace === workspaceId && <ObjectImagesDialog key={workspaceId} name={title} imagePaths={page.imagePaths}

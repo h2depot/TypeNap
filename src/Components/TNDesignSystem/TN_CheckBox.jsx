@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,7 +38,7 @@ const TN_CheckBox = ({ checked = false, onChange, label, theme: themeOverride, d
   };
 
   return (
-    <div
+    <div data-tn-ui
       role="checkbox"
       aria-checked={checked}
       aria-disabled={disabled}

@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useTNTheme } from './theme';
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -91,7 +92,7 @@ export const TN_Toast = ({ id, message, type = 'info', onClose, theme: themeOver
   }
 
   return (
-    <motion.div
+    <motion.div data-tn-ui
       layout
       initial={{ opacity: 0, y: 40, scale: 0.9, x: 20 }}
       animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
@@ -205,7 +206,7 @@ export const TN_ToastContainer = ({
 }) => {
   const theme = useTNTheme(themeOverride);
   return (
-    <div
+    <div data-tn-ui
       style={{
         position: 'fixed',
         bottom: '24px',

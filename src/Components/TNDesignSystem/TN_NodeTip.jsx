@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import { useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './TN_NodeTip.css'
@@ -47,7 +48,7 @@ export default function TN_NodeTip({ children, name = '', summary = '', maxLengt
   }, [open, theme])
 
   return (
-    <span ref={anchor} className="TN-node-tip-anchor" tabIndex={disabled ? undefined : 0}
+    <span data-tn-ui ref={anchor} className="TN-node-tip-anchor" tabIndex={disabled ? undefined : 0}
       aria-describedby={open ? id : undefined}
       onPointerEnter={() => { setHovered(true); setDismissed(false) }}
       onPointerLeave={() => setHovered(false)}
@@ -56,7 +57,7 @@ export default function TN_NodeTip({ children, name = '', summary = '', maxLengt
       onKeyDown={(event) => { if (event.key === 'Escape') setDismissed(true) }}>
       {children}
       {open && createPortal(
-        <div ref={card} id={id} role="tooltip" className="TN-node-tip" data-theme={position?.theme || theme || 'dark'}
+        <div data-tn-ui ref={card} id={id} role="tooltip" className="TN-node-tip" data-theme={position?.theme || theme || 'dark'}
           style={{ left: position?.left ?? 0, top: position?.top ?? 0, visibility: position ? 'visible' : 'hidden' }}>
           <strong className="TN-node-tip__name">{name}</strong>
           {description && <p className="TN-node-tip__summary">{description}</p>}

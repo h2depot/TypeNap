@@ -16,9 +16,11 @@ use uuid::Uuid;
 pub async fn create_document_json(
     app: tauri::AppHandle,
     input: CreateContentsInput,
+    template_ids: Option<Vec<String>>,
 ) -> Result<ContentsInfo, String> {
     let _write_guard = backup_manager::CONTENT_WRITE_LOCK.lock().map_err(|error| error.to_string())?;
     json_kind(&input.content_type)?;
+    let stack = super::template_manager::initial_stack(&app, input.content_type, &template_ids.unwrap_or_default())?;
     let library = file_manager::get_library_path(&app)?;
     let info = {
         let _guard = document_name::CREATION_LOCK
@@ -50,14 +52,15 @@ pub async fn create_document_json(
             .create_new(true)
             .open(path)
             .map_err(|e| e.to_string())?;
-        let initial = match info.content_type {
+        let mut initial = match info.content_type {
             ContentType::Character => {
                 serde_json::json!({"name": name, "summary": "", "imagePaths": [], "role": "", "profile": "", "personality": "", "notes": ""})
             }
             _ => {
-                serde_json::json!({"name": name, "summary": "", "imagePaths": [], "properties": {}})
+                serde_json::json!({"name": name, "summary": "", "imagePaths": []})
             }
         };
+        initial["templateStack"] = stack;
         file.write_all(
             serde_json::to_string_pretty(&initial)
                 .map_err(|e| e.to_string())?
@@ -100,6 +103,8 @@ pub async fn save_json_content(
     super::image_rename::normalize_object_references(app_data, &mut content)
         .map_err(|message| SaveDocumentError::Preparation { message })?;
     validate_object_images(&content).map_err(|message| SaveDocumentError::Preparation { message })?;
+    super::template_manager::validate_document(&content, contents_info.content_type)
+        .map_err(|message| SaveDocumentError::Preparation { message })?;
     let path = resolve_json(&library, &contents_info)
         .map_err(|message| SaveDocumentError::Preparation { message })?;
     let json =
@@ -213,6 +218,7 @@ fn load_from_library(root: &Path, info: &ContentsInfo) -> Result<Value, String> 
 #[cfg(test)]
 fn save_to_library(root: &Path, info: &ContentsInfo, content: &Value) -> Result<(), String> {
     validate_object_images(content)?;
+    super::template_manager::validate_document(content, info.content_type)?;
     let path = resolve_json(root, info)?;
     let json = serde_json::to_string_pretty(content).map_err(|e| e.to_string())?;
     atomic_file::write_text(&path, &json).map_err(|e| e.to_string())

@@ -21,7 +21,7 @@
   "search": {
     "more": "その他のメニュー",
     "bookmarks": "ブックマーク",
-    "bookmarkInstructions": "ドラッグまたは上下ボタンで並び替えられます。変更は自動で保存されます。",
+    "bookmarkInstructions": "項目を0.2秒長押ししてドラッグ、または上下ボタンで並び替えられます。変更は自動で保存されます。",
     "noBookmarks": "保存したブックマークはありません。",
     "reorderBookmark": "{{name}}を並び替え",
     "moveBookmarkUp": "{{name}}を上へ移動",
@@ -38,6 +38,7 @@
     "shortcutSaveFailed": "ショートカットを保存できませんでした。"
   },
   "common": {
+    "noOptions": "もう選択肢がないよ！",
     "cancel": "キャンセル",
     "close": "閉じる",
     "delete": "削除する",
@@ -196,7 +197,7 @@
       "unknownDate": "日時不明 (初期状態)",
       "noContent": "(内容なし)",
       "previewSummary": "概要",
-      "previewProperties": "オリジナル属性",
+      "previewProperties": "項目",
       "previewImages": "画像ファイル",
       "previewUnavailable": "このバックアップの構造を読み取れませんでした。"
     }
@@ -409,6 +410,49 @@
     "storyAssets": "初期作品を準備できませんでした。",
     "jsonFile": "初期化情報を読み書きできませんでした。",
     "default": "アプリを初期化できませんでした。"
+  },
+  "templates": {
+    "basicInfo": "基本情報",
+    "namePlaceholder": "未設定",
+    "fieldSettings": "本体の項目設定",
+    "name": "テンプレート名", "scope": "スコープ", "allScopes": "すべてのスコープ",
+    "editTitle": "テンプレートの定義", "privateTitle": "ファイル専用テンプレート",
+    "privateHint": "privateはこのファイル専用です。共有できません。",
+    "definitionHint": "項目名と、文字列・文字列リストのどちらかを指定します。各項目の内容は、ファイルごとに入力します。",
+    "fieldName": "項目名", "fieldType": "型", "options": "選択肢（1行に1つ）",
+    "addField": "項目を追加", "moveUp": "上へ移動", "moveDown": "下へ移動",
+    "reorder": "{{name}}を並べ替え",
+    "stack": "テンプレートスタック", "stackHint": "複数のテンプレートを組み合わせられます。並び順がセクションの表示順になります。",
+    "choose": "テンプレートを選択", "missing": "利用できないテンプレート", "add": "追加", "remove": "削除",
+    "actions": "{{name}}の操作", "addTemplate": "テンプレートを追加", "noAvailable": "追加できるテンプレートがありません。",
+    "snapshotHint": "追加時の版を使用しています。共有テンプレートの変更は「更新」で反映できます。",
+    "edit": "編集", "update": "v{{revision}}に更新", "removeConfirm": "「{{name}}」と入力した値をこの資料から削除しますか？",
+    "addPrivate": "ファイル専用テンプレート", "retiredHint": "削除・型変更された項目の元の値も、このファイル内に保持しています。",
+    "unset": "未入力", "yes": "はい", "no": "いいえ", "listHint": "1行に1項目",
+    "empty": "該当するテンプレートがありません。", "fieldCount": "{{count}}項目",
+    "deleteMessage": "「{{name}}」をライブラリから削除しますか？ 各ファイルに追加済みのセクションは保持されます。",
+    "refresh": "更新",
+    "insertHere": "ここにテンプレートを挿入",
+    "insertShared": "共有テンプレート",
+    "insertPrivate": "この資料専用",
+    "legacyMemo": "資料メモ",
+    "dragHint": "0.2秒長押ししてドラッグで並べ替え。キーボードではSpaceでつかみ、矢印で移動、Spaceで確定、Escapeで取消。",
+    "renameField": "{{name}}の項目名",
+    "newFieldName": "追加する項目名",
+    "deleteField": "{{name}}を削除",
+    "fieldNameRequired": "項目名を入力してください。",
+    "duplicateFieldName": "同じ名前の項目があります。",
+    "limitReached": "テンプレートは100個まで追加できます。",
+    "types": { "String": "String · 文字列", "StringList": "StringList · リスト" }
+  },
+  "templateLibrary": {
+    "backups": "バックアップ・削除の取り消し",
+    "restore": "この版を復元",
+    "noBackups": "バックアップはまだありません。",
+    "restoreHint": "テンプレートを元の項目IDで復元します。各資料でテンプレートの「更新」を適用すると、対応する退避値があれば戻ります。現在の定義もバックアップに残ります。",
+    "searchPlaceholder": "テンプレートを検索",
+    "sortName": "テンプレート名",
+    "create": "新規作成"
   },
   "library": {
     "description": "作品を管理する場所です。作品を開くと、ワークスペースのタブに追加されます。",

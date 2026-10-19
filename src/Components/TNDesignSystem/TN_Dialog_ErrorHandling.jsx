@@ -1,3 +1,4 @@
+import './TN_Selection.css';
 import React, { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -14,7 +15,7 @@ const TN_DialogErrorHandling = ({ isOpen, title, children, maxWidth = '500px' })
   return (
     <AnimatePresence>
       {isOpen && (
-        <div
+        <div data-tn-ui
           role="alertdialog"
           aria-modal="true"
           aria-labelledby="initialization-error-title"
