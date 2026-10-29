@@ -34,12 +34,25 @@
     margin-bottom: 12px;
 }
 
+.sidebar[data-collapsed='true'] {
+    scrollbar-width: none;
+}
+
+.sidebar[data-collapsed='true']::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar[data-collapsed='true'] .sidebarHeader {
+    justify-content: center;
+}
+
 .sidebarToggle {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
+    box-sizing: border-box;
     flex-shrink: 0;
     padding: 0;
     border: 0;
@@ -67,18 +80,30 @@
     flex: 1;
 }
 
+.sidebarBody[hidden] {
+    display: none;
+}
+
 .sidebarCollapsedActions {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    width: 32px;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.sidebarNavDivider {
+    width: calc(100% - 12px);
+    margin: 0 6px;
+    border: 0;
+    border-top: 1px solid var(--tn-stroke);
     flex-shrink: 0;
 }
 
 .overviewIconButton {
     position: relative;
-    border: 1px solid transparent;
-    border-radius: 12px;
+    border-radius: 10px;
     transition: background-color 150ms ease, color 150ms ease;
 }
 
@@ -125,16 +150,6 @@
     box-sizing: border-box;
 }
 
-.sidebarAddIconButton {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-}
-
-.sidebarAddIconButton > div {
-    padding: 7px !important;
-}
-
 .contentsNavButton {
     position: relative;
     display: flex;
@@ -164,7 +179,16 @@
     color: var(--tn-text);
 }
 
-.overviewIconButton[aria-pressed='true'],
+.overviewIconButton[aria-pressed='true'] {
+    background: var(--nav-selected-bg, #232B69);
+    color: #E5E5E5;
+}
+
+:global([data-theme='dark']) .overviewIconButton[aria-pressed='true'] {
+    background: var(--nav-selected-bg, #D4CFBF);
+    color: #1A1A1A;
+}
+
 .contentsNavButton[aria-pressed='true'] {
     background: color-mix(in srgb, var(--tn-bg) 74%, var(--app-color-mix, white));
     border-color: var(--tn-border-light);
@@ -172,7 +196,6 @@
     box-shadow: var(--tn-shadow);
 }
 
-.overviewIconButton[aria-pressed='true']::before,
 .contentsNavButton[aria-pressed='true']::before {
     content: '';
     position: absolute;
@@ -237,9 +260,9 @@
 
 .contentsSearchField {
     width: 360px;
-    max-width: 100%;
-    min-width: 0;
-    flex: 0 1 360px;
+    min-width: min(100%, 180px);
+    flex: 1 1 240px;
+    max-width: 360px;
 }
 
 .contentsSortControls {
@@ -247,11 +270,11 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    margin-left: auto;
 }
 
-@media (max-width: 900px) {
-    .contentsSearchField { flex: 1 1 100%; width: 100%; }
-    .contentsSortControls { width: 100%; }
+@media (max-width: 1100px) {
+    .contentsSearchField { flex: 1 1 100%; width: 100%; max-width: 100%; }
 }
 
 .contentsResultRow {
@@ -268,19 +291,6 @@
     font-size: 12px;
     color: var(--tn-subtext);
     flex-shrink: 0;
-}
-
-.contentsEmptyState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    padding: 24px;
-    text-align: center;
-    color: var(--tn-subtext);
-    border: 1px dashed var(--tn-border-light);
-    border-radius: 10px;
 }
 
 .memoWrapper {
@@ -374,3 +384,28 @@
 
 .createDialogForm { display: flex; flex-direction: column; gap: 28px; }
 .createDialogActions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }
+.flowViewSectionHeader { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; padding: 0 6px 0 14px; box-sizing: border-box; color: var(--tn-subtext); font-size: 11px; }
+.flowViewSectionToggle { display: inline-flex; flex: 1; min-width: 0; align-self: stretch; align-items: center; gap: 8px; min-height: 28px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.flowViewSectionToggle:hover { color: #E8890D; }
+.flowViewSectionToggle:focus-visible { outline: 2px solid var(--tn-focus); outline-offset: 3px; }
+.flowViewSectionTriangle { flex-shrink: 0; width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid currentColor; transform: rotate(0deg); transition: transform 150ms ease; }
+.flowViewSectionTriangle[data-expanded='true'] { transform: rotate(90deg); }
+.flowViewList, .flowViewCollapsedList { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.flowViewCollapsedList { align-items: center; gap: 8px; }
+.flowViewList[hidden] { display: none; }
+.flowViewNavRow { position: relative; display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0; }
+.flowViewDragButton { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.flowViewNavRow[data-dragging='true'] { border-radius: 12px; background: var(--tn-bg); box-shadow: var(--tn-shadow); }
+.flowViewNavRow[data-dragging='true'] .flowViewDragButton { cursor: grabbing; }
+.flowViewNavRow > .contentsNavButton { flex: 1; min-width: 0; width: auto; }
+.flowViewNavName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.flowViewNavRow[data-collapsed='true'] { justify-content: center; width: 32px; }
+.flowViewMenuButton:focus-visible { outline: 2px solid var(--tn-focus); outline-offset: 2px; }
+.flowViewEmpty { margin: 0; padding: 0 14px; color: var(--tn-subtext); font-size: 12px; line-height: 1.7; }
+.flowViewDialogBody { display: grid; gap: 18px; }
+.flowViewDialogBody p { margin: 0; overflow-wrap: anywhere; }
+.flowViewDialogField { display: grid; gap: 12px; }
+.flowViewDialogHint { color: var(--tn-subtext); font-size: 13px; line-height: 1.7; }
+@media (prefers-reduced-motion: reduce) {
+    .flowViewSectionTriangle { transition: none; }
+}

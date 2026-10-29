@@ -189,12 +189,36 @@ fn write_story_info(library_path: &Path, story_info: &StoryInfo) -> Result<(), S
     fs::write(story_info_path, json).map_err(|e| e.to_string())
 }
 
+pub(crate) fn prepare_duplicate_story_info(
+    library: &Path,
+    source: &str,
+    staging_library: &Path,
+    name: &str,
+) -> Result<(), String> {
+    let mut info = read_story_info(library, source);
+    info.story_name = name.into();
+    info.created_at = time_manager::current_timestamp();
+    info.last_update = info.created_at;
+    (info.chapters, info.char_cnt) =
+        collect_story_chapters(&path_gate::story_dir(staging_library, name)?);
+    info.contents = super::content_path::list(staging_library, name)?;
+    write_story_info(staging_library, &info)
+}
+
 pub fn sync_story_info(
     app: &tauri::AppHandle,
     story_name: &str,
     touch_last_update: bool,
 ) -> Result<StoryInfo, String> {
     let library_path = get_library_path(app)?;
+    sync_story_info_in_library(&library_path, story_name, touch_last_update)
+}
+
+pub(crate) fn sync_story_info_in_library(
+    library_path: &Path,
+    story_name: &str,
+    touch_last_update: bool,
+) -> Result<StoryInfo, String> {
     let story_path = path_gate::story_dir(&library_path, story_name)?;
     let (chapters, char_cnt) = collect_story_chapters(&story_path);
     let mut story_info = read_story_info(&library_path, story_name);

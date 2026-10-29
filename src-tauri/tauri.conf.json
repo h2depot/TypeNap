@@ -19,6 +19,7 @@
         "minHeight": 600,
         "center": true,
         "resizable": true,
+        "zoomHotkeysEnabled": true,
         "decorations": false,
         "maximized": false,
         "backgroundColor": "#1A1A1A"

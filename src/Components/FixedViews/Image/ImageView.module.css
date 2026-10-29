@@ -66,7 +66,7 @@
 .meta { display: flex; justify-content: space-between; gap: 8px; overflow: hidden; color: var(--tn-subtext); font-size: 11px; line-height: 18px; white-space: nowrap; }
 .meta span { overflow: hidden; text-overflow: ellipsis; }
 .imageFallback { box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; padding: 12px; color: var(--tn-subtext); font-size: 12px; text-align: center; }
-.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; padding: 24px; border: 1px dashed var(--tn-border-light); border-radius: 10px; color: var(--tn-subtext); text-align: center; }
+.empty { min-height: 240px; }
 .error { margin-bottom: 20px; padding: 16px; border: 1px solid var(--tn-border-light); border-radius: 10px; }
 .error p { margin: 0 0 8px; }
 .errorDetail { overflow-wrap: anywhere; color: var(--tn-subtext); font-size: 12px; }

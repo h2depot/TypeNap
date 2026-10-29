@@ -1,0 +1,127 @@
+.graph-map {
+  position: relative;
+  flex: 1; min-width: 0; min-height: 0; overflow: hidden;
+  background: var(--flow-base);
+  --graph-edge-color: #69451F;
+  --xy-background-color: var(--flow-base);
+  --xy-minimap-background-color: var(--flow-surface);
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--flow-base) 65%, transparent);
+  --xy-controls-button-background-color: var(--flow-surface);
+  --xy-controls-button-background-color-hover: var(--flow-base);
+  --xy-controls-button-color: var(--flow-text);
+  --xy-controls-button-border-color: var(--flow-border);
+}
+.graph-map .react-flow { background: var(--flow-base); touch-action: none; }
+.graph-map .react-flow__edge:hover { --graph-edge-color: #E8890D; }
+/* Keep color feedback animated in both motion modes, matching MemoNode. */
+.graph-map .react-flow__edge-path { transition: stroke .35s ease; }
+.graph-map .react-flow__edge marker path { transition: fill .35s ease; }
+.graph-map .react-flow__node {
+  width: 180px; padding: 22px 16px;
+  border: 1px solid var(--flow-border); border-radius: 14px;
+  background: var(--flow-surface); color: var(--flow-text);
+  font-family: inherit; font-size: 15px;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Pointer focus must not add a browser outline around the animated cards.
+   Keep :focus-visible available for keyboard navigation. */
+.graph-map .react-flow__node :focus:not(:focus-visible) {
+  outline: none;
+}
+.graph-map .react-flow__node-character,
+.graph-map .react-flow__node-entity,
+.graph-map .react-flow__node-memo,
+.graph-map .react-flow__node-document,
+.graph-map .react-flow__node-world {
+  width: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.story-node { position: relative; line-height: 0; }
+.story-node__card { position: relative; z-index: 0; isolation: isolate; }
+.story-node__tip-actions { display: flex; align-items: center; gap: 8px; line-height: normal; }
+.story-node__tip-actions button:focus-visible { outline: 2px solid var(--brand-accent, #E8890D); outline-offset: 3px; }
+.story-node--memo:hover .memo-node__grip,
+.story-node--memo:focus-within .memo-node__grip { opacity: 1; }
+.graph-edge-label {
+  position: absolute;
+  pointer-events: all;
+  color: var(--flow-text);
+  font-family: inherit;
+}
+.graph-edge-label--selected { z-index: 10; }
+.graph-edge-menu {
+  width: 290px;
+  padding: 12px;
+  border: 1px solid var(--flow-border);
+  border-radius: 14px;
+  background: var(--flow-surface);
+  box-shadow: 0 8px 28px #0002;
+  cursor: default;
+}
+.graph-edge-menu__directions { display: flex; gap: 4px; }
+.graph-edge-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.graph-edge-menu__directions button {
+  flex: 1;
+  padding: 7px 4px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.graph-edge-menu__directions button:hover { background: var(--flow-base); }
+.graph-edge-menu__directions button[aria-pressed="true"] {
+  border-color: var(--brand-accent);
+  background: color-mix(in srgb, var(--brand-accent) 14%, var(--flow-surface));
+}
+.graph-edge-menu__comment { display: grid; gap: 6px; margin-top: 12px; font-size: 12px; }
+.graph-edge-menu__comment textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  padding: 8px;
+  border: 1px solid var(--flow-border);
+  border-radius: 8px;
+  background: var(--flow-base);
+  color: inherit;
+  font: inherit;
+  line-height: 1.6;
+  cursor: text;
+}
+.graph-edge-comment {
+  display: block;
+  max-width: 240px;
+  max-height: 120px;
+  overflow: auto;
+  padding: 6px 10px;
+  border: 1px solid var(--flow-border);
+  border-radius: 8px;
+  background: var(--flow-surface);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.graph-edge-menu button:focus-visible,
+.graph-edge-menu textarea:focus-visible,
+.graph-edge-comment:focus-visible { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+.graph-map .react-flow__minimap { border: 1px solid var(--flow-border); border-radius: 10px; overflow: hidden; }
+@media (max-width: 600px) { .graph-map .react-flow__minimap { display: none; } }

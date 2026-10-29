@@ -1,11 +1,12 @@
 import { contentId, contentsInfo } from '../../../store/contentsInfo.js';
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { EllipsisVertical, Page, User, Map, Entity, PageSearch, ArrowUpWideNarrow, ArrowDownWideNarrow } from '../../../assets/IconList';
 import styles from "./tab_story.module.css";
 import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
+import { duplicateContent } from '../../../store/duplication.js';
 import { useToastStore } from "../../../store/toastStore";
 import { useStatsStore } from "../../../store/saving/stats";
 import { invoke } from "@tauri-apps/api/core";
@@ -22,6 +23,8 @@ import {
 } from "../../TNDesignSystem";
 import { useTranslation } from "react-i18next";
 import ContentTypeSelector from './ContentTypeSelector';
+import ContentTypeFilter from '../../ContentTypeFilter';
+import EmptyState from '../../EmptyState';
 import BackupPreview from '../../JSONBox/BackupPreview';
 import TemplateStackPicker from '../../Templates/TemplateStackPicker';
 
@@ -49,6 +52,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     const [isFileRenameDialogOpen, setIsFileRenameDialogOpen] = useState(false);
     const [renameTargetFile, setRenameTargetFile] = useState("");
     const [editFileName, setEditFileName] = useState("");
+    const renameErrorId = useId();
 
     const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false);
     const [restoreTargetFile, setRestoreTargetFile] = useState("");
@@ -57,6 +61,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     const [restoreSliderValue, setRestoreSliderValue] = useState(0);
 
     const [searchQuery, setSearchQuery] = useState("");
+    const [contentTypeFilter, setContentTypeFilter] = useState('all');
     const [sortBy, setSortBy] = useState("title");
     const [isAscending, setIsAscending] = useState(true);
     const sortOptions = [
@@ -65,8 +70,10 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     ];
     const files = (workspace.contentsList ?? []).filter((info) => ["txt", "character", "world", "entity"].includes(info.content_type));
     const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
+    const hasActiveFilters = normalizedSearchQuery !== '' || contentTypeFilter !== 'all';
     const visibleFiles = files
         .map((info, index) => ({ ...info, title: info.name, index }))
+        .filter(info => contentTypeFilter === 'all' || info.content_type === contentTypeFilter)
         .filter(({ title }) => title.toLocaleLowerCase().includes(normalizedSearchQuery))
         .sort((a, b) => {
             const comparison = sortBy === "order"
@@ -77,6 +84,10 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     const normalizedNewFileName = newFileName.trim().toLocaleLowerCase();
     const newFileNameExists = normalizedNewFileName !== "" && files.some((info) => (
         info.name.trim().toLocaleLowerCase() === normalizedNewFileName
+    ));
+    const normalizedRename = editFileName.trim().toLowerCase();
+    const renameNameExists = normalizedRename !== '' && files.some(info => (
+        contentId(info) !== contentId(renameTargetFile) && info.name.trim().toLowerCase() === normalizedRename
     ));
 
     const handleDelete = async () => {
@@ -121,6 +132,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
     };
 
     const handleUpdateTxtName = async (info, newFileName) => {
+        if (renameNameExists) return;
         const oldFileName = info.name;
         const nextFileName = newFileName.trim();
         if (!nextFileName || oldFileName === nextFileName) {
@@ -252,6 +264,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                             borderRadius="10px"
                         />
                     </div>
+                    <ContentTypeFilter value={contentTypeFilter} onChange={setContentTypeFilter} />
                     <div className={styles.contentsSortControls}>
                         <TN_Dropdown
                             options={sortOptions}
@@ -267,19 +280,19 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         />
                     </div>
                 </div>
-                {normalizedSearchQuery && <div className={styles.contentsResultRow}>
+                {hasActiveFilters && <div className={styles.contentsResultRow}>
                     <div className={styles.contentsResultCount} role="status">
                         {t("story.files.resultCount", { count: visibleFiles.length, total: files.length })}
                     </div>
                 </div>}
                 <div className={styles.listScrollArea}>
-                    <TN_ListView maxWidth="100%">
+                    {visibleFiles.length > 0 && <TN_ListView maxWidth="100%">
                         {visibleFiles.map((info) => (
                             <TN_ListItem
                                 key={info.access_id}
                                 icon={React.createElement({ txt: Page, character: User, world: Map, entity: Entity }[info.content_type], { size: 20 })}
                                 title={info.name}
-                                description={info.content_type === "txt" ? t("story.files.description") : `${{ character: "Character", world: "World", entity: "Entity" }[info.content_type]} / JSONBox`}
+                                description={{ txt: "Text", character: "Character", world: "World", entity: "Entity" }[info.content_type]}
                                 onClick={() => addTab('work', info.name, { story_name: info.story_name, name: info.name, access_id: info.access_id, content_type: info.content_type, title: info.name })}
                                 control={
                                     <TN_Menu
@@ -321,6 +334,12 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                                                 }
                                             },
                                             {
+                                                label: t("common.duplicate"),
+                                                onClick: () => duplicateContent(info).catch(error => {
+                                                    console.error('Content duplication failed', error);
+                                                })
+                                            },
+                                            {
                                                 label: t("common.delete"),
                                                 isDanger: true,
                                                 onClick: () => {
@@ -333,19 +352,13 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                                 }
                             />
                         ))}
-                    </TN_ListView>
+                    </TN_ListView>}
 
-                    {visibleFiles.length === 0 && (
-                        <div className={styles.contentsEmptyState}>
-                            <PageSearch size={32} />
-                            <p>{t(normalizedSearchQuery ? "story.files.noResults" : "story.files.empty")}</p>
-                            {normalizedSearchQuery && (
-                                <TN_Button variant="secondary" onClick={() => setSearchQuery("")}>
-                                    {t("common.clearInput")}
-                                </TN_Button>
-                            )}
-                        </div>
-                    )}
+                    {visibleFiles.length === 0 && <EmptyState
+                        message={t(hasActiveFilters ? 'story.files.noResults' : 'story.files.empty')}
+                        actionLabel={t('story.files.clearFilters')}
+                        onAction={hasActiveFilters ? () => { setSearchQuery(''); setContentTypeFilter('all'); } : undefined}
+                    />}
                 </div>
             </div>
 
@@ -459,8 +472,13 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                             value={editFileName}
                             onChange={(e) => setEditFileName(e.target.value)}
                             placeholder={t("story.files.renamePlaceholder")}
+                            aria-invalid={renameNameExists}
+                            aria-describedby={renameNameExists ? renameErrorId : undefined}
                             autoFocus
                         />
+                        {renameNameExists && <div id={renameErrorId} role="alert" style={{ color: '#d9534f', fontSize: '13px' }}>
+                            {t('story.files.duplicateName')}
+                        </div>}
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
@@ -479,7 +497,7 @@ export default function Tab_StoryContents({ story_name, workspace, isAddDialogOp
                         <TN_Button
                             type="submit"
                             variant="proceed"
-                            disabled={editFileName.trim() === ""}
+                            disabled={editFileName.trim() === "" || renameNameExists}
                         >
                             {t("common.change")}
                         </TN_Button>

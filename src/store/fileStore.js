@@ -185,6 +185,33 @@ export const useFileStore = create((set, get) => ({
         }
     },
 
+    duplicateStory: (storyName) => withImageReferenceWrite(async () => {
+        try {
+            const created = normalizeStoryInfo(await invoke('duplicate_story', { storyName }));
+            await get().fetchStoryList();
+            await get().fetchWholeTxtList();
+            showSuccessToast(i18next.t('notice.duplicated', { name: created.story_name }));
+            return created;
+        } catch (error) {
+            showErrorToast(operationFailed('duplicateStory'), error);
+            throw error;
+        }
+    }),
+
+    duplicateContent: (value) => withImageReferenceWrite(async () => {
+        try {
+            const info = contentsInfo(value);
+            const created = contentsInfo(await invoke('duplicate_content', { contentsInfo: info }));
+            await get().fetchStoryList();
+            await get().fetchWholeTxtList();
+            showSuccessToast(i18next.t('notice.duplicated', { name: created.name }));
+            return created;
+        } catch (error) {
+            showErrorToast(operationFailed('duplicateContent'), error);
+            throw error;
+        }
+    }),
+
     renameStory: async (oldStoryName, newStoryName) => {
         try {
             await invoke("rename_story", { oldStoryName, newStoryName });
@@ -236,6 +263,11 @@ export const useFileStore = create((set, get) => ({
             catch (error) { showErrorToast(i18next.t('notice.recentFilesSaveFailed'), error); }
             return renamed;
         } catch (error) {
+            if ((error instanceof Error ? error.message : String(error)) === 'Content already exists') {
+                const message = i18next.t('work.duplicateName');
+                useToastStore.getState().addToast(message, 'error');
+                throw new Error(message);
+            }
             showErrorToast(operationFailed('renameText'), error);
             throw error;
         }

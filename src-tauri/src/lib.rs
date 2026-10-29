@@ -5,7 +5,7 @@ pub mod webbrowser;
 
 use file_ops::{
     backup_manager, image_manager, document_manager, file_manager, initializer, json_editor,
-    txt_editor, template_manager,
+    txt_editor, template_manager, duplicate_manager,
 };
 use tauri::Manager;
 use utils::{battery_manager, time_manager};
@@ -66,6 +66,8 @@ pub fn run() {
             file_manager::create_story,
             file_manager::delete_story,
             file_manager::rename_story,
+            duplicate_manager::duplicate_story,
+            duplicate_manager::duplicate_content,
             file_manager::delete_txt,
             file_manager::scan,
             file_manager::delete_non_txt_files,

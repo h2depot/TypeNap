@@ -9,12 +9,15 @@
 }
 
 .controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    flex-wrap: wrap;
 }
+
+.scopeFilter { justify-self: center; max-width: 100%; }
+.emptyState { margin-top: 20px; }
 
 .search {
     width: 360px;
@@ -24,6 +27,7 @@
 }
 
 .rightControls {
+    justify-self: end;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -44,8 +48,8 @@
 .rowMenuButton:disabled { opacity: .4; cursor: default; }
 
 @media (max-width: 900px) {
-    .search { flex: 1 1 100%; width: 100%; }
-    .rightControls { width: 100%; }
+    .controls { grid-template-columns: minmax(0, 1fr) auto; }
+    .search { grid-column: 1 / -1; width: 100%; }
 }
 
 @media (max-width: 700px) {

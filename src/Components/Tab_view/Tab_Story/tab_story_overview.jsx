@@ -18,11 +18,15 @@ import ImageCollectionPicker from '../../Dialog/ImageCollectionPicker';
 
 export default function TabStoryOverview({ story_name, workspace, isTitleDialogOpen, onCloseTitleDialog }) {
     const { t } = useTranslation();
-    const { renameStory } = useFileStore();
+    const { renameStory, storyList = [] } = useFileStore();
     const { updateStoryInfo, renameStoryWorkspace, waitForSynopsisSave } = useStoryStore();
     const { renameStoryTabs } = useTabStore();
     const { fetchImageList, addUserImage, wholeImageList } = useImageStore();
     const [editedTitle, setEditedTitle] = useState(story_name);
+    const normalizedRename = editedTitle.trim().toLowerCase();
+    const renameNameExists = normalizedRename !== '' && storyList.some(story => (
+        story.story_name !== story_name && story.story_name.trim().toLowerCase() === normalizedRename
+    ));
     const [savingTitle, setSavingTitle] = useState(false);
     const [savingColor, setSavingColor] = useState(false);
     useEffect(() => setEditedTitle(story_name), [story_name, isTitleDialogOpen]);
@@ -32,7 +36,7 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
 
     const handleSaveTitle = async (e) => {
         if (e) e.preventDefault();
-        if (savingTitle) return;
+        if (savingTitle || renameNameExists) return;
 
         const newStoryName = editedTitle.trim();
         if (!newStoryName || newStoryName === story_name) {
@@ -127,8 +131,10 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
         <form onSubmit={handleSaveTitle} className={styles.overviewFields}>
             <label htmlFor="story-overview-title">{t('library.rename.label')}</label>
             <TN_TextField id="story-overview-title" value={editedTitle}
+                aria-invalid={renameNameExists} aria-describedby={renameNameExists ? 'story-overview-title-error' : undefined}
                 disabled={savingTitle} onChange={e => setEditedTitle(e.target.value)} />
-            <TN_Button type="submit" disabled={savingTitle || !editedTitle.trim() || editedTitle.trim() === story_name}>
+            {renameNameExists && <div id="story-overview-title-error" role="alert" style={{ color: '#d9534f', fontSize: '13px' }}>{t('story.create.duplicateName')}</div>}
+            <TN_Button type="submit" disabled={savingTitle || renameNameExists || !editedTitle.trim() || editedTitle.trim() === story_name}>
                 {t('common.change')}
             </TN_Button>
         </form>
@@ -138,10 +144,12 @@ export default function TabStoryOverview({ story_name, workspace, isTitleDialogO
                 <form onSubmit={handleSaveTitle} className={styles.overviewFields}>
                     <label htmlFor="story-title-dialog-input">{t('library.rename.label')}</label>
                     <TN_TextField id="story-title-dialog-input" autoFocus value={editedTitle}
+                        aria-invalid={renameNameExists} aria-describedby={renameNameExists ? 'story-title-dialog-error' : undefined}
                         disabled={savingTitle} onChange={e => setEditedTitle(e.target.value)} />
+                    {renameNameExists && <div id="story-title-dialog-error" role="alert" style={{ color: '#d9534f', fontSize: '13px' }}>{t('story.create.duplicateName')}</div>}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', width: '100%' }}>
                         <TN_Button variant="secondary" disabled={savingTitle} onClick={onCloseTitleDialog}>{t('common.cancel')}</TN_Button>
-                        <TN_Button variant="proceed" type="submit" disabled={savingTitle || !editedTitle.trim() || editedTitle.trim() === story_name}>{t('common.change')}</TN_Button>
+                        <TN_Button variant="proceed" type="submit" disabled={savingTitle || renameNameExists || !editedTitle.trim() || editedTitle.trim() === story_name}>{t('common.change')}</TN_Button>
                     </div>
                 </form>
             </TN_Dialog>, document.body

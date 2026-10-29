@@ -5,6 +5,10 @@ export const newDefinition = (scope = 'character') => ({
     id: crypto.randomUUID(), name: '', scope, revision: 1, fields: [], createdAt: 0, updatedAt: 0,
 });
 export const newField = () => ({ id: crypto.randomUUID(), label: '', type: 'String', options: [] });
+export const duplicateDefinition = (definition, name) => ({
+    ...structuredClone(definition), ...newDefinition(definition.scope), name,
+    fields: definition.fields.map(field => ({ ...structuredClone(field), id: crypto.randomUUID() })),
+});
 export const makeEntry = definition => ({ definition: structuredClone(definition), values: {}, ...(definition.scope !== 'private' ? { sourceDefinition: structuredClone(definition) } : {}) });
 // Track the shared baseline separately from document-only edits, including legacy
 // documents whose local revision may already collide with a library revision.

@@ -20,9 +20,9 @@ const TN_Menu = ({ trigger, items = [], theme: themeOverride, placement = 'auto'
       if (event.key === 'Escape') setIsOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside, true);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handleClickOutside, true);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
@@ -58,6 +58,7 @@ const TN_Menu = ({ trigger, items = [], theme: themeOverride, placement = 'auto'
         {isOpen && (
           <TN_FloatingLayer anchorRef={menuRef} interactive placement={placement}>
           <motion.div
+            data-tn-popup-panel
             ref={popupRef}
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 8, scale: 1 }}

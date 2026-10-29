@@ -1,0 +1,62 @@
+.switcher {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--filter-count), minmax(0, 1fr));
+    gap: 2px;
+    width: calc(46px * var(--filter-count) + 8px);
+    max-width: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: var(--tn-option-bg);
+    box-shadow: inset 0 0 0 1px var(--tn-stroke);
+}
+
+.indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc((100% - 8px - (var(--filter-count) - 1) * 2px) / var(--filter-count));
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: var(--tn-text);
+    transform: translateX(calc(var(--filter-index) * (100% + 2px)));
+    transition: transform 220ms cubic-bezier(.25, .1, .25, 1);
+    pointer-events: none;
+}
+
+.option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--tn-subtext);
+    font: inherit;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.option:not([aria-checked='true']):hover { background: var(--tn-hover-bg); color: var(--tn-text); }
+.option[aria-checked='true'] { color: var(--light-base); }
+:global([data-theme='dark']) .option[aria-checked='true'] { color: var(--dark-base); }
+.option:focus-visible { outline: 2px solid var(--tn-focus, #E8890D); outline-offset: 2px; }
+.all {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    /* Give the bundled ExtraBold face a little more weight at this small size. */
+    -webkit-text-stroke: .2px currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .indicator, .option { transition: none; }
+}

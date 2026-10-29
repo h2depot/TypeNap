@@ -1,0 +1,39 @@
+.roadmap-character-node__stroke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Match the card body, excluding the SVG's right and bottom shadow space. */
+  width: calc(100% * 300 / 311);
+  height: calc(100% * 477.778 / 489);
+  box-sizing: border-box;
+  border: 4px solid #e8890d;
+  border-radius: 2.935187% / 1.843023%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .roadmap-character-node:hover > .roadmap-character-node__stroke {
+    opacity: 1;
+  }
+}
+
+.roadmap-character-photo__incoming,
+.roadmap-character-photo__outgoing {
+  transform-box: fill-box;
+  animation: roadmap-character-photo-drop 520ms ease both;
+}
+
+.roadmap-character-photo__outgoing {
+  animation-name: roadmap-character-photo-fall;
+}
+
+@keyframes roadmap-character-photo-drop {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes roadmap-character-photo-fall {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}

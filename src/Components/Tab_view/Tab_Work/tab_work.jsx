@@ -93,18 +93,19 @@ export default function TabWork({ story_name, title, access_id, content_type = "
     };
 
     const handleRename = async (newTitle) => {
-        try {
-            const renamed = await saveTitle(workspaceId, newTitle);
-            if (renamed) renameWorkTabs(renamed);
+        const renamed = await saveTitle(workspaceId, newTitle);
+        if (renamed) renameWorkTabs(renamed);
 
+        try {
             await fetchWholeTxtList();
             const storyInfo = await getStoryInfo(story_name);
             updateStoryInfo(story_name, storyInfo);
 
             console.log("Renamed to:", newTitle);
         } catch (err) {
-            alert(t("work.renameFailed"));
-            throw err;
+            // The rename already succeeded; list refresh errors must not revert
+            // the editor title to a name that no longer exists on disk.
+            console.error('Failed to refresh lists after renaming', err);
         }
     };
 

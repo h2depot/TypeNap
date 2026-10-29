@@ -135,8 +135,17 @@ fn write_initial_backup(
     file_name: &str,
     base_content: String,
 ) -> Result<(), String> {
+    write_initial_backup_at(&file_manager::get_backup_path(app)?, story_name, file_name, base_content)
+}
+
+pub(crate) fn write_initial_backup_at(
+    backup_root: &Path,
+    story_name: &str,
+    file_name: &str,
+    base_content: String,
+) -> Result<(), String> {
     let backup_path =
-        backup_path_for_stem(&file_manager::get_backup_path(app)?, story_name, file_name)?;
+        backup_path_for_stem(backup_root, story_name, file_name)?;
 
     if backup_path.exists() {
         let _: BackupJson =

@@ -1,0 +1,132 @@
+.tabular {
+  --tabular-paper: var(--flow-base);
+  --tabular-ink: var(--tb-text);
+  --tabular-header: color-mix(in srgb, var(--flow-surface) 55%, var(--flow-base));
+  --tabular-frame: color-mix(in srgb, var(--tabular-ink) 32%, var(--flow-base));
+  --tabular-line: color-mix(in srgb, var(--flow-text) 12%, var(--flow-base));
+  --tabular-muted: color-mix(in srgb, var(--tabular-ink) 52%, var(--flow-base));
+  --tabular-hover: color-mix(in srgb, var(--flow-text) 4%, var(--flow-base));
+  --tabular-focus: var(--flow-selected);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: transparent;
+  color: var(--tabular-ink);
+  font-family: var(--font-family-ui, sans-serif);
+  font-weight: 400;
+}
+.tabular[hidden] { display: none; }
+.tabular button, .tabular input, .tabular textarea { font-family: inherit; }
+.tabular button:disabled { cursor: default; }
+.tabular button:focus-visible, .tabular__scroll:focus-visible, .tabular__resize-handle:focus-visible { outline: 2px solid var(--tabular-focus) !important; outline-offset: -2px; }
+.tabular__toolbar { display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 12px 20px; min-height: 76px; padding: 16px 20px; background: transparent; }
+.tabular__summary { display: inline-flex; align-items: center; gap: 8px; color: var(--tabular-muted); font-size: 12px; white-space: nowrap; }
+.tabular__toolbar-actions, .tabular__history { display: flex; align-items: center; gap: 10px; }
+.tabular__history { gap: 6px; margin-left: auto; }
+.tabular__action-label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: var(--font-weight-ui, 700); white-space: nowrap; }
+.tabular__action-label svg { flex-shrink: 0; }
+.tabular__quiet-action .tabular__action-label { font-size: 12px; }
+.tabular__quiet-action:hover { background: var(--tabular-hover) !important; }
+.tabular__viewport { display: flex; flex: 1; min-width: 0; min-height: 0; margin: 0 20px 20px; overflow: hidden; border: 2px solid var(--tabular-frame); border-radius: 16px; background: var(--tabular-paper); }
+.tabular__scroll { flex: 1; min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-color: auto; scrollbar-width: auto; }
+/* Keep the native scroll interaction, with quiet inset rails inside the rounded frame. */
+.tabular__scroll::-webkit-scrollbar { width: 10px; height: 10px; background: transparent; }
+.tabular__scroll::-webkit-scrollbar-track { margin: 12px; border-radius: 10px; background: transparent; }
+.tabular__scroll::-webkit-scrollbar-thumb { min-width: 32px; min-height: 32px; border: 2px solid transparent; border-radius: 10px; background-color: var(--tabular-frame); background-clip: padding-box; }
+.tabular__scroll::-webkit-scrollbar-thumb:hover { background-color: var(--tabular-muted); }
+.tabular__scroll::-webkit-scrollbar-thumb:active { background-color: var(--tabular-ink); }
+.tabular__scroll::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.tabular__scroll::-webkit-scrollbar-corner { background: transparent; }
+@supports not selector(::-webkit-scrollbar) {
+  .tabular__scroll { scrollbar-width: thin; scrollbar-color: var(--tabular-frame) transparent; }
+}
+.tabular__table { table-layout: fixed; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 13px; }
+.tabular__table th, .tabular__table td { border-right: 1px solid var(--tabular-line); border-bottom: 1px solid var(--tabular-line); }
+.tabular__table th:last-child, .tabular__table td:last-child { border-right: 0; }
+.tabular__data-row > th, .tabular__data-row > td { height: var(--tabular-row-height); max-height: var(--tabular-row-height); }
+.tabular__table thead th { position: sticky; top: 0; z-index: 3; height: 48px; padding: 0 12px; background: var(--tabular-header); color: var(--tabular-ink); font-weight: 700; box-shadow: 0 1px 0 var(--tabular-frame); }
+.tabular__table .tabular__corner { left: 0; z-index: 5; box-shadow: 1px 0 0 var(--tabular-line); }
+.tabular__corner > span { font-size: 12px; font-weight: 500; }
+.tabular__column-title { display: flex; align-items: center; gap: 4px; min-width: 0; padding-right: 36px; }
+.tabular__column-title input, .tabular__row-title input { flex: 1; width: 100%; min-width: 0; padding: 4px 0; border: 0; outline: none; background: transparent; color: inherit; font-family: var(--font-family-ui, sans-serif); font-size: 13px; font-weight: 700; line-height: 24px; text-overflow: ellipsis; }
+.tabular__column-title:focus-within, .tabular__row-title:focus-within { color: var(--tabular-ink); }
+.tabular__column-delete { position: absolute; top: 10px; right: 12px; z-index: 4; display: inline-flex; }
+.tabular__column-delete, .tabular__row-actions { opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
+.tabular__column-heading:hover .tabular__column-delete, .tabular__column-heading:focus-within .tabular__column-delete { opacity: 1; pointer-events: auto; }
+.tabular__table thead .tabular__add-heading {
+  padding: 0;
+  text-align: center;
+  /* Keep the shared header border and shadow so the + cell stays aligned. */
+  background: linear-gradient(to right, var(--tabular-header), var(--tabular-paper));
+}
+.tabular__table .tabular__row-heading { position: sticky; left: 0; z-index: 2; padding: 0; vertical-align: top; background: var(--tabular-paper); box-shadow: 1px 0 0 var(--tabular-line); }
+.tabular__row-frame { position: absolute; inset: 0 0 6px; overflow: auto; overscroll-behavior: auto; scrollbar-gutter: stable; }
+.tabular__row-title { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px 12px 40px; }
+.tabular__row-identity { display: flex; flex-direction: column; align-items: stretch; gap: 3px; width: 100%; min-height: 100%; padding: 10px 12px 40px; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.tabular__row-visual, .tabular__element-icon { display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0; width: 24px; height: 24px; color: var(--tabular-muted); }
+.tabular__row-visual { pointer-events: none; }
+.tabular__element-icon { position: relative; }
+.tabular__element-icon img { position: absolute; inset: 0; width: 24px; height: 24px; border-radius: 3px; object-fit: cover; }
+.tabular__element-icon img[hidden] { display: none; }
+.tabular__row-label { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.tabular__row-label strong { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; line-height: 24px; overflow-wrap: anywhere; }
+.tabular__row-summary { color: var(--tabular-muted); font-size: 12px; font-weight: 400; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tabular__row-summary:empty { display: none; }
+.tabular__row-editor { display: grid; gap: 6px; padding: 8px; }
+.tabular__row-editor-actions, .tabular__row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 2px; }
+.tabular__row-actions { position: absolute; z-index: 3; right: 12px; bottom: 8px; gap: 6px; }
+.tabular__row-heading:hover .tabular__row-actions, .tabular__row-heading:focus-within .tabular__row-actions { opacity: 1; pointer-events: auto; }
+.tabular__cell { position: relative; padding: 0; vertical-align: top; background: var(--tabular-paper); }
+.tabular__cell-body { position: absolute; inset: 0; overflow: auto; overscroll-behavior: auto; scrollbar-gutter: stable; padding: 10px 12px; font-size: 13px; font-weight: 400; line-height: 24px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.tabular__cell-content { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; color: inherit; }
+.tabular__table .tabular__row-heading:hover, .tabular__cell:hover { background: var(--tabular-hover); }
+/* Paint the scroll gutter from the same surface as the entire hovered cell. */
+.tabular__row-frame, .tabular__cell-body, .tabular__cell-editor { background: inherit; }
+.tabular__cell-body > span { display: block; }
+.tabular__cell[data-editing='true'] { box-shadow: inset 0 0 0 1px var(--tabular-focus); }
+.tabular__cell-editor { position: absolute; inset: 1px; display: flex; flex-direction: column; padding: 0; }
+.tabular-textarea { display: block; box-sizing: border-box; width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--tabular-line); border-radius: 10px; background: var(--tabular-paper); color: var(--tabular-ink); font-family: inherit; font-size: 13px; font-weight: 400; line-height: 24px; resize: none; overflow: auto; overscroll-behavior: auto; scrollbar-gutter: stable; }
+.tabular-textarea::placeholder { color: var(--tabular-muted); }
+.tabular-textarea:focus { border-color: var(--tabular-focus); outline: none; }
+.tabular__cell-editor > .tabular-textarea { flex: 1; min-height: 0; padding: 9px 11px 32px; border: 0; border-radius: 0; background: inherit; }
+.tabular__cell-body, .tabular__cell-editor > .tabular-textarea { font-family: var(--font-family-content); }
+.tabular__cell-tools { position: absolute; right: 4px; bottom: 4px; display: flex; }
+/* Blend the table's ending rules into its opaque paper color. Border images
+   retain the real 1px borders; no masks, transparent fills or offset overlays. */
+.tabular__trailing-cell {
+  background: var(--tabular-paper);
+  border-image: linear-gradient(to right, var(--tabular-line), var(--tabular-paper)) 1;
+}
+.tabular__add-row td {
+  height: 44px;
+  padding: 0;
+  border-bottom: 0;
+  background: var(--tabular-paper);
+  border-image: linear-gradient(to bottom, var(--tabular-line), var(--tabular-paper)) 1;
+}
+.tabular__add-row-heading { position: sticky; left: 0; z-index: 2; }
+.tabular__add-row-heading > div { display: flex; align-items: center; width: fit-content; padding: 8px; }
+.tabular__sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tabular__resize-handle { position: absolute; z-index: 6; touch-action: none; user-select: none; }
+.tabular__resize-handle::after { content: ''; position: absolute; background: var(--tabular-focus); opacity: 0; }
+.tabular__resize-handle--column { top: 0; right: 0; bottom: 0; width: 8px; cursor: col-resize; }
+.tabular__resize-handle--column::after { top: 0; bottom: 0; right: 0; width: 2px; }
+.tabular__resize-handle--row { left: 0; right: 0; bottom: 0; height: 6px; cursor: row-resize; }
+.tabular__resize-handle--row::after { left: 0; right: 0; bottom: 0; height: 2px; }
+.tabular__column-heading:hover .tabular__resize-handle::after, .tabular__corner:hover .tabular__resize-handle::after,
+.tabular__row-heading:hover > .tabular__resize-handle::after, .tabular__resize-handle:focus-visible::after { opacity: 1; }
+@media (hover: none) {
+  .tabular__column-delete, .tabular__row-actions { opacity: 1; pointer-events: auto; }
+  .tabular__resize-handle::after { opacity: .5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tabular__column-delete, .tabular__row-actions { transition: none; }
+}
+@media (max-width: 700px) {
+  .tabular__toolbar { padding: 12px; gap: 12px; }
+  .tabular__toolbar-actions { flex-wrap: wrap; }
+  .tabular__viewport { margin: 0 12px 12px; border-radius: 12px; }
+}

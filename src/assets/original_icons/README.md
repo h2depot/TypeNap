@@ -34,3 +34,7 @@ Map, Type, Images, Bot, Library
 
 名前は形状に基づいて付けています。元データは `svg.txt` に保持しています。
 SVG を修正した場合は対応する `icons/*.js` の描画データも更新してください。
+
+`Memo` / `MemoIcon` はプロジェクト直下の `newsvg.txt` から登録したメモ用アイコンです。元図案は `svg/Memo.svg` に保持し、React コンポーネントでは `currentColor` でテーマの文字色を継承します。GraphMap のメモ項目と、それを共有する Tabular の追加メニューで使用しています。
+
+`ListView` / `ListViewIcon` は `newsvg.txt` から登録したリスト表示用アイコンです。元図案は `svg/ListView.svg` に保持し、React コンポーネントでは `currentColor` でテーマの文字色を継承します。既存のアイコンと同様に `size` や `color` を指定できます。

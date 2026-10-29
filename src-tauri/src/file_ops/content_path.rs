@@ -100,8 +100,7 @@ pub fn renamed_path(
     path_gate::validate_name(name)?;
     let old = resolve(root, info)?;
     for item in list(root, &info.story_name)? {
-        if item.content_type == info.content_type
-            && item.name.trim().to_lowercase() == name.trim().to_lowercase()
+        if item.name.trim().to_lowercase() == name.trim().to_lowercase()
             && parse_id(&item.access_id)? != parse_id(&info.access_id)?
         {
             return Err("Content already exists".into());
@@ -136,6 +135,48 @@ mod tests {
             assert_eq!(self.0.parent(), Some(std::env::temp_dir().as_path()));
             fs::remove_dir_all(&self.0).unwrap();
         }
+    }
+
+    #[test]
+    fn rename_rejects_duplicate_names_across_all_content_types_without_changing_files() {
+        let fixture = Fixture::new();
+        let library = fixture.0.join("Library");
+        let kinds = [
+            ContentType::Txt,
+            ContentType::Character,
+            ContentType::World,
+            ContentType::Entity,
+        ];
+        for (index, kind) in kinds.into_iter().enumerate() {
+            let name = format!("Title {index}");
+            let id = Uuid::new_v4().to_string();
+            fs::write(
+                library
+                    .join("Story")
+                    .join(file_name(kind, &name, &id).unwrap()),
+                "unchanged body",
+            )
+            .unwrap();
+        }
+        let items = list(&library, "Story").unwrap();
+        for source in &items {
+            // The content itself is excluded from collision detection.
+            assert!(renamed_path(&library, source, &source.name).is_ok());
+            for target in &items {
+                if source.access_id == target.access_id {
+                    continue;
+                }
+                assert_eq!(
+                    renamed_path(&library, source, &target.name.to_uppercase()).unwrap_err(),
+                    "Content already exists"
+                );
+                assert_eq!(
+                    fs::read_to_string(resolve(&library, source).unwrap()).unwrap(),
+                    "unchanged body"
+                );
+            }
+        }
+        assert_eq!(list(&library, "Story").unwrap(), items);
     }
 
     #[test]

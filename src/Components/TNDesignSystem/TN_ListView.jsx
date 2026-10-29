@@ -20,6 +20,7 @@ export const TN_ListView = ({ children, theme: themeOverride, width = '100%', ma
   return (
     <div data-tn-ui
       data-tn-list-view
+      data-theme={theme}
       style={{
         width: width,
         maxWidth: maxWidth,
@@ -37,9 +38,10 @@ export const TN_ListView = ({ children, theme: themeOverride, width = '100%', ma
 };
 
 /**
- * TN_ListItem - Flat settings row.
+ * TN_ListItem - Flat settings row. `interactive` enables shared feedback for
+ * sortable rows without adding a navigation action or chevron.
  */
-export const TN_ListItem = ({ icon, title, description, control, onClick, disabled = false, theme: themeOverride, ...props }) => {
+export const TN_ListItem = ({ icon, title, description, control, onClick, interactive = false, disabled = false, theme: themeOverride, ...props }) => {
   const theme = useTNTheme(themeOverride);
   const isClickable = !!onClick && !disabled;
 
@@ -50,6 +52,7 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
     <div data-tn-ui
       data-tn-list-item
       data-clickable={isClickable ? 'true' : undefined}
+      data-interactive={interactive && !disabled ? 'true' : undefined}
       data-theme={theme}
       onClick={isClickable ? onClick : undefined}
       style={{
@@ -91,7 +94,6 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
               justifyContent: 'center',
               width: '40px',
               height: '40px',
-              color: textColor,
               flexShrink: 0,
             }}
           >
@@ -102,10 +104,9 @@ export const TN_ListItem = ({ icon, title, description, control, onClick, disabl
         {/* テキストスロット (タイトル & サブタイトル) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
           {title && (
-            <span style={{
+            <span data-tn-list-title style={{
               fontSize: '15px',
               fontWeight: 'var(--font-weight-ui, 800)',
-              color: textColor,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

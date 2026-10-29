@@ -5,6 +5,7 @@ export { default as TN_CheckBox } from './TN_CheckBox';
 export { default as TN_Dialog } from './TN_Dialog';
 export { default as TN_DialogErrorHandling } from './TN_Dialog_ErrorHandling';
 export { default as TN_Dropdown } from './TN_Dropdown';
+export { default as TN_DropdownMenu } from './TN_DropdownMenu';
 export { default as TN_IconButton } from './TN_IconButton';
 export { default as TN_NavButton } from './TN_NavButton';
 export { default as TN_ImageOption } from './TN_ImageOption';

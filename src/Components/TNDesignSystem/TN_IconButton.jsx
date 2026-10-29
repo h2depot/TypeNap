@@ -3,7 +3,7 @@ import { useTNTheme } from './theme';
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', theme: themeOverride, borderRadius = '50%', disabled = false, type = 'button', style, ...props }) => {
+const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', theme: themeOverride, borderRadius = '50%', disabled = false, subtle = false, type = 'button', style, ...props }) => {
   const theme = useTNTheme(themeOverride);
   const isPrimary = variant === 'primary';
   const isTransparent = variant === 'ghost';
@@ -78,10 +78,11 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
     <motion.button data-tn-ui
       type={type}
       onClick={disabled ? undefined : onClick}
-      initial="initial"
-      whileHover={disabled ? undefined : "hover"}
-      whileTap={disabled ? undefined : "tap"}
-      variants={buttonVariants}
+      initial={subtle ? false : "initial"}
+      whileHover={disabled ? undefined : subtle ? { backgroundColor: theme === 'light' ? 'rgba(35,43,105,0.08)' : 'rgba(212,207,191,0.08)' } : "hover"}
+      whileTap={disabled || subtle ? undefined : "tap"}
+      variants={subtle ? undefined : buttonVariants}
+      transition={subtle ? { duration: 0.15 } : undefined}
       disabled={disabled}
       style={{
         position: 'relative',
@@ -95,7 +96,7 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
         padding: '3px', // border width
         borderRadius: borderRadius,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        boxShadow: disabled
+        boxShadow: disabled || subtle
           ? 'none'
           : theme === 'light'
             ? '0 4px 10px rgba(0,0,0,0.06)'
@@ -113,7 +114,7 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
       )}
 
       {/* 2. Accent Border / Glow Background (Fades in on hover) */}
-      {!disabled && (
+      {!disabled && !subtle && (
         <motion.div
           variants={{
             initial: { opacity: 0 },
@@ -147,7 +148,7 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
         }}
       >
         {/* TN_MascotIcon hover glassmorphism background for the ghost variant */}
-        {isTransparent && !disabled && (
+        {isTransparent && !disabled && !subtle && (
           <motion.div
             variants={{
               initial: { opacity: 0 },
@@ -166,7 +167,7 @@ const TN_IconButton = ({ icon, onClick, variant = 'secondary', size = 'medium', 
         )}
 
         <motion.div
-          variants={iconContainerVariants}
+          variants={subtle ? undefined : iconContainerVariants}
           style={{
             display: 'flex',
             justifyContent: 'center',

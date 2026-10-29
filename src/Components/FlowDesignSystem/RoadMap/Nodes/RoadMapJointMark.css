@@ -1,0 +1,50 @@
+.roadmap .roadmap-joint-mark {
+  /* Above the card's isolated stacking context, including its motion/SVG layers. */
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--flow-base);
+  background: var(--brand-accent);
+  box-shadow: 0 0 0 2px var(--brand-accent);
+  /* Keep handles measurable and hittable for React Flow while visually hidden. */
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+/* A transparent proximity area reveals the handle before reaching the dot. */
+.roadmap .roadmap-joint-mark::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+}
+
+.roadmap .roadmap-joint-mark[data-visible='true'],
+.roadmap .roadmap-node:hover .roadmap-joint-mark,
+.roadmap .roadmap-node:focus-within .roadmap-joint-mark,
+.roadmap .roadmap-joint-mark.connecting {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .roadmap .roadmap-joint-mark { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roadmap .roadmap-joint-mark { transition: none; }
+}
+
+.roadmap .roadmap-joint-mark:hover,
+.roadmap .roadmap-joint-mark.connecting {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand-accent) 45%, transparent);
+}
+
+/* Leave the document footer available for toggling, including its center.
+   Keep the bottom connection target and its proximity area outside the card. */
+.roadmap .roadmap-node--document .react-flow__handle-bottom {
+  bottom: -16px;
+}
+
+.roadmap .roadmap-node--document .react-flow__handle-bottom::before {
+  inset: 0 -20px -20px;
+}

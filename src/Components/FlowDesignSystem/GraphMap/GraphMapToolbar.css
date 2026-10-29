@@ -1,0 +1,39 @@
+.graph-toolbar {
+  position: absolute;
+  z-index: 5;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.graph-toolbar__search {
+  position: relative;
+  width: min(340px, 100%);
+  min-width: 0;
+  pointer-events: auto;
+}
+.graph-toolbar__add { flex-shrink: 0; pointer-events: auto; }
+.graph-toolbar__history {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+.graph-toolbar__results {
+  position: absolute;
+  top: calc(100% + 8px);
+  width: 100%;
+  max-height: min(420px, 50dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 600px) {
+  .graph-toolbar { top: 12px; left: 12px; right: 12px; gap: 8px; flex-wrap: wrap; }
+  .graph-toolbar__search { flex: 1 1 240px; }
+  .graph-toolbar__search:focus-within { z-index: 1; }
+}

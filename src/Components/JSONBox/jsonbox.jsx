@@ -33,6 +33,10 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
     const photoHeight = photoWidth / photoAspectRatio;
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
+    const [renamingTitle, setRenamingTitle] = useState(false);
+    const titlePending = useRef(false);
+    const confirmedTitle = useRef(title);
+    confirmedTitle.current = title;
     const [menuOpen, setMenuOpen] = useState(true);
     const [imagesDialogWorkspace, setImagesDialogWorkspace] = useState(null);
     const [lockState, setLockState] = useState({ workspaceId, locked: true });
@@ -106,10 +110,24 @@ export default function JSONBox({ workspaceId, title, content, contentType, onCh
     <div className={styles.overviewFields}>
     <div className={styles.titleRow}>
     {ContentIcon && <ContentIcon size={32} className={styles.characterIcon} aria-hidden="true" />}
-    <input key={`${workspaceId}/${title}`} className={styles.title} aria-label={t('editor.titlePlaceholder')} defaultValue={title} onBlur={async e => {
-        const next = e.target.value.trim();
-        if (!next) { e.target.value = title; return; }
-        if (next !== title) { try { await onRename(next); } catch (e) { setError(String(e)); } }
+    <input key={`${workspaceId}/${title}`} className={styles.title} aria-label={t('editor.titlePlaceholder')} defaultValue={title} readOnly={renamingTitle} onBlur={async e => {
+        if (titlePending.current) return;
+        const input = e.currentTarget;
+        const next = input.value.trim();
+        if (!next || next === title) { input.value = title; return; }
+        titlePending.current = true;
+        setRenamingTitle(true);
+        setError('');
+        try {
+            await onRename(next);
+            input.value = next;
+        } catch (error) {
+            input.value = confirmedTitle.current;
+            setError(error instanceof Error ? error.message : String(error));
+        } finally {
+            titlePending.current = false;
+            setRenamingTitle(false);
+        }
     }} onKeyDown={e => {
         if (e.nativeEvent.isComposing || e.keyCode === 229) return;
         if (e.key === 'Enter') e.currentTarget.blur();
