@@ -38,6 +38,7 @@
     "shortcutSaveFailed": "ショートカットを保存できませんでした。"
   },
   "common": {
+    "duplicate": "複製する",
     "noOptions": "もう選択肢がないよ！",
     "cancel": "キャンセル",
     "close": "閉じる",
@@ -150,6 +151,28 @@
       "comingSoon": "{{type}} の作成機能は準備中です。"
     },
     "overview": {"title": "作品概要", "navigation": "作品ナビゲーション", "collapseNavigation": "ナビゲーションを収納", "expandNavigation": "ナビゲーションを展開", "contents": "コンテンツビュー", "textColor": "表紙の文字色", "hideCoverText": "表紙の文字を非表示"},
+    "views": {
+      "section": "ビュー",
+      "add": "ビューを追加",
+      "addGraph": "GraphMapを追加",
+      "addTabular": "Tabularを追加",
+      "actions": "{{name}}のメニュー",
+      "rename": "名前を編集",
+      "createTitle": "ビューを追加",
+      "renameTitle": "ビューの名前を編集",
+      "deleteTitle": "ビューを削除",
+      "nameLabel": "ビューの名前",
+      "namePlaceholder": "名前を入力…",
+      "createSubmit": "ビューを追加",
+      "renameSubmit": "変更を保存",
+      "required": "名前を入力してください。",
+      "tooLong": "名前は100文字以内で入力してください。",
+      "duplicate": "同じ種類でこの名前のビューが既にあります。",
+      "deleteMessage": "「{{name}}」を削除しますか？",
+      "deleteHint": "このビューの配置や表のデータを削除します。本文・キャラクターなどの元コンテンツは削除されません。",
+      "empty": "ビューはまだありません。＋から追加できます。",
+      "saveFailed": "ビューの変更を保存できませんでした。もう一度お試しください。"
+    },
     "create": {
       "nameLabel": "ストーリーの名前",
       "namePlaceholder": "新しいストーリーの名前を入力...",
@@ -169,7 +192,9 @@
     "files": {
       "searchPlaceholder": "コンテンツを検索...",
       "resultCount": "{{total}}件中 {{count}}件を表示",
-      "noResults": "一致する本文がありません。",
+      "noResults": "条件に一致するコンテンツがありません。",
+      "clearFilters": "条件をクリア",
+      "filter": { "label": "コンテンツの種類で絞り込み", "all": "すべてのコンテンツ", "txt": "本文", "character": "人物", "world": "世界観", "entity": "エンティティ" },
       "sort": { "title": "名前順", "order": "作品内の順番" },
       "description": "テキストファイル",
       "fetchFailed": "ファイルリストの取得に失敗しました: ",
@@ -348,9 +373,11 @@
     }
   },
   "work": {
+    "duplicateName": "同じ名前のコンテンツが既に存在するため、名前を変更できません。別の名前を入力してください。",
     "renameFailed": "タイトルの変更に失敗しました。"
   },
   "notice": {
+    "duplicated": "「{{name}}」を複製しました。",
     "tabLimit": "これ以上タブを開けません。",
     "settingsLoadFailed": "設定を読み込めませんでした。",
     "settingsSaveFailed": "設定を保存できませんでした。",
@@ -372,6 +399,7 @@
     "savePathFailed": "保存先を準備できませんでした。ファイル名と保存先を確認してください。",
     "loadFileFailed": "ファイルを読み込めませんでした。",
     "operations": {
+      "duplicateStory": "作品の複製", "duplicateContent": "コンテンツの複製",
       "getBasePath": "保存先の取得", "loadStories": "作品一覧の取得", "loadTexts": "文書一覧の取得",
       "loadText": "文書の取得", "loadStory": "作品情報の取得", "updateSynopsis": "あらすじの更新",
       "updateCover": "表紙の更新", "createStory": "作品の作成", "deleteStory": "作品の削除",
@@ -446,6 +474,7 @@
     "types": { "String": "String · 文字列", "StringList": "StringList · リスト" }
   },
   "templateLibrary": {
+    "noResults": "条件に一致するテンプレートがありません。",
     "backups": "バックアップ・削除の取り消し",
     "restore": "この版を復元",
     "noBackups": "バックアップはまだありません。",

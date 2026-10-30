@@ -1,12 +1,27 @@
 .TN-node-tip-anchor { display: inline-flex; max-width: 100%; flex-shrink: 0; vertical-align: top; }
 .TN-node-tip-anchor:focus-visible { outline: 2px solid #e8890d; outline-offset: 5px; border-radius: 6px; }
-.TN-node-tip {
+.TN-node-tip-layer {
   position: fixed;
   z-index: 10000;
-  box-sizing: border-box;
   width: 280px;
   max-width: calc(100vw - 24px);
   max-height: calc(100dvh - 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.TN-node-tip-layer--interactive { pointer-events: auto; }
+.TN-node-tip-layer--interactive::before { content: ''; position: absolute; }
+.TN-node-tip-layer--interactive[data-side='right']::before { top: 0; bottom: 0; right: 100%; width: 12px; }
+.TN-node-tip-layer--interactive[data-side='left']::before { top: 0; bottom: 0; left: 100%; width: 12px; }
+.TN-node-tip-layer--interactive[data-side='bottom']::before { left: 0; right: 0; bottom: 100%; height: 12px; }
+.TN-node-tip-layer--interactive[data-side='top']::before { left: 0; right: 0; top: 100%; height: 12px; }
+.TN-node-tip__actions { display: flex; flex-shrink: 0; justify-content: flex-end; }
+.TN-node-tip {
+  box-sizing: border-box;
+  min-height: 0;
+  width: 100%;
   overflow: hidden;
   padding: 18px 20px;
   border: 1px solid rgba(212, 207, 191, .2);

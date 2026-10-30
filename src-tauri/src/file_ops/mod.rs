@@ -6,6 +6,7 @@ pub mod content_path;
 pub mod contents_info;
 pub mod document_manager;
 pub mod document_name;
+pub mod duplicate_manager;
 pub mod file_manager;
 pub mod initializer;
 pub mod json_backup_manager;

@@ -43,6 +43,7 @@
     "close": "Close",
     "delete": "Delete",
     "rename": "Rename",
+    "duplicate": "Duplicate",
     "change": "Change",
     "create": "Create",
     "loading": "Loading...",
@@ -150,6 +151,28 @@
       "comingSoon": "{{type}} creation is coming soon."
     },
     "overview": {"title": "Overview", "navigation": "Story navigation", "collapseNavigation": "Collapse navigation", "expandNavigation": "Expand navigation", "contents": "Chapters", "textColor": "Cover text color", "hideCoverText": "Hide cover text"},
+    "views": {
+      "section": "Views",
+      "add": "Add view",
+      "addGraph": "Add GraphMap",
+      "addTabular": "Add Tabular",
+      "actions": "Menu for {{name}}",
+      "rename": "Edit name",
+      "createTitle": "Add view",
+      "renameTitle": "Edit view name",
+      "deleteTitle": "Delete view",
+      "nameLabel": "View name",
+      "namePlaceholder": "Enter a name…",
+      "createSubmit": "Add view",
+      "renameSubmit": "Save changes",
+      "required": "Enter a name.",
+      "tooLong": "Use no more than 100 characters.",
+      "duplicate": "A view of this type already has this name.",
+      "deleteMessage": "Delete “{{name}}”?",
+      "deleteHint": "This removes the view’s layout or table data. Source content such as text and characters will be kept.",
+      "empty": "No views yet. Use + to add one.",
+      "saveFailed": "Could not save the view changes. Please try again."
+    },
     "create": {
       "nameLabel": "Story name",
       "namePlaceholder": "Enter a story name...",
@@ -167,9 +190,11 @@
     },
     "actions": { "restoreBackup": "Restore backup" },
     "files": {
-      "searchPlaceholder": "Search by manuscript name...",
-      "resultCount": "Showing {{count}} of {{total}} manuscripts",
-      "noResults": "No matching manuscripts.",
+      "searchPlaceholder": "Search contents...",
+      "resultCount": "Showing {{count}} of {{total}} items",
+      "noResults": "No content matches your filters.",
+      "clearFilters": "Clear filters",
+      "filter": { "label": "Filter by content type", "all": "All content", "txt": "Text", "character": "Character", "world": "World", "entity": "Entity" },
       "sort": { "title": "Name", "order": "Story order" },
       "description": "Text file",
       "fetchFailed": "Could not load the file list: ",
@@ -348,6 +373,7 @@
     }
   },
   "work": {
+    "duplicateName": "Another content item already uses this name. Please enter a different name.",
     "renameFailed": "Could not rename the title."
   },
   "notice": {
@@ -365,6 +391,7 @@
     "libraryCreated": "The library was missing, so a new one was created.",
     "synopsisUpdated": "Synopsis updated.",
     "coverUpdated": "Cover updated.",
+    "duplicated": "Created {{name}}.",
     "saved": "Saved ‘{{title}}’.",
     "partialSave": "The text was saved, but {{target}} could not be updated.",
     "backup": "the backup",
@@ -372,6 +399,7 @@
     "savePathFailed": "Could not prepare the save location. Check the file name and location.",
     "loadFileFailed": "Could not load the file.",
     "operations": {
+      "duplicateStory": "duplicate the story", "duplicateContent": "duplicate the content",
       "getBasePath": "get the save location", "loadStories": "load the story list", "loadTexts": "load the document list",
       "loadText": "load the document", "loadStory": "load the story details", "updateSynopsis": "update the synopsis",
       "updateCover": "update the cover", "createStory": "create the story", "deleteStory": "delete the story",
@@ -446,6 +474,7 @@
     "types": { "String": "String · Text", "StringList": "StringList · Text list" }
   },
   "templateLibrary": {
+    "noResults": "No templates match your filters.",
     "backups": "Backups and undo deletion",
     "restore": "Restore this version",
     "noBackups": "No backups yet.",

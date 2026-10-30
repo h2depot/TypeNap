@@ -38,6 +38,7 @@ export { default as BookClose_TN, default as BookClose_TNIcon } from './icons/Bo
 export { default as BookSearch_TN, default as BookSearch_TNIcon } from './icons/BookSearch_TN.js';
 export { default as Statistics, default as StatisticsIcon } from './icons/Statistics.js';
 export { default as Page, default as PageIcon } from './icons/Page.js';
+export { default as Memo, default as MemoIcon } from './icons/Memo.js';
 export { default as PageSearch, default as PageSearchIcon } from './icons/PageSearch.js';
 export { default as Stack, default as StackIcon } from './icons/Stack.js';
 export { default as Save, default as SaveIcon } from './icons/Save.js';
@@ -57,3 +58,4 @@ export { default as ContentsView, default as ContentsViewIcon } from './icons/Co
 export { default as PanelClose, default as PanelCloseIcon } from './icons/PanelClose.js';
 export { default as PanelOpen, default as PanelOpenIcon } from './icons/PanelOpen.js';
 export { default as BluePrint, default as BluePrintIcon } from './icons/BluePrint.js';
+export { default as ListView, default as ListViewIcon } from './icons/ListView.js';

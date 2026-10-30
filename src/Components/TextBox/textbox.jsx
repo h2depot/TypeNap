@@ -13,6 +13,9 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
     const { t } = useTranslation();
     const [isVertical, setIsVertical] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title);
+    const renamingTitle = useRef(false);
+    const confirmedTitle = useRef(title);
+    confirmedTitle.current = title;
     const [selectedCharLength, setSelectedCharLength] = useState(0);
     const [selectedVisible, setSelectedVisible] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false);
@@ -97,7 +100,7 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
     }, [searchVisible]);
 
     const handleInputClick = () => {
-        if (!isTitleEdible) {
+        if (!isTitleEdible && !renamingTitle.current) {
             setIsTitleEdible(true);
         }
     };
@@ -110,14 +113,22 @@ export default function TextBox({ workspaceId, title, content, onChangeContent, 
             .setTextSelection(nextMatch).focus().scrollIntoView().run();
     };
 
-    const handleSave = () => {
-        if (isTitleEdible) {
-            if (editedTitle.trim() && editedTitle !== title) {
-                onRename(editedTitle);
-            } else {
-                setEditedTitle(title);
-            }
-            setIsTitleEdible(false);
+    const handleSave = async () => {
+        if (!isTitleEdible || renamingTitle.current) return;
+        const nextTitle = editedTitle.trim();
+        setIsTitleEdible(false);
+        if (!nextTitle || nextTitle === title) {
+            setEditedTitle(title);
+            return;
+        }
+        renamingTitle.current = true;
+        try {
+            await onRename(nextTitle);
+        } catch {
+            // A rejected rename leaves the persisted identity and body intact.
+            setEditedTitle(confirmedTitle.current);
+        } finally {
+            renamingTitle.current = false;
         }
     };
 

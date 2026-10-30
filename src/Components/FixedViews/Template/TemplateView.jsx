@@ -4,6 +4,8 @@ import { ArrowDownWideNarrow, ArrowUpWideNarrow, EllipsisVertical, PageSearch, P
 import { TN_Button, TN_Dialog, TN_Dropdown, TN_IconButton, TN_ListItem, TN_ListView, TN_Menu, TN_TextField } from '../../TNDesignSystem';
 import { useTemplateStore } from '../../../store/templateStore';
 import TemplateDefinitionDialog from '../../Templates/TemplateDefinitionDialog';
+import ContentTypeFilter from '../../ContentTypeFilter';
+import EmptyState from '../../EmptyState';
 import { newDefinition, SHARED_SCOPES } from '../../Templates/templateModel';
 import templateStyles from '../../Templates/templates.module.css';
 import styles from './TemplateView.module.css';
@@ -14,6 +16,7 @@ export default function TemplateView() {
     const [sortBy, setSortBy] = useState('name');
     const [ascending, setAscending] = useState(true);
     const [scope, setScope] = useState('all');
+    const hasActiveFilters = query.trim() !== '' || scope !== 'all';
     const [editing, setEditing] = useState(null);
     const [deleting, setDeleting] = useState(null);
     const [error, setError] = useState('');
@@ -21,7 +24,7 @@ export default function TemplateView() {
     const [history, setHistory] = useState(null);
     const [historyTarget, setHistoryTarget] = useState(null);
     const [selectedBackup, setSelectedBackup] = useState('');
-    const { templates, refresh, save, remove, backups, restore, loading, error: loadError } = useTemplateStore();
+    const { templates, refresh, save, duplicate, remove, backups, restore, loading, error: loadError } = useTemplateStore();
     const backup = history?.find(item => `${item.id}/${item.revision}` === selectedBackup);
     useEffect(() => { void refresh().catch(() => {}); }, [refresh]);
     const visible = templates.filter(item => (scope === 'all' || item.scope === scope) && item.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
@@ -53,8 +56,11 @@ export default function TemplateView() {
                         borderRadius="10px"
                     />
                 </div>
+                <div className={styles.scopeFilter}>
+                    <ContentTypeFilter value={scope} onChange={setScope} types={SHARED_SCOPES}
+                        aria-label={t('templates.scope')} allLabel={t('templates.allScopes')} />
+                </div>
                 <div className={styles.rightControls}>
-                    <TN_Dropdown value={scope} onChange={setScope} aria-label={t('templates.scope')} options={[{ value: 'all', label: t('templates.allScopes') }, ...SHARED_SCOPES.map(value => ({ value, label: value }))]} />
                     <TN_Dropdown
                         value={sortBy}
                         onChange={setSortBy}
@@ -77,8 +83,12 @@ export default function TemplateView() {
                 <TN_Button variant="proceed" borderRadius="10px" onClick={() => setEditing(newDefinition(scope === 'all' ? 'character' : scope))}><Plus size={18} aria-hidden="true" />{t('templateLibrary.create')}</TN_Button>
             </div>
             {(loadError || error) && <p role="alert">{loadError || error} {loadError && <button type="button" onClick={() => { void refresh().catch(() => {}); }}>{t('templates.refresh')}</button>}</p>}
-            {!loading && visible.length === 0 && <p className={templateStyles.muted}>{t('templates.empty')}</p>}
-            <TN_ListView maxWidth="100%">
+            {!loading && !loadError && visible.length === 0 && <div className={styles.emptyState}><EmptyState
+                message={t(hasActiveFilters ? 'templateLibrary.noResults' : 'templates.empty')}
+                actionLabel={t('story.files.clearFilters')}
+                onAction={hasActiveFilters ? () => { setQuery(''); setScope('all'); } : undefined}
+            /></div>}
+            {visible.length > 0 && <TN_ListView maxWidth="100%">
             {visible.map(definition => <TN_ListItem key={definition.id}
                 title={definition.name}
                 description={`${definition.scope} · v${definition.revision} · ${t('templates.fieldCount', { count: definition.fields.length })}`}
@@ -94,12 +104,13 @@ export default function TemplateView() {
                     trigger={<button type="button" className={styles.rowMenuButton} disabled={busy} aria-label={t('templates.actions', { name: definition.name })}><EllipsisVertical size={20} /></button>}
                     items={[
                         { label: t('templates.edit'), onClick: () => setEditing(definition) },
+                        { label: t('common.duplicate'), onClick: () => perform(() => duplicate(definition.id)) },
                         { label: t('story.actions.restoreBackup'), onClick: () => openHistory(definition) },
                         { label: t('common.delete'), isDanger: true, onClick: () => setDeleting(definition) },
                     ]}
                 />}
             />)}
-            </TN_ListView>
+            </TN_ListView>}
             {editing && <TemplateDefinitionDialog key={editing.id} definition={editing} existing={templates.some(item => item.id === editing.id)} onClose={() => setEditing(null)} onSave={save} />}
             <TN_Dialog isOpen={history !== null} onClose={() => { if (!busy) setHistory(null); }} title={historyTarget ? `${historyTarget.name} · ${t('story.actions.restoreBackup')}` : t('templateLibrary.backups')}>
                 <p>{t('templateLibrary.restoreHint')}</p>

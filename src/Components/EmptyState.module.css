@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: 24px;
+    text-align: center;
+    color: var(--tn-subtext);
+    border: 1px dashed var(--tn-border-light);
+    border-radius: 10px;
+}

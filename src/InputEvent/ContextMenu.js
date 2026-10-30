@@ -208,11 +208,14 @@ document.addEventListener("contextmenu", async (e) => {
     }
 });
 
-// Close context menu on any click outside
-document.addEventListener("mousedown", (e) => {
+// Capture before graph panning/selection handlers stop event propagation.
+// Do not consume the event: the same press must still reach the graph.
+document.addEventListener("pointerdown", (e) => {
+    const contextMenu = useContextMenuStore.getState();
+    if (!contextMenu.isOpen) return;
     const menuEl = document.getElementById("nomal-context-menu");
     if (menuEl && menuEl.contains(e.target)) {
         return;
     }
-    useContextMenuStore.getState().closeMenu();
-});
+    contextMenu.closeMenu();
+}, { capture: true });

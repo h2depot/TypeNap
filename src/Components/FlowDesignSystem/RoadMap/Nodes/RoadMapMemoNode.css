@@ -1,0 +1,72 @@
+.roadmap-memo-node {
+  --memo-on: var(--brand-indigo, #232B69);
+  position: relative;
+  max-width: 100%;
+  padding: 3px;
+  border: 2px solid var(--flow-border);
+  border-radius: 20px;
+  background: var(--flow-surface);
+  color: var(--flow-text);
+  line-height: 1.6;
+  box-shadow: 0 0 10px transparent, 0 8px 24px #0002;
+  /* Keep focus feedback animated in both motion modes, like the graph cards. */
+  transition: border-color .35s ease, background-color .35s ease, box-shadow .35s ease;
+}
+[data-theme='dark'] .roadmap-memo-node {
+  --memo-on: var(--brand-neutral, #D4CFBF);
+}
+.roadmap-memo-node__grip {
+  position: absolute;
+  top: 2px;
+  left: -46px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--flow-border);
+  border-radius: 10px;
+  background: var(--flow-surface);
+  color: var(--flow-muted);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity .15s ease, color .35s ease, border-color .35s ease;
+}
+/* Bridge the gap so the grip stays hovered while moving out from the memo. */
+.roadmap-memo-node__grip::after { content: ''; position: absolute; top: -1px; bottom: -1px; right: -12px; width: 12px; }
+.roadmap-memo-node:hover .roadmap-memo-node__grip,
+.roadmap-memo-node:focus-within .roadmap-memo-node__grip,
+.react-flow__node-memo.dragging .roadmap-memo-node__grip { opacity: 1; }
+.roadmap-memo-node__grip:hover { color: var(--memo-on); border-color: var(--memo-on); }
+.roadmap-memo-node__grip:active,
+.react-flow__node-memo.dragging .roadmap-memo-node__grip { cursor: grabbing; }
+@media (hover: none) {
+  .roadmap-memo-node__grip { opacity: 1; }
+}
+.roadmap-memo-node:focus-within {
+  border-color: var(--memo-on);
+  background-color: var(--memo-on);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--memo-on) 13%, transparent), 0 8px 24px #0002;
+}
+.roadmap-memo-node__body { height: var(--roadmap-memo-body-height); overflow: auto; border-radius: 14px; background: var(--flow-base); cursor: text; }
+.roadmap-memo-node__body > div { min-height: 100%; }
+.roadmap-memo-node__input {
+  min-height: var(--roadmap-memo-body-height);
+  padding: 18px;
+  outline: none;
+  font-family: var(--font-family-content);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--tb-text);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  caret-color: var(--tn-focus);
+}
+.roadmap-memo-node__input p { margin: 0 0 .5em; }
+.roadmap-memo-node__input p:last-child { margin-bottom: 0; }
+.roadmap-memo-node__input p:only-child:has(> br:only-child)::before { content: 'ここにメモを書いてみよう…'; float: left; height: 0; color: var(--tb-placeholder); pointer-events: none; }
+.roadmap-memo-node__input ::selection { background: rgba(141, 151, 202, 0.35); color: var(--tb-text); }
+.roadmap-memo-node__input pre { white-space: pre-wrap; }

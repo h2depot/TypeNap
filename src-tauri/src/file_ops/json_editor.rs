@@ -305,10 +305,11 @@ mod tests {
             );
             let value = serde_json::json!({"name": "日本語", "items": [1, true, null]});
             save_to_library(&fixture.0, &info, &value).unwrap();
-            rename_in_library(&fixture.0, &info, "New_name").unwrap();
+            let new_name = format!("New_name_{}", kind.prefix());
+            rename_in_library(&fixture.0, &info, &new_name).unwrap();
             let path = resolve_json(&fixture.0, &info).unwrap();
             let (_, name, id) = split_json_name(&path).unwrap();
-            assert_eq!(name, "New_name");
+            assert_eq!(name, new_name);
             assert_eq!(id.to_string(), info.access_id);
             assert!(is_json_content_file(&path));
             assert_eq!(load_from_library(&fixture.0, &info).unwrap(), value);

@@ -7,6 +7,9 @@ export default function Trackpad() {
 
     useEffect(() => {
         const handleWheel = (event) => {
+            // Only reserve gestures over the rounded table when it overflows horizontally.
+            const tableScroll = event.target?.closest?.('.tabular__scroll');
+            if (tableScroll && tableScroll.scrollWidth > tableScroll.clientWidth) return;
             if (Math.abs(event.deltaX) < 20) return;
 
             const now = Date.now();

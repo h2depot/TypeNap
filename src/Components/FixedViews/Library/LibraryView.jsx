@@ -3,9 +3,11 @@ import { useTabStore } from "../../../store/tabStore";
 import { useFileStore } from "../../../store/fileStore";
 import { useStoryStore } from "../../../store/storyStore";
 import { useTxtStore } from "../../../store/txtStore";
+import { duplicateStory } from '../../../store/duplication.js';
 import { BookSearch_TN, ArrowUpWideNarrow, ArrowDownWideNarrow, Plus } from "../../../assets/IconList";
 import styles from "./LibraryView.module.css";
 import AddTabContent from "../../Dialog/AddTabContent";
+import EmptyState from '../../EmptyState';
 import {
     TN_Dialog,
     TN_Button,
@@ -30,6 +32,10 @@ export default function LibraryView() {
     const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
     const [renameTargetStory, setRenameTargetStory] = useState("");
     const [newStoryName, setNewStoryName] = useState("");
+    const normalizedRename = newStoryName.trim().toLowerCase();
+    const renameNameExists = normalizedRename !== '' && storyList.some(story => (
+        story.story_name !== renameTargetStory && story.story_name.trim().toLowerCase() === normalizedRename
+    ));
 
     const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
     const [detailsTargetStory, setDetailsTargetStory] = useState(null);
@@ -99,6 +105,7 @@ export default function LibraryView() {
 
     const handleRenameStory = async (e) => {
         if (e) e.preventDefault();
+        if (renameNameExists) return;
 
         const nextStoryName = newStoryName.trim();
         if (!nextStoryName || nextStoryName === renameTargetStory) {
@@ -183,6 +190,12 @@ export default function LibraryView() {
                                     }
                                 },
                                 {
+                                    label: t("common.duplicate"),
+                                    onClick: () => duplicateStory(storyName).catch(error => {
+                                        console.error('Story duplication failed', error);
+                                    })
+                                },
+                                {
                                     label: t("common.delete"),
                                     onClick: () => {
                                         setDeleteTargetStory(storyName);
@@ -194,13 +207,13 @@ export default function LibraryView() {
                         />
                     );
                 })}
-                {visibleStories.length === 0 && (
-                    <div className={styles.emptyState}>
-                        <BookSearch_TN size={32} aria-hidden="true" />
-                        <p>{t(searchQuery ? "library.noResults" : "library.empty")}</p>
-                        {searchQuery && <TN_Button variant="secondary" onClick={() => setSearchQuery("")}>{t("common.clearInput")}</TN_Button>}
-                    </div>
-                )}
+                {visibleStories.length === 0 && <EmptyState
+                    className={styles.emptyState}
+                    icon={<BookSearch_TN size={32} aria-hidden="true" />}
+                    message={t(searchQuery ? 'library.noResults' : 'library.empty')}
+                    actionLabel={t('common.clearInput')}
+                    onAction={searchQuery ? () => setSearchQuery('') : undefined}
+                />}
             </div>
 
             <TN_Dialog
@@ -316,8 +329,13 @@ export default function LibraryView() {
                             value={newStoryName}
                             onChange={(e) => setNewStoryName(e.target.value)}
                             placeholder={t("library.rename.placeholder")}
+                            aria-invalid={renameNameExists}
+                            aria-describedby={renameNameExists ? 'library-rename-error' : undefined}
                             autoFocus
                         />
+                        {renameNameExists && <div id="library-rename-error" role="alert" style={{ color: '#d9534f', fontSize: '13px' }}>
+                            {t('story.create.duplicateName')}
+                        </div>}
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
@@ -334,7 +352,7 @@ export default function LibraryView() {
                         <TN_Button
                             type="submit"
                             variant="proceed"
-                            disabled={newStoryName.trim() === ""}
+                            disabled={newStoryName.trim() === "" || renameNameExists}
                         >
                             {t("common.change")}
                         </TN_Button>

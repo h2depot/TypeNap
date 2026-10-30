@@ -9,6 +9,7 @@ import { normalizeImagePath } from '../../../utils/imagePaths.js';
 import { TN_Button, TN_Dropdown, TN_IconButton, TN_TextField } from '../../TNDesignSystem';
 import { IMAGE_GAP, IMAGE_META_HEIGHT, layoutImages, selectImages } from './imageGallery.js';
 import { ImageDeleteDialog, ImagePreview, ImageRenameDialog } from './ImageDialogs.jsx';
+import EmptyState from '../../EmptyState';
 import styles from './ImageView.module.css';
 
 // Module-level cache: persists across mounts (tab switches) within the same session.
@@ -302,11 +303,13 @@ export default function ImageView() {
                 </div>;
             })}
         </div>
-        {!loading && !listError && visibleImages.length === 0 && <div className={styles.empty}>
-            <Images size={32} aria-hidden="true" />
-            <p>{t(filtered ? 'imageLibrary.noResults' : 'imageLibrary.empty')}</p>
-            {filtered && <TN_Button variant="secondary" onClick={resetFilters}>{t('imageLibrary.resetFilters')}</TN_Button>}
-        </div>}
+        {!loading && !listError && visibleImages.length === 0 && <EmptyState
+            className={styles.empty}
+            icon={<Images size={32} aria-hidden="true" />}
+            message={t(filtered ? 'imageLibrary.noResults' : 'imageLibrary.empty')}
+            actionLabel={t('imageLibrary.resetFilters')}
+            onAction={filtered ? resetFilters : undefined}
+        />}
         {previewImage && <ImagePreview key={`preview:${previewImage.path}`} image={previewImage} size={dimensions[previewImage.path]}
             inactive={deleteTargets.length > 0 || Boolean(renameTarget)} busy={busy} onDelete={() => requestDelete([previewImage])}
             onRename={() => requestRename(previewImage)}
